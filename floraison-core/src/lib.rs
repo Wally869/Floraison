@@ -43,11 +43,8 @@ pub mod math {
 pub mod geometry {
     //! Geometric primitives and mesh generation
 
-    /// Mesh data structures (placeholder)
-    pub mod mesh {
-        //! Core mesh data structures
-        // Will be implemented in Task 2.2
-    }
+    /// Mesh data structures
+    pub mod mesh;
 
     /// Surface of revolution generator (placeholder)
     pub mod surface_revolution {
