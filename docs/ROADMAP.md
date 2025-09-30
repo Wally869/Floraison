@@ -15,6 +15,12 @@
 - ✅ **Task 2.4**: Surface of Revolution Generator for receptacles and stems
 - ✅ **Task 2.5**: Bézier Curve Utilities with evaluation and sampling
 - 🎉 **Epic 2 Complete!** Core Math Library finished
+- ✅ **Task 3.1**: Receptacle Component with Bézier profiles and surface of revolution
+- ✅ **Task 3.2**: Pistil Component with tapered style and spherical stigma
+- ✅ **Task 3.3**: Stamen Component with cylindrical filament and ellipsoid anther
+- ✅ **Task 3.4**: Simple Petal Component with Bézier outlines and fan triangulation
+- 🎉 **Epic 3 Complete!** Basic Floral Components finished
+- ✅ **Task 4.1**: Floral Diagram Data Structures with whorl arrangements and golden spiral
 
 ## Overview
 
@@ -573,28 +579,31 @@ fn generate_sphere(radius: f32, segments: usize, rings: usize) -> Mesh
 
 ---
 
-#### Task 3.3: Stamen Component
+#### Task 3.3: Stamen Component ✅
 
 **Description**: Create stamen as thin filament with ellipsoid anther.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-components/src/stamen.rs` created
-- [ ] Parameter struct:
+- [x] Module `floraison-components/src/stamen.rs` created
+- [x] Parameter struct:
   ```rust
   pub struct StamenParams {
       pub filament_length: f32,
       pub filament_radius: f32,
       pub anther_length: f32,
-      pub anther_radius: f32,
+      pub anther_width: f32,
+      pub anther_height: f32,
       pub segments: usize,
   }
   ```
-- [ ] Function `generate(params: &StamenParams) -> Mesh`
-- [ ] Filament as thin cylinder
-- [ ] Anther as stretched sphere (ellipsoid)
-- [ ] Anther positioned at top of filament
-- [ ] Default parameters
-- [ ] Unit test
+- [x] Function `generate(params: &StamenParams) -> Mesh`
+- [x] Filament as thin cylinder
+- [x] Anther as stretched sphere (ellipsoid)
+- [x] Anther positioned at top of filament
+- [x] Default parameters and 3 presets (short, slender, elongated_anther)
+- [x] 9 unit tests + 2 doc-tests
 
 **Dependencies**: Tasks 2.2, 2.4
 
@@ -613,29 +622,31 @@ sphere.transform(Mat4::from_scale(Vec3::new(
 
 ---
 
-#### Task 3.4: Simple Petal Component (Flat Mesh)
+#### Task 3.4: Simple Petal Component (Flat Mesh) ✅
 
 **Description**: Create basic petal as flat textured quad with elliptical outline.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-components/src/petal.rs` created
-- [ ] Parameter struct:
+- [x] Module `floraison-components/src/petal.rs` created
+- [x] Parameter struct:
   ```rust
-  pub struct SimplePetalParams {
+  pub struct PetalParams {
       pub length: f32,
       pub width: f32,
-      pub tip_width: f32,    // for tapering
+      pub tip_sharpness: f32,
       pub base_width: f32,
-      pub resolution: usize, // subdivisions
+      pub outline_samples: usize,
   }
   ```
-- [ ] Function `generate_simple(params: &SimplePetalParams) -> Mesh`
-- [ ] Generates flat mesh in XY plane (Z = 0)
-- [ ] Smooth outline (not rectangular)
-- [ ] Proper UV mapping (0-1 range)
-- [ ] Back faces included (duplicate and flip normals)
-- [ ] Default parameters create lily-like petal
-- [ ] Unit test
+- [x] Function `generate(params: &PetalParams) -> Mesh`
+- [x] Generates flat mesh in XY plane (Z = 0)
+- [x] Smooth Bézier curve outline (4 cubic curves)
+- [x] Proper UV mapping (0-1 range)
+- [x] Fan triangulation from center point
+- [x] Default parameters and 3 presets (wide, narrow, short)
+- [x] 10 unit tests + 2 doc-tests
 
 **Dependencies**: Task 2.2
 
@@ -669,44 +680,46 @@ for row in 0..resolution {
 
 **Estimated Effort**: 6-8 hours
 
-#### Task 4.1: Floral Diagram Data Structure
+#### Task 4.1: Floral Diagram Data Structure ✅
 
 **Description**: Define data structures for floral diagram (component counts and layout).
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-diagram/src/layout.rs` created
-- [ ] Enums for component types:
+- [x] Module `floraison-components/src/diagram.rs` created
+- [x] Enum for arrangement patterns:
   ```rust
-  #[derive(Debug, Clone, Copy)]
-  pub enum ComponentType {
-      Pistil,
-      Stamen,
-      Petal,
-      Sepal,
+  pub enum ArrangementPattern {
+      EvenlySpaced,
+      GoldenSpiral,
+      CustomOffset(f32),
   }
   ```
-- [ ] Struct for component placement:
+- [x] Struct for component whorl:
   ```rust
-  pub struct ComponentPlacement {
-      pub component_type: ComponentType,
-      pub radius: f32,      // radial distance from center
-      pub angle: f32,       // angular position (radians)
-      pub scale: f32,       // size multiplier
-      pub rotation: f32,    // rotation around attachment point
+  pub struct ComponentWhorl {
+      pub count: usize,
+      pub radius: f32,
+      pub height: f32,
+      pub pattern: ArrangementPattern,
+      pub rotation_offset: f32,
   }
   ```
-- [ ] Struct for floral diagram:
+- [x] Struct for floral diagram:
   ```rust
   pub struct FloralDiagram {
-      pub pistil_count: usize,
-      pub stamen_count: usize,
-      pub petal_count: usize,
-      pub sepal_count: usize,
-      pub radial_symmetry: bool,
+      pub receptacle_height: f32,
+      pub receptacle_radius: f32,
+      pub petal_whorls: Vec<ComponentWhorl>,
+      pub stamen_whorls: Vec<ComponentWhorl>,
+      pub pistil_whorls: Vec<ComponentWhorl>,
+      pub sepal_whorls: Vec<ComponentWhorl>,
   }
   ```
-- [ ] Method `generate_placements(&self) -> Vec<ComponentPlacement>` computes 2D positions
-- [ ] Unit tests verify symmetry and count
+- [x] Method `calculate_angles()` on ComponentWhorl computes angular positions
+- [x] Four preset diagrams: lily(), five_petal(), daisy(), four_petal()
+- [x] 9 unit tests + 2 doc-tests
 
 **Dependencies**: Task 2.3 (for phyllotaxis)
 

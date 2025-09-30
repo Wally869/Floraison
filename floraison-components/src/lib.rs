@@ -4,33 +4,25 @@
 //! Each component is parameterized and generates geometry that can be assembled into
 //! complete flowers.
 
-pub use floraison_core::{Vec2, Vec3};
+pub use floraison_core::{Vec2, Vec3, Mat4, Quat};
+pub use floraison_core::geometry::mesh::Mesh;
 
 /// Receptacle (base of flower) generator
-pub mod receptacle {
-    //! Receptacle generator using surface of revolution
-    // Will be implemented in Task 3.1
-}
+pub mod receptacle;
 
 /// Pistil (female reproductive structure) generator
-pub mod pistil {
-    //! Pistil generator with style and stigma
-    // Will be implemented in Task 3.2
-}
+pub mod pistil;
 
 /// Stamen (male reproductive structure) generator
-pub mod stamen {
-    //! Stamen generator with filament and anther
-    // Will be implemented in Task 3.3
-}
+pub mod stamen;
 
 /// Petal generator
-pub mod petal {
-    //! Petal generator with B-spline surfaces
-    // Will be implemented in Task 3.4 (simple) and Task 6.5 (B-spline)
-}
+pub mod petal;
 
-/// Sepal generator
+/// Floral diagram and component arrangement
+pub mod diagram;
+
+/// Sepal generator (placeholder)
 pub mod sepal {
     //! Sepal generator (reuses petal logic)
     // Will be implemented in Task 7.1
