@@ -2,4 +2,19 @@
 /target/
 Cargo.lock
 
+# Node
+node_modules/
+package-lock.json
+
 # WASM build artifacts are managed in floraison-ui/.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -23,6 +23,89 @@ Floraison is a web-based tool for generating botanically accurate 3D flowers usi
 
 🚧 In active development for the [Made with Claude](https://build.anthropic.com) contest
 
+## Getting Started
+
+### Prerequisites
+
+- **Rust** (latest stable): [rustup.rs](https://rustup.rs)
+- **Node.js** 18+ and npm 9+: [nodejs.org](https://nodejs.org)
+- **wasm-pack**: `cargo install wasm-pack`
+- **cargo-watch** (optional, for auto-rebuild): `cargo install cargo-watch`
+
+### Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/anthropics/floraison
+cd floraison
+
+# Install dependencies
+npm run setup
+
+# Start development server (auto-rebuilds WASM + hot-reload UI)
+npm run dev
+
+# Open browser to http://localhost:5173
+```
+
+### Available Commands
+
+**Development:**
+```bash
+npm run dev              # Start dev servers (WASM + UI with hot reload)
+npm run dev:wasm         # Watch Rust files and rebuild WASM
+npm run dev:ui           # Start UI dev server only
+```
+
+**Building:**
+```bash
+npm run build            # Production build (optimized WASM + UI)
+npm run build:wasm       # Build WASM only
+npm run build:ui         # Build UI only
+```
+
+**Testing:**
+```bash
+npm run test             # Run all tests (Rust + UI)
+npm run test:rust        # Rust tests only
+npm run test:ui          # UI tests only
+```
+
+**Code Quality:**
+```bash
+npm run check            # Type check all code
+npm run format           # Format code (rustfmt + prettier)
+npm run lint             # Lint code (clippy + eslint)
+```
+
+**Maintenance:**
+```bash
+npm run clean            # Remove build artifacts
+```
+
+### Project Structure
+
+```
+floraison/
+├── floraison-core/          # Core math & geometry (Rust)
+├── floraison-components/    # Flower component generators (Rust)
+├── floraison-wasm/          # WASM bindings (Rust)
+├── floraison-ui/            # Web UI (SvelteKit + TailwindCSS)
+│   └── src/lib/wasm/        # Generated WASM output
+├── docs/                    # Documentation
+├── package.json             # Root npm scripts
+└── Cargo.toml              # Rust workspace
+
+```
+
+### Development Workflow
+
+1. **Make changes** to Rust code in `floraison-*/src/`
+2. **WASM auto-rebuilds** (if `npm run dev` is running)
+3. **UI hot-reloads** automatically in browser
+4. **Test changes** with `npm run test`
+5. **Format code** with `npm run format` before committing
+
 ## Documentation
 
 - [Technical Overview](docs/TECHNICAL_OVERVIEW.md) - Architecture and implementation details

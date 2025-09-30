@@ -1,0 +1,45 @@
+{
+	"name": "floraison",
+	"version": "0.1.0",
+	"private": true,
+	"description": "Procedural 3D flower generation based on botanical principles",
+	"type": "module",
+	"scripts": {
+		"dev": "concurrently --names \"WASM,UI\" -c \"cyan,green\" \"npm run dev:wasm\" \"npm run dev:ui\"",
+		"dev:wasm": "cargo watch -i floraison-ui/ -s \"cd floraison-wasm && wasm-pack build --target web --out-dir ../floraison-ui/src/lib/wasm --out-name floraison --dev\"",
+		"dev:ui": "npm run dev --prefix floraison-ui",
+		"build": "npm run build:wasm && npm run build:ui",
+		"build:wasm": "cd floraison-wasm && wasm-pack build --target web --out-dir ../floraison-ui/src/lib/wasm --out-name floraison",
+		"build:ui": "npm run build --prefix floraison-ui",
+		"preview": "npm run preview --prefix floraison-ui",
+		"check": "cargo check --workspace && npm run check --prefix floraison-ui",
+		"test": "cargo test --workspace && npm run test --prefix floraison-ui",
+		"test:rust": "cargo test --workspace",
+		"test:ui": "npm run test --prefix floraison-ui",
+		"format": "cargo fmt --all && npm run format --prefix floraison-ui",
+		"lint": "cargo clippy --workspace --all-targets --all-features && npm run lint --prefix floraison-ui",
+		"clean": "cargo clean && rm -rf floraison-ui/node_modules floraison-ui/.svelte-kit floraison-ui/build",
+		"setup": "npm install && cd floraison-ui && npm install"
+	},
+	"devDependencies": {
+		"concurrently": "^9.1.0"
+	},
+	"engines": {
+		"node": ">=18.0.0",
+		"npm": ">=9.0.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/anthropics/floraison"
+	},
+	"keywords": [
+		"procedural-generation",
+		"flower",
+		"3d",
+		"webassembly",
+		"rust",
+		"svelte",
+		"botanical"
+	],
+	"license": "MIT"
+}

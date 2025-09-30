@@ -5,7 +5,12 @@
       "Bash(wasm-pack:*)",
       "Bash(test:*)",
       "Bash(cat:*)",
-      "Bash(npm run test:*)"
+      "Bash(npm run test:*)",
+      "Bash(cargo install:*)",
+      "Bash(cargo watch:*)",
+      "Bash(npm install)",
+      "Bash(npm run check:*)",
+      "Bash(npm run build:wasm:*)"
     ],
     "deny": [],
     "ask": []
