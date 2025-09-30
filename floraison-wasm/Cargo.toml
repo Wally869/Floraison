@@ -1,0 +1,21 @@
+[package]
+name = "floraison-wasm"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+floraison-core = { workspace = true, features = ["serde"] }
+floraison-components = { workspace = true, features = ["serde"] }
+
+wasm-bindgen = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde-wasm-bindgen = { workspace = true }
+console_error_panic_hook = { workspace = true }
+js-sys = { workspace = true }

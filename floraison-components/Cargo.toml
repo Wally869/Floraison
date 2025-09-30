@@ -1,0 +1,16 @@
+[package]
+name = "floraison-components"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+floraison-core = { workspace = true }
+glam = { workspace = true }
+serde = { workspace = true, optional = true }
+
+[features]
+default = []
+serde = ["dep:serde", "floraison-core/serde"]

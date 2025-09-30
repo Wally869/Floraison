@@ -5,8 +5,9 @@
 
 ## Progress Summary
 
+- ✅ **Task 1.1**: Rust Workspace initialized with 3 crates (core, components, wasm)
 - ✅ **Task 1.3**: SvelteKit Frontend initialized with TailwindCSS v4, TypeScript, testing setup
-- 🔄 **Current**: Ready to begin Task 1.1 (Rust Workspace setup)
+- 🔄 **Current**: Ready to begin Task 1.2 (WASM Build System)
 
 ## Overview
 
@@ -33,18 +34,22 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 **Estimated Effort**: 4-6 hours
 
-#### Task 1.1: Initialize Rust Workspace
+#### Task 1.1: Initialize Rust Workspace ✅
 
 **Description**: Set up Cargo workspace with multiple crates for separation of concerns.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Workspace created with `Cargo.toml` at root
-- [ ] Crate structure created:
+- [x] Workspace created with `Cargo.toml` at root
+- [x] Crate structure created:
   - `floraison-core` (library)
   - `floraison-components` (library)
-  - `floraison-wasm` (cdylib)
-- [ ] All crates compile successfully
-- [ ] Basic `lib.rs` files with placeholder modules
+  - `floraison-wasm` (cdylib + rlib)
+- [x] All crates compile successfully
+- [x] Basic `lib.rs` files with placeholder modules
+- [x] Workspace dependencies configured (glam, serde, wasm-bindgen, etc.)
+- [x] Release profile optimized for WASM size
 
 **Dependencies**: None
 
