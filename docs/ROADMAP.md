@@ -12,7 +12,8 @@
 - ✅ **Task 2.1**: Vector Math Wrapper with cylindrical/spherical coordinates and utilities
 - ✅ **Task 2.2**: Mesh Data Structures with normals, merging, and transformation
 - ✅ **Task 2.3**: Phyllotaxis Functions with Fibonacci spirals and botanical arrangements
-- 🔄 **Current**: Task 2.4 (Surface of Revolution Generator)
+- ✅ **Task 2.4**: Surface of Revolution Generator for receptacles and stems
+- 🔄 **Current**: Task 2.5 (Bézier Curve Utilities)
 
 ## Overview
 
@@ -354,18 +355,30 @@ pub fn vogel_spiral(index: usize, count: usize, radius: f32) -> Vec2 {
 
 ---
 
-#### Task 2.4: Surface of Revolution Generator
+#### Task 2.4: Surface of Revolution Generator ✅
 
 **Description**: Create function to generate mesh from 2D profile curve rotated around axis.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Function `surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh`
-- [ ] Profile points represent (radius, height) pairs
-- [ ] Generates proper triangulation with smooth normals
-- [ ] Handles degenerate cases (radius = 0 at ends)
-- [ ] Proper UV mapping (u = angle, v = height)
-- [ ] Unit tests with simple shapes (cylinder, cone, sphere)
-- [ ] Documentation with diagrams
+- [x] Function `surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh`
+- [x] Profile points represent (radius, height) pairs (x=radius, y=height)
+- [x] Generates proper triangulation with smooth normals and correct winding order
+- [x] Handles degenerate cases (radius = 0 at poles with triangle fans)
+- [x] Proper UV mapping (u = angle/2π, v = normalized height)
+- [x] Convenience functions: `cylinder()`, `cone()`, `uv_sphere()`
+- [x] Unit tests with simple shapes (11 tests, all passing):
+  - Cylinder geometry and normals
+  - Cone with pole handling
+  - UV sphere
+  - Double cone (two poles)
+  - Bulbous receptacle
+  - UV mapping verification
+  - Edge case handling
+- [x] Doc-tests with examples (7 doc-tests, all passing)
+- [x] Comprehensive documentation with botanical context
+- [x] WASM compatibility verified
 
 **Dependencies**: Task 2.2
 

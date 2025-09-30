@@ -43,11 +43,8 @@ pub mod geometry {
     /// Mesh data structures
     pub mod mesh;
 
-    /// Surface of revolution generator (placeholder)
-    pub mod surface_revolution {
-        //! Generate meshes by revolving 2D profiles
-        // Will be implemented in Task 2.4
-    }
+    /// Surface of revolution generator
+    pub mod surface_revolution;
 
     /// Tessellation utilities (placeholder)
     pub mod tessellation {
