@@ -11,11 +11,8 @@ pub use glam::{Mat3, Mat4, Quat, Vec2, Vec3, Vec4};
 pub mod math {
     //! Mathematical utilities for flower generation
 
-    /// Vector and matrix utilities (placeholder)
-    pub mod vector {
-        //! Vector math extensions and utilities
-        // Will be implemented in Task 2.1
-    }
+    /// Vector and matrix utilities
+    pub mod vector;
 
     /// Phyllotaxis (spiral arrangements) calculations (placeholder)
     pub mod phyllotaxis {

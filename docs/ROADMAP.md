@@ -9,7 +9,8 @@
 - ✅ **Task 1.2**: WASM Build System configured with wasm-pack, build scripts, and tests
 - ✅ **Task 1.3**: SvelteKit Frontend initialized with TailwindCSS v4, TypeScript, testing setup
 - ✅ **Task 1.4**: Development Workflow with unified commands and documentation
-- 🔄 **Current**: Ready to begin Epic 2 (Core Math Library)
+- ✅ **Task 2.1**: Vector Math Wrapper with cylindrical/spherical coordinates and utilities
+- 🔄 **Current**: Task 2.2 (Mesh Data Structures)
 
 ## Overview
 
@@ -180,18 +181,28 @@ Or create a simple bash/PowerShell script for Windows compatibility.
 
 **Estimated Effort**: 6-8 hours
 
-#### Task 2.1: Vector Math Wrapper
+#### Task 2.1: Vector Math Wrapper ✅
 
 **Description**: Set up 3D vector math using `glam` crate with convenience wrappers.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] `glam` crate added to `floraison-core`
-- [ ] Re-export types: `Vec3`, `Vec2`, `Mat3`, `Mat4`, `Quat`
-- [ ] Add custom helper functions:
-  - `Vec3::cylindrical(radius, angle, height) -> Vec3`
-  - `Vec3::spherical(radius, theta, phi) -> Vec3`
-- [ ] Unit tests for all helper functions
-- [ ] Documentation comments on all public functions
+- [x] `glam` crate added to `floraison-core`
+- [x] Re-export types: `Vec3`, `Vec2`, `Mat3`, `Mat4`, `Quat`
+- [x] Add custom helper functions:
+  - `Vec3Ext::from_cylindrical(radius, angle, height) -> Vec3`
+  - `Vec3Ext::to_cylindrical(&self) -> (f32, f32, f32)`
+  - `Vec3Ext::from_spherical(radius, theta, phi) -> Vec3`
+  - `Vec3Ext::to_spherical(&self) -> (f32, f32, f32)`
+  - `Vec2Ext::from_polar(radius, angle) -> Vec2`
+  - `Vec2Ext::to_polar(&self) -> (f32, f32)`
+  - `Vec2Ext::rotate_by_angle(&self, angle) -> Vec2`
+  - Utility functions: `lerp`, `smoothstep`, `remap`
+- [x] Unit tests for all helper functions (12 tests, all passing)
+- [x] Documentation comments with examples on all public functions
+- [x] Doc-tests pass (10 doc-tests)
+- [x] WASM compatibility verified
 
 **Dependencies**: Task 1.1
 

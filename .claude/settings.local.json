@@ -10,7 +10,10 @@
       "Bash(cargo watch:*)",
       "Bash(npm install)",
       "Bash(npm run check:*)",
-      "Bash(npm run build:wasm:*)"
+      "Bash(npm run build:wasm:*)",
+      "Bash(cargo test:*)",
+      "Bash(cargo doc:*)",
+      "Bash(cargo check:*)"
     ],
     "deny": [],
     "ask": []
