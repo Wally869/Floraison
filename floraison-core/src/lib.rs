@@ -17,11 +17,8 @@ pub mod math {
     /// Phyllotaxis (spiral arrangements) calculations
     pub mod phyllotaxis;
 
-    /// Bézier curve evaluation (placeholder)
-    pub mod bezier {
-        //! Bézier curve utilities for smooth profiles
-        // Will be implemented in Task 2.5
-    }
+    /// Bézier curve evaluation
+    pub mod bezier;
 
     /// B-spline curves and surfaces (placeholder)
     pub mod bspline {

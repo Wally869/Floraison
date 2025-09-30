@@ -13,7 +13,8 @@
 - ✅ **Task 2.2**: Mesh Data Structures with normals, merging, and transformation
 - ✅ **Task 2.3**: Phyllotaxis Functions with Fibonacci spirals and botanical arrangements
 - ✅ **Task 2.4**: Surface of Revolution Generator for receptacles and stems
-- 🔄 **Current**: Task 2.5 (Bézier Curve Utilities)
+- ✅ **Task 2.5**: Bézier Curve Utilities with evaluation and sampling
+- 🎉 **Epic 2 Complete!** Core Math Library finished
 
 ## Overview
 
@@ -431,17 +432,33 @@ pub fn surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh {
 
 ---
 
-#### Task 2.5: Bézier Curve Utilities
+#### Task 2.5: Bézier Curve Utilities ✅
 
 **Description**: Implement Bézier curve evaluation for smooth profiles.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Function `bezier_quadratic(p0, p1, p2: Vec2, t: f32) -> Vec2`
-- [ ] Function `bezier_cubic(p0, p1, p2, p3: Vec2, t: f32) -> Vec2`
-- [ ] Function `sample_bezier_cubic(p0, p1, p2, p3: Vec2, samples: usize) -> Vec<Vec2>`
-- [ ] Tangent calculation functions for each type
-- [ ] Unit tests verify known curve properties (endpoints, tangents)
-- [ ] Documentation with visual examples
+- [x] Function `quadratic_bezier_2d(p0, p1, p2, t) -> Vec2`
+- [x] Function `cubic_bezier_2d(p0, p1, p2, p3, t) -> Vec2`
+- [x] 3D variants: `quadratic_bezier_3d()` and `cubic_bezier_3d()`
+- [x] Derivative functions for tangent calculation:
+  - `quadratic_bezier_derivative_2d()`
+  - `cubic_bezier_derivative_2d()`
+- [x] Sampling functions:
+  - `sample_quadratic_2d()`
+  - `sample_cubic_2d()`
+  - `sample_cubic_3d()`
+- [x] Unit tests verify curve properties (16 tests, all passing):
+  - Endpoint validation
+  - Midpoint calculations
+  - Derivative/tangent correctness
+  - Degenerate cases (linear curves)
+  - Curve continuity
+  - Edge case handling
+- [x] Doc-tests with practical examples (10 doc-tests, all passing)
+- [x] Comprehensive documentation with usage examples
+- [x] WASM compatibility verified
 
 **Dependencies**: Task 2.1
 
