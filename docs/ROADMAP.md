@@ -115,7 +115,7 @@ Build command: `wasm-pack build --target web --out-dir ../frontend/src/lib/wasm`
 - [x] TailwindCSS v4 installed and configured
 - [x] Dev server runs successfully (`npm run dev`)
 - [x] Testing setup (Vitest + Playwright)
-- [ ] Vite config updated to handle WASM imports (deferred to Task 1.2)
+- [x] Vite config updated to handle WASM imports (completed in Task 1.2)
 
 **Dependencies**: None
 
