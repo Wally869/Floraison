@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(wasm-pack:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "Bash(npm run test:*)"
     ],
     "deny": [],
     "ask": []

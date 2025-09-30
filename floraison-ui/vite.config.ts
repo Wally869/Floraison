@@ -5,6 +5,15 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson()],
+	server: {
+		fs: {
+			// Allow serving files from the WASM directory
+			allow: ['..']
+		}
+	},
+	optimizeDeps: {
+		exclude: ['$lib/wasm/floraison.js']
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

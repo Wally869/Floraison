@@ -7,6 +7,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
+		"wasm:build": "cd .. && wasm-pack build --target web --out-dir floraison-ui/src/lib/wasm --out-name floraison floraison-wasm",
+		"wasm:dev": "cd .. && wasm-pack build --target web --out-dir floraison-ui/src/lib/wasm --out-name floraison --dev floraison-wasm",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
