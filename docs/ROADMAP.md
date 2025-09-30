@@ -21,6 +21,9 @@
 - ✅ **Task 3.4**: Simple Petal Component with Bézier outlines and fan triangulation
 - 🎉 **Epic 3 Complete!** Basic Floral Components finished
 - ✅ **Task 4.1**: Floral Diagram Data Structures with whorl arrangements and golden spiral
+- ✅ **Task 4.2**: Component Instance Mapping with ReceptacleMapper and 3D positioning
+- ✅ **Task 4.3**: Flower Assembly Function combining all components into unified mesh
+- 🎉 **Epic 4 Complete!** Single Flower Assembly finished
 
 ## Overview
 
@@ -48,7 +51,7 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 | [Epic 1](roadmap/phase-1/epic-01-project-setup.md) | Project Setup & Infrastructure | 4-6 hours | 4 | ✅ Complete |
 | [Epic 2](roadmap/phase-1/epic-02-core-math-library.md) | Core Math Library | 6-8 hours | 5 | ✅ Complete |
 | [Epic 3](roadmap/phase-1/epic-03-floral-components.md) | Basic Floral Components | 9-11 hours | 4 | ✅ Complete |
-| [Epic 4](roadmap/phase-1/epic-04-single-flower-assembly.md) | Single Flower Assembly | 6-8 hours | 3 | 🔄 In Progress |
+| [Epic 4](roadmap/phase-1/epic-04-single-flower-assembly.md) | Single Flower Assembly | 6-8 hours | 3 | ✅ Complete |
 | [Epic 5](roadmap/phase-1/epic-05-frontend-foundation.md) | Frontend Foundation | 10-12 hours | 6 | ⏳ Pending |
 
 **Phase 1 Total**: 28-34 hours
@@ -139,4 +142,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 3/15 epics complete • 11/78 tasks complete • Phase 1 in progress 🚀
+**Progress**: 4/15 epics complete • 14/78 tasks complete • Phase 1 in progress 🚀

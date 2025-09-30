@@ -93,18 +93,20 @@ impl FloralDiagram {
 
 ---
 
-## Task 4.2: Component Instance Mapping
+## Task 4.2: Component Instance Mapping ✅
 
 **Description**: Map 2D floral diagram positions to 3D positions on receptacle surface.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-diagram/src/mapping.rs` created
-- [ ] Struct `ReceptacleMapper` that holds receptacle profile data
-- [ ] Method `map_to_3d(placement: &ComponentPlacement, receptacle_height: f32) -> Transform3D`
+- [x] Module `floraison-components/src/assembly.rs` created
+- [x] Struct `ReceptacleMapper` that holds receptacle profile data
+- [x] Method `map_to_3d(placement: &ComponentPlacement, receptacle_height: f32) -> Transform3D`
   - Returns position and orientation (as Mat4 or separate pos/rotation)
-- [ ] Radial position (2D) maps to cylindrical coordinates on receptacle
-- [ ] Orientation computed so component points outward from center
-- [ ] Unit tests verify mapping correctness
+- [x] Radial position (2D) maps to cylindrical coordinates on receptacle
+- [x] Orientation computed so component points outward from center
+- [x] Unit tests verify mapping correctness
 
 **Dependencies**: Task 4.1, Task 3.1
 
@@ -158,30 +160,32 @@ impl ReceptacleMapper {
 
 ---
 
-## Task 4.3: Flower Assembly Function
+## Task 4.3: Flower Assembly Function ✅
 
 **Description**: Combine all components into single flower mesh.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-diagram/src/flower.rs` created
-- [ ] Struct `FlowerParams` combining all component parameters:
+- [x] Module `floraison-components/src/assembly.rs` contains assembly functions
+- [x] Struct `FlowerParams` combining all component parameters:
   ```rust
   pub struct FlowerParams {
       pub diagram: FloralDiagram,
       pub receptacle: ReceptacleParams,
       pub pistil: PistilParams,
       pub stamen: StamenParams,
-      pub petal: SimplePetalParams,
+      pub petal: PetalParams,
   }
   ```
-- [ ] Function `generate_flower(params: &FlowerParams) -> Mesh`
+- [x] Function `generate_flower(params: &FlowerParams) -> Mesh`
   - Generates receptacle
   - Generates each component type once
   - For each placement: clone, transform, merge into final mesh
-- [ ] Proper coordinate transformations applied
-- [ ] All meshes welded together
-- [ ] Single unified mesh returned
-- [ ] Unit test generates valid flower
+- [x] Proper coordinate transformations applied
+- [x] All meshes welded together
+- [x] Single unified mesh returned
+- [x] Unit test generates valid flower
 
 **Dependencies**: Tasks 3.1-3.4, 4.1, 4.2
 

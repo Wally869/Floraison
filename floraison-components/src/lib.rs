@@ -22,6 +22,9 @@ pub mod petal;
 /// Floral diagram and component arrangement
 pub mod diagram;
 
+/// Flower assembly and component positioning
+pub mod assembly;
+
 /// Sepal generator (placeholder)
 pub mod sepal {
     //! Sepal generator (reuses petal logic)
