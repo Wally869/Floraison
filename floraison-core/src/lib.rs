@@ -14,11 +14,8 @@ pub mod math {
     /// Vector and matrix utilities
     pub mod vector;
 
-    /// Phyllotaxis (spiral arrangements) calculations (placeholder)
-    pub mod phyllotaxis {
-        //! Fibonacci spiral arrangements for natural patterns
-        // Will be implemented in Task 2.3
-    }
+    /// Phyllotaxis (spiral arrangements) calculations
+    pub mod phyllotaxis;
 
     /// Bézier curve evaluation (placeholder)
     pub mod bezier {

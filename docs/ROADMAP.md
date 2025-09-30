@@ -11,7 +11,8 @@
 - ✅ **Task 1.4**: Development Workflow with unified commands and documentation
 - ✅ **Task 2.1**: Vector Math Wrapper with cylindrical/spherical coordinates and utilities
 - ✅ **Task 2.2**: Mesh Data Structures with normals, merging, and transformation
-- 🔄 **Current**: Task 2.3 (Phyllotaxis Functions)
+- ✅ **Task 2.3**: Phyllotaxis Functions with Fibonacci spirals and botanical arrangements
+- 🔄 **Current**: Task 2.4 (Surface of Revolution Generator)
 
 ## Overview
 
@@ -305,18 +306,26 @@ impl Mesh {
 
 ---
 
-#### Task 2.3: Phyllotaxis Functions
+#### Task 2.3: Phyllotaxis Functions ✅
 
 **Description**: Implement Fibonacci spiral arrangement calculations.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-core/src/math/phyllotaxis.rs` created
-- [ ] Function `golden_angle() -> f32` returns 137.5078° in radians
-- [ ] Function `fibonacci_angle(n: usize) -> f32` calculates angle for Fibonacci sequence
-- [ ] Function `vogel_spiral(index: usize, count: usize, radius: f32) -> Vec2` for disc packing
-- [ ] Precomputed constants for common angles (120°, 144°, 180°)
-- [ ] Unit tests verify angle calculations
-- [ ] Documentation with botanical context
+- [x] Module `floraison-core/src/math/phyllotaxis.rs` created
+- [x] Constant `GOLDEN_ANGLE` = 137.5078° in radians (2.39996322972865332)
+- [x] Function `fibonacci_angle(n: usize) -> f32` calculates angle for Fibonacci sequence
+- [x] Function `vogel_spiral(index, count, radius) -> Vec2` for optimal disc packing
+- [x] Function `radial_positions(count, radius, offset) -> Vec<Vec2>` for evenly spaced arrangements
+- [x] Function `whorled_positions(count, radius, height, offset) -> Vec<Vec3>` for 3D whorls
+- [x] Function `fibonacci_spiral_3d(count, radius, height, radius_fn) -> Vec<Vec3>` for cylindrical spirals
+- [x] Radius variation functions: `radius_constant`, `radius_linear`, `radius_quadratic`, `radius_bulge`
+- [x] Precomputed constants for common angles (90°, 120°, 144°, 180°)
+- [x] Unit tests verify all arrangements (21 tests, all passing)
+- [x] Doc-tests with usage examples (11 doc-tests, all passing)
+- [x] Comprehensive documentation with botanical context and examples
+- [x] WASM compatibility verified
 
 **Dependencies**: Task 2.1
 
