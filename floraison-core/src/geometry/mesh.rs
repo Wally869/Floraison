@@ -22,9 +22,9 @@ use serde::{Deserialize, Serialize};
 /// let mut mesh = Mesh::new();
 ///
 /// // Add vertices
-/// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::new(0.0, 0.0));
-/// let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::new(1.0, 0.0));
-/// let v2 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::new(0.0, 1.0));
+/// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::new(0.0, 0.0), Vec3::ONE);
+/// let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::new(1.0, 0.0), Vec3::ONE);
+/// let v2 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::new(0.0, 1.0), Vec3::ONE);
 ///
 /// // Add triangle
 /// mesh.add_triangle(v0, v1, v2);
@@ -134,9 +134,9 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-    /// let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
-    /// let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO);
+    /// let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh.add_triangle(v0, v1, v2);
     /// ```
     pub fn add_triangle(&mut self, i0: u32, i1: u32, i2: u32) {
@@ -178,10 +178,10 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-    /// let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-    /// let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
-    /// let v3 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
+    /// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v3 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh.add_quad(v0, v1, v2, v3);
     /// assert_eq!(mesh.triangle_count(), 2);
     /// ```
@@ -204,15 +204,15 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh1 = Mesh::new();
-    /// let v0 = mesh1.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-    /// let v1 = mesh1.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
-    /// let v2 = mesh1.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO);
+    /// let v0 = mesh1.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh1.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh1.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh1.add_triangle(v0, v1, v2);
     ///
     /// let mut mesh2 = Mesh::new();
-    /// let v0 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-    /// let v1 = mesh2.add_vertex(Vec3::new(3.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-    /// let v2 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
+    /// let v0 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh2.add_vertex(Vec3::new(3.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh2.add_triangle(v0, v1, v2);
     ///
     /// mesh1.merge(&mesh2);
@@ -247,9 +247,9 @@ impl Mesh {
     ///
     /// let mut mesh = Mesh::new();
     /// // Add vertices with dummy normals (counter-clockwise winding when viewed from above)
-    /// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-    /// let v1 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO);
-    /// let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
+    /// let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
     /// mesh.add_triangle(v0, v1, v2);
     ///
     /// // Compute proper normals from geometry
@@ -315,7 +315,7 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2, Mat4};
     ///
     /// let mut mesh = Mesh::new();
-    /// mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
+    /// mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
     ///
     /// // Translate by (1, 2, 3)
     /// let transform = Mat4::from_translation(Vec3::new(1.0, 2.0, 3.0));
@@ -350,8 +350,8 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-    /// mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
+    /// mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// assert_eq!(mesh.vertex_count(), 2);
     /// ```
     pub fn vertex_count(&self) -> usize {
@@ -366,9 +366,9 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-    /// let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
-    /// let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO);
+    /// let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+    /// let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh.add_triangle(v0, v1, v2);
     /// mesh.add_triangle(v0, v2, v1);
     /// assert_eq!(mesh.triangle_count(), 2);
@@ -398,7 +398,7 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
+    /// mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// mesh.clear();
     /// assert!(mesh.is_empty());
     /// ```

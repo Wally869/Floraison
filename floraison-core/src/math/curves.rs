@@ -36,7 +36,7 @@ use crate::Vec3;
 ///
 /// // Evaluate at midpoint of segment [p1, p2]
 /// let point = catmull_rom_point(p0, p1, p2, p3, 0.5);
-/// assert!((point - Vec3::new(0.0, 1.5, 0.25)).length() < 0.01);
+/// assert!((point - Vec3::new(0.0, 1.5, 0.21875)).length() < 0.01);
 /// ```
 pub fn catmull_rom_point(p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3, t: f32) -> Vec3 {
     // Catmull-Rom basis matrix with tension = 0.5

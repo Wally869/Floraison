@@ -16,6 +16,7 @@ use serde::{Deserialize, Serialize};
 /// # Example
 /// ```
 /// use floraison_components::stamen::{StamenParams, generate};
+/// use floraison_components::Vec3;
 ///
 /// let params = StamenParams {
 ///     filament_length: 1.5,
@@ -24,6 +25,7 @@ use serde::{Deserialize, Serialize};
 ///     anther_width: 0.08,
 ///     anther_height: 0.08,
 ///     segments: 10,
+///     color: Vec3::ONE,
 ///     filament_curve: None,  // Straight filament
 /// };
 ///

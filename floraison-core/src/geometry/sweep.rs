@@ -50,7 +50,7 @@ use std::f32::consts::PI;
 ///     Vec3::new(0.0, 1.0, 0.3),
 /// ];
 ///
-/// let mesh = sweep_along_curve(&profile, &curve, 16);
+/// let mesh = sweep_along_curve(&profile, &curve, 16, Vec3::ONE);
 /// assert!(mesh.vertex_count() > 0);
 /// ```
 pub fn sweep_along_curve(profile: &[Vec2], curve: &[Vec3], segments: usize, color: Vec3) -> Mesh {

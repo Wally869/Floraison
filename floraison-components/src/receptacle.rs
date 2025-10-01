@@ -18,6 +18,7 @@ use serde::{Deserialize, Serialize};
 /// # Example
 /// ```
 /// use floraison_components::receptacle::{ReceptacleParams, generate};
+/// use floraison_components::Vec3;
 ///
 /// // Create a bulbous receptacle
 /// let params = ReceptacleParams {
@@ -28,6 +29,7 @@ use serde::{Deserialize, Serialize};
 ///     bulge_position: 0.6,
 ///     segments: 16,
 ///     profile_samples: 8,
+///     color: Vec3::ONE,
 /// };
 ///
 /// let mesh = generate(&params);

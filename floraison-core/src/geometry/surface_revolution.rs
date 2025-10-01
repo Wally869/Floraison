@@ -16,7 +16,7 @@
 //!
 //! ```
 //! use floraison_core::geometry::surface_revolution::surface_of_revolution;
-//! use floraison_core::Vec2;
+//! use floraison_core::{Vec2, Vec3};
 //!
 //! // Create a simple cylinder profile
 //! let profile = vec![
@@ -25,7 +25,7 @@
 //! ];
 //!
 //! // Revolve around Y-axis with 16 segments
-//! let mesh = surface_of_revolution(&profile, 16);
+//! let mesh = surface_of_revolution(&profile, 16, Vec3::ONE);
 //! assert_eq!(mesh.vertex_count(), 32); // 2 rings × 16 segments
 //! ```
 
@@ -68,33 +68,33 @@ use std::f32::consts::PI;
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::surface_of_revolution;
-/// use floraison_core::Vec2;
+/// use floraison_core::{Vec2, Vec3};
 ///
 /// let profile = vec![
 ///     Vec2::new(1.0, 0.0),
 ///     Vec2::new(1.0, 5.0),
 /// ];
-/// let cylinder = surface_of_revolution(&profile, 16);
+/// let cylinder = surface_of_revolution(&profile, 16, Vec3::ONE);
 /// ```
 ///
 /// ## Cone
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::surface_of_revolution;
-/// use floraison_core::Vec2;
+/// use floraison_core::{Vec2, Vec3};
 ///
 /// let profile = vec![
 ///     Vec2::new(1.0, 0.0),  // Wide base
 ///     Vec2::new(0.0, 2.0),  // Point at top
 /// ];
-/// let cone = surface_of_revolution(&profile, 16);
+/// let cone = surface_of_revolution(&profile, 16, Vec3::ONE);
 /// ```
 ///
 /// ## Sphere (approximation)
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::surface_of_revolution;
-/// use floraison_core::Vec2;
+/// use floraison_core::{Vec2, Vec3};
 /// use std::f32::consts::PI;
 ///
 /// // Half-circle profile
@@ -105,7 +105,7 @@ use std::f32::consts::PI;
 ///     })
 ///     .collect();
 ///
-/// let sphere = surface_of_revolution(&profile, 16);
+/// let sphere = surface_of_revolution(&profile, 16, Vec3::ONE);
 /// ```
 pub fn surface_of_revolution(profile: &[Vec2], segments: usize, color: Vec3) -> Mesh {
     assert!(!profile.is_empty(), "Profile cannot be empty");
@@ -211,8 +211,9 @@ pub fn surface_of_revolution(profile: &[Vec2], segments: usize, color: Vec3) -> 
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::cylinder;
+/// use floraison_core::Vec3;
 ///
-/// let cyl = cylinder(1.0, 5.0, 16);
+/// let cyl = cylinder(1.0, 5.0, 16, Vec3::ONE);
 /// assert!(cyl.vertex_count() > 0);
 /// ```
 pub fn cylinder(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh {
@@ -234,8 +235,9 @@ pub fn cylinder(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh 
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::cone;
+/// use floraison_core::Vec3;
 ///
-/// let cone = cone(1.0, 2.0, 16);
+/// let cone = cone(1.0, 2.0, 16, Vec3::ONE);
 /// assert!(cone.vertex_count() > 0);
 /// ```
 pub fn cone(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh {
@@ -257,8 +259,9 @@ pub fn cone(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh {
 ///
 /// ```
 /// use floraison_core::geometry::surface_revolution::uv_sphere;
+/// use floraison_core::Vec3;
 ///
-/// let sphere = uv_sphere(1.0, 8, 16);
+/// let sphere = uv_sphere(1.0, 8, 16, Vec3::ONE);
 /// assert!(sphere.vertex_count() > 0);
 /// ```
 pub fn uv_sphere(radius: f32, rings: usize, segments: usize, color: Vec3) -> Mesh {
