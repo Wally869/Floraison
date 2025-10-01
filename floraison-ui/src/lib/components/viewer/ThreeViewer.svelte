@@ -4,6 +4,8 @@
 	import { createScene, type SceneContext } from '$lib/three/scene';
 	import { wasmMeshToGeometry } from '$lib/three/mesh-converter';
 	import type { MeshData } from '$lib/wasm/floraison';
+	import ViewerControls from './ViewerControls.svelte';
+	import { viewerSettings } from '$lib/stores/viewer';
 
 	// Props
 	interface Props {
@@ -44,6 +46,22 @@
 		}
 	});
 
+	// React to viewer settings changes
+	$effect(() => {
+		if (!sceneCtx) return;
+
+		const settings = $viewerSettings;
+		sceneCtx.setBackgroundColor(settings.backgroundColor);
+		sceneCtx.setAmbientIntensity(settings.ambientIntensity);
+		sceneCtx.setDirectionalIntensity(settings.directionalIntensity);
+		sceneCtx.toggleAxesHelper(settings.showAxes);
+
+		// Update wireframe on existing mesh
+		if (flowerMesh && flowerMesh.material instanceof THREE.MeshStandardMaterial) {
+			flowerMesh.material.wireframe = settings.wireframe;
+		}
+	});
+
 	function updateMesh(newMesh: MeshData) {
 		if (!sceneCtx) return;
 
@@ -64,7 +82,8 @@
 			color: 0xffcc00,
 			side: THREE.DoubleSide,
 			metalness: 0.1,
-			roughness: 0.7
+			roughness: 0.7,
+			wireframe: $viewerSettings.wireframe
 		});
 
 		// Create mesh and add to scene
@@ -85,6 +104,12 @@
 			sceneCtx.controls.update();
 		}
 	}
+
+	function handleResetCamera() {
+		if (sceneCtx) {
+			sceneCtx.resetCamera();
+		}
+	}
 </script>
 
 <div class="viewer-container">
@@ -92,6 +117,7 @@
 	{#if !mesh}
 		<div class="loading">Loading flower...</div>
 	{/if}
+	<ViewerControls onResetCamera={handleResetCamera} />
 </div>
 
 <style>

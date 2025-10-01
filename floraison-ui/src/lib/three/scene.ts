@@ -14,6 +14,12 @@ export interface SceneContext {
 	controls: OrbitControls;
 	animate: () => void;
 	dispose: () => void;
+	// Viewer control methods
+	setBackgroundColor: (color: string) => void;
+	setAmbientIntensity: (intensity: number) => void;
+	setDirectionalIntensity: (intensity: number) => void;
+	toggleAxesHelper: (visible: boolean) => void;
+	resetCamera: () => void;
 }
 
 /**
@@ -53,6 +59,11 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.position.set(5, 10, 5);
 	scene.add(dirLight);
 
+	// Add axes helper (initially hidden)
+	const axesHelper = new THREE.AxesHelper(10);
+	axesHelper.visible = false;
+	scene.add(axesHelper);
+
 	// Add orbit controls
 	const controls = new OrbitControls(camera, renderer.domElement);
 	controls.enableDamping = true;
@@ -77,12 +88,41 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		controls.dispose();
 	}
 
+	// Viewer control methods
+	function setBackgroundColor(color: string) {
+		scene.background = new THREE.Color(color);
+	}
+
+	function setAmbientIntensity(intensity: number) {
+		ambientLight.intensity = intensity;
+	}
+
+	function setDirectionalIntensity(intensity: number) {
+		dirLight.intensity = intensity;
+	}
+
+	function toggleAxesHelper(visible: boolean) {
+		axesHelper.visible = visible;
+	}
+
+	function resetCamera() {
+		camera.position.set(10, 10, 10);
+		camera.lookAt(0, 0, 0);
+		controls.target.set(0, 0, 0);
+		controls.update();
+	}
+
 	return {
 		scene,
 		camera,
 		renderer,
 		controls,
 		animate,
-		dispose
+		dispose,
+		setBackgroundColor,
+		setAmbientIntensity,
+		setDirectionalIntensity,
+		toggleAxesHelper,
+		resetCamera
 	};
 }

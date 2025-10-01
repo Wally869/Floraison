@@ -48,7 +48,28 @@
 				const paramsJson = JSON.stringify(params);
 				console.log('Generating flower with params:', paramsJson);
 
+				// Performance profiling
+				const startTime = performance.now();
 				mesh = generator!.generate_flower(paramsJson);
+				const endTime = performance.now();
+				const genTime = endTime - startTime;
+
+				// Log metrics
+				if (mesh) {
+					const positions = mesh.positions();
+					const indices = mesh.indices();
+
+					console.log('✓ Flower generated:', {
+						time: `${genTime.toFixed(2)}ms`,
+						vertices: positions.length / 3,
+						triangles: indices.length / 3
+					});
+
+					// Warn if generation is slow
+					if (genTime > 1000) {
+						console.warn('⚠ Slow generation detected (>1s). Consider reducing mesh resolution.');
+					}
+				}
 			} catch (e) {
 				console.error('Failed to generate flower:', e);
 				error = e instanceof Error ? e.message : 'Failed to generate flower';
