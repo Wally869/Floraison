@@ -59,9 +59,9 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	renderer.setPixelRatio(window.devicePixelRatio);
 
-	// Enable shadows with soft shadow mapping
+	// Enable shadows with highest quality (VSM = softest, most realistic)
 	renderer.shadowMap.enabled = true;
-	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+	renderer.shadowMap.type = THREE.VSMShadowMap;
 
 	// Enable tone mapping for realistic lighting (industry standard)
 	renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -81,16 +81,18 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.position.set(5, 10, 5);
 	dirLight.castShadow = true;
 
-	// Configure shadow camera for optimal shadow quality
-	dirLight.shadow.mapSize.width = 2048;
-	dirLight.shadow.mapSize.height = 2048;
+	// Configure shadow camera for maximum quality
+	dirLight.shadow.mapSize.width = 4096;  // Ultra-high resolution
+	dirLight.shadow.mapSize.height = 4096;
 	dirLight.shadow.camera.near = 0.5;
 	dirLight.shadow.camera.far = 50;
 	dirLight.shadow.camera.left = -10;
 	dirLight.shadow.camera.right = 10;
 	dirLight.shadow.camera.top = 10;
 	dirLight.shadow.camera.bottom = -10;
-	dirLight.shadow.bias = -0.001;
+	dirLight.shadow.bias = -0.0001;  // Tighter bias for VSM
+	dirLight.shadow.radius = 3;  // Wider penumbra for softer edge
+	dirLight.shadow.blurSamples = 25;  // More blur samples for smoothness
 
 	scene.add(dirLight);
 
