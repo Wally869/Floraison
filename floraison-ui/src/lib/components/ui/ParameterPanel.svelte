@@ -306,10 +306,7 @@
 						<div class="param-group">
 							<label for="inflo-recursion-depth">
 								<span class="param-label">Recursion Depth</span>
-								<span class="param-value"
-									>{$inflorescenceParams.recursion_depth ??
-										getRecursiveDefaults($inflorescenceParams.pattern).recursion_depth}</span
-								>
+								<span class="param-value">{$inflorescenceParams.recursion_depth}</span>
 							</label>
 							<input
 								id="inflo-recursion-depth"
@@ -329,12 +326,7 @@
 						<div class="param-group">
 							<label for="inflo-branch-ratio">
 								<span class="param-label">Branch Ratio</span>
-								<span class="param-value"
-									>{(
-										$inflorescenceParams.branch_ratio ??
-										getRecursiveDefaults($inflorescenceParams.pattern).branch_ratio
-									).toFixed(2)}</span
-								>
+								<span class="param-value">{$inflorescenceParams.branch_ratio.toFixed(2)}</span>
 							</label>
 							<input
 								id="inflo-branch-ratio"
@@ -351,12 +343,7 @@
 							<div class="param-group">
 								<label for="inflo-angle-div">
 									<span class="param-label">Angle Divergence (deg)</span>
-									<span class="param-value"
-										>{(
-											$inflorescenceParams.angle_divergence ??
-											getRecursiveDefaults($inflorescenceParams.pattern).angle_divergence
-										).toFixed(1)}°</span
-									>
+									<span class="param-value">{$inflorescenceParams.angle_divergence.toFixed(1)}°</span>
 								</label>
 								<input
 									id="inflo-angle-div"

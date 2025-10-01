@@ -471,9 +471,9 @@ export const lilyRacemePreset: FlowerPreset = {
 		rotation_angle: 137.5, // Golden angle
 		flower_size_top: 0.7,
 		flower_size_bottom: 0.9,
-		recursion_depth: null,
-		branch_ratio: null,
-		angle_divergence: null
+		recursion_depth: 1,
+		branch_ratio: 0.7,
+		angle_divergence: 0.0
 	}
 };
 
@@ -573,9 +573,9 @@ export const lavenderSpikePreset: FlowerPreset = {
 		rotation_angle: 144.0, // Tight spiral
 		flower_size_top: 0.5,
 		flower_size_bottom: 0.6,
-		recursion_depth: null,
-		branch_ratio: null,
-		angle_divergence: null
+		recursion_depth: 1,
+		branch_ratio: 0.7,
+		angle_divergence: 0.0
 	}
 };
 
@@ -617,9 +617,9 @@ export const cherryUmbelPreset: FlowerPreset = {
 		rotation_angle: 72.0, // Even spacing (360/5)
 		flower_size_top: 0.7,
 		flower_size_bottom: 0.7,
-		recursion_depth: null,
-		branch_ratio: null,
-		angle_divergence: null
+		recursion_depth: 1,
+		branch_ratio: 0.7,
+		angle_divergence: 0.0
 	}
 };
 
@@ -701,9 +701,9 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 		rotation_angle: 137.5,
 		flower_size_top: 0.6,
 		flower_size_bottom: 0.6,
-		recursion_depth: null,
-		branch_ratio: null,
-		angle_divergence: null
+		recursion_depth: 1,
+		branch_ratio: 0.7,
+		angle_divergence: 0.0
 	}
 };
 
@@ -796,7 +796,7 @@ export const astilbeCompoundPreset: FlowerPreset = {
 		flower_size_bottom: 0.6,
 		recursion_depth: 2,
 		branch_ratio: 0.5,
-		angle_divergence: null // Not used for compound raceme
+		angle_divergence: 0.0 // Not used for compound raceme
 	}
 };
 
@@ -897,9 +897,9 @@ export const alliumUmbelPreset: FlowerPreset = {
 		rotation_angle: 12.0, // Even spacing (360/30)
 		flower_size_top: 0.3, // Small flowers for density
 		flower_size_bottom: 0.3,
-		recursion_depth: null,
-		branch_ratio: null,
-		angle_divergence: null
+		recursion_depth: 1,
+		branch_ratio: 0.7,
+		angle_divergence: 0.0
 	}
 };
 

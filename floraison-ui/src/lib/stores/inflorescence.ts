@@ -28,10 +28,10 @@ export interface InflorescenceParams {
 	rotation_angle: number;
 	flower_size_top: number;
 	flower_size_bottom: number;
-	// Optional parameters for recursive patterns (null = use pattern default)
-	recursion_depth: number | null;
-	branch_ratio: number | null;
-	angle_divergence: number | null;
+	// Recursive pattern parameters (always initialized)
+	recursion_depth: number;
+	branch_ratio: number;
+	angle_divergence: number;
 }
 
 const defaultParams: InflorescenceParams = {
@@ -46,9 +46,9 @@ const defaultParams: InflorescenceParams = {
 	rotation_angle: 137.5, // Golden angle
 	flower_size_top: 0.8,
 	flower_size_bottom: 1.0,
-	recursion_depth: null,
-	branch_ratio: null,
-	angle_divergence: null
+	recursion_depth: 1, // Always initialize to 1 (never null to avoid slider midpoint issue)
+	branch_ratio: 0.7,
+	angle_divergence: 0.0
 };
 
 export const inflorescenceParams = writable<InflorescenceParams>(defaultParams);
@@ -83,25 +83,25 @@ export function getRecursiveDefaults(pattern: PatternType): {
 	switch (pattern) {
 		case 'Dichasium':
 			return {
-				recursion_depth: 3,
+				recursion_depth: 1,
 				branch_ratio: 0.7,
 				angle_divergence: 30.0
 			};
 		case 'Drepanium':
 			return {
-				recursion_depth: 5,
+				recursion_depth: 1,
 				branch_ratio: 0.8,
 				angle_divergence: 137.5 // Uses rotation_angle by default, but can override
 			};
 		case 'CompoundRaceme':
 			return {
-				recursion_depth: 2,
+				recursion_depth: 1,
 				branch_ratio: 0.5,
 				angle_divergence: 0.0 // Not used
 			};
 		case 'CompoundUmbel':
 			return {
-				recursion_depth: 2,
+				recursion_depth: 1,
 				branch_ratio: 0.5,
 				angle_divergence: 0.0 // Not used
 			};

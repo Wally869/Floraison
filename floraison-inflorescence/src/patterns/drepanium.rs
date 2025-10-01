@@ -42,7 +42,7 @@ pub fn generate_branch_points(
     axis: &AxisCurve,
 ) -> Vec<BranchPoint> {
     // Extract parameters with defaults
-    let max_depth = params.recursion_depth.unwrap_or(5);
+    let max_depth = params.recursion_depth.unwrap_or(1);
     let branch_ratio = params.branch_ratio.unwrap_or(0.8);
     let spiral_angle = params.rotation_angle; // Golden angle by default
 

@@ -32,11 +32,13 @@ pub fn generate_compound_umbel(
     flower_mesh: &Mesh,
     stem_color: Vec3,
 ) -> Mesh {
-    let compound_depth = params.recursion_depth.unwrap_or(2);
+    let compound_depth = params.recursion_depth.unwrap_or(1);
 
-    // Base case: simple umbel
+    // Base case: simple umbel (change pattern to avoid infinite recursion)
     if compound_depth <= 1 {
-        return assembly::assemble_inflorescence(params, flower_mesh, stem_color);
+        let mut simple_params = params.clone();
+        simple_params.pattern = PatternType::Umbel;
+        return assembly::assemble_inflorescence(&simple_params, flower_mesh, stem_color);
     }
 
     let mut final_mesh = Mesh::new();
