@@ -3,7 +3,7 @@
 //! This module handles the assembly of individual floral components into complete flowers.
 //! It maps 2D floral diagram positions to 3D positions on the receptacle surface.
 
-use crate::{Vec2, Vec3, Mat4, Quat, Mesh};
+use crate::{Vec2, Vec3, Mat3, Mat4, Quat, Mesh};
 use crate::receptacle::ReceptacleParams;
 use crate::pistil::PistilParams;
 use crate::stamen::StamenParams;
@@ -236,8 +236,28 @@ impl ReceptacleMapper {
             normal_2d.x * placement.angle.sin(),  // radial Z component
         ).normalize();
 
-        // Create rotation from +Y to normal direction
-        let rotation = Quat::from_rotation_arc(Vec3::Y, normal);
+        // Compute tangent to the circle at this azimuthal angle (in XZ plane)
+        // This is the direction "around" the flower at this position
+        let tangent = Vec3::new(
+            -placement.angle.sin(),  // d/dθ of cos(θ)
+            0.0,
+            placement.angle.cos(),   // d/dθ of sin(θ)
+        ).normalize();
+
+        // Compute binormal (perpendicular to both normal and tangent)
+        // Use right-handed coordinate system: binormal = tangent × normal
+        let binormal = tangent.cross(normal).normalize();
+
+        // Re-orthogonalize tangent to ensure perfect orthogonality
+        // (in case normal and tangent weren't exactly perpendicular)
+        let tangent = normal.cross(binormal).normalize();
+
+        // Build rotation matrix from coordinate frame:
+        // - Local X-axis → tangent (azimuthal direction around flower)
+        // - Local Y-axis → normal (radially outward from receptacle)
+        // - Local Z-axis → binormal (perpendicular to both)
+        let rotation_matrix = Mat3::from_cols(tangent, normal, binormal);
+        let rotation = Quat::from_mat3(&rotation_matrix);
 
         Transform3D::with_scale(position, rotation, placement.scale)
     }

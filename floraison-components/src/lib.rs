@@ -4,7 +4,7 @@
 //! Each component is parameterized and generates geometry that can be assembled into
 //! complete flowers.
 
-pub use floraison_core::{Vec2, Vec3, Mat4, Quat};
+pub use floraison_core::{Vec2, Vec3, Mat3, Mat4, Quat};
 pub use floraison_core::geometry::mesh::Mesh;
 
 /// Receptacle (base of flower) generator
