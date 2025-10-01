@@ -120,8 +120,12 @@
 		<label for="preset-select" class="preset-label">Preset:</label>
 		<select
 			id="preset-select"
-			bind:value={selectedPreset}
-			onchange={loadPreset}
+			value={selectedPreset}
+			onchange={(e) => {
+				isLoadingPreset = true; // Set flag BEFORE updating value
+				selectedPreset = e.currentTarget.value as PresetName;
+				loadPreset();
+			}}
 			class="preset-dropdown"
 		>
 			<optgroup label="Single Flowers">
