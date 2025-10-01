@@ -4,6 +4,8 @@
 //! Exposes the Rust implementation to JavaScript/TypeScript.
 
 use wasm_bindgen::prelude::*;
+use floraison_components::assembly::{FlowerParams, generate_flower};
+use floraison_core::geometry::mesh::Mesh;
 
 /// Initialize the WASM module
 /// Sets up panic hook for better error messages in the browser console
@@ -28,9 +30,37 @@ impl FlowerGenerator {
 
     /// Generate a flower from JSON parameters
     /// Returns mesh data that can be used to create Three.js geometry
-    pub fn generate_flower(&self, _params_json: &str) -> Result<JsValue, JsValue> {
-        // Placeholder - will be implemented in later tasks
-        Err(JsValue::from_str("Not yet implemented"))
+    pub fn generate_flower(&self, params_json: &str) -> Result<MeshData, JsValue> {
+        // Parse JSON parameters
+        let params: FlowerParams = serde_json::from_str(params_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse parameters: {}", e)))?;
+
+        // Generate flower mesh
+        let mesh = generate_flower(&params);
+
+        // Convert to WASM mesh data
+        Ok(MeshData::from_mesh(&mesh))
+    }
+
+    /// Generate a lily flower with default parameters
+    pub fn generate_lily(&self) -> Result<MeshData, JsValue> {
+        let params = FlowerParams::lily();
+        let mesh = generate_flower(&params);
+        Ok(MeshData::from_mesh(&mesh))
+    }
+
+    /// Generate a five-petal flower with default parameters
+    pub fn generate_five_petal(&self) -> Result<MeshData, JsValue> {
+        let params = FlowerParams::five_petal();
+        let mesh = generate_flower(&params);
+        Ok(MeshData::from_mesh(&mesh))
+    }
+
+    /// Generate a daisy flower with default parameters
+    pub fn generate_daisy(&self) -> Result<MeshData, JsValue> {
+        let params = FlowerParams::daisy();
+        let mesh = generate_flower(&params);
+        Ok(MeshData::from_mesh(&mesh))
     }
 }
 
@@ -41,6 +71,39 @@ pub struct MeshData {
     normals: Vec<f32>,
     uvs: Vec<f32>,
     indices: Vec<u32>,
+}
+
+impl MeshData {
+    /// Convert a Mesh to flat arrays for JavaScript
+    pub fn from_mesh(mesh: &Mesh) -> Self {
+        // Flatten Vec<Vec3> positions to Vec<f32> with stride 3
+        let positions: Vec<f32> = mesh.positions
+            .iter()
+            .flat_map(|v| [v.x, v.y, v.z])
+            .collect();
+
+        // Flatten Vec<Vec3> normals to Vec<f32> with stride 3
+        let normals: Vec<f32> = mesh.normals
+            .iter()
+            .flat_map(|v| [v.x, v.y, v.z])
+            .collect();
+
+        // Flatten Vec<Vec2> uvs to Vec<f32> with stride 2
+        let uvs: Vec<f32> = mesh.uvs
+            .iter()
+            .flat_map(|v| [v.x, v.y])
+            .collect();
+
+        // Copy indices directly
+        let indices = mesh.indices.clone();
+
+        Self {
+            positions,
+            normals,
+            uvs,
+            indices,
+        }
+    }
 }
 
 #[wasm_bindgen]

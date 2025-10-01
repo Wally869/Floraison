@@ -10,7 +10,7 @@ repository.workspace = true
 crate-type = ["cdylib", "rlib"]
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = ["-O", "--enable-bulk-memory"]
+wasm-opt = ["-O", "--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
 
 [dependencies]
 floraison-core = { workspace = true, features = ["serde"] }

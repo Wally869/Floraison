@@ -14,7 +14,12 @@
       "Bash(cargo test:*)",
       "Bash(cargo doc:*)",
       "Bash(cargo check:*)",
-      "Bash(cargo build:*)"
+      "Bash(cargo build:*)",
+      "Bash(npm run wasm:build:*)",
+      "Bash(cargo clean:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
