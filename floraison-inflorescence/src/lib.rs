@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 
 pub mod patterns;
 pub mod assembly;
+pub mod aging;
 
 /// Inflorescence pattern type
 ///
@@ -124,6 +125,25 @@ pub struct InflorescenceParams {
 
     /// Flower scale factor at bottom
     pub flower_size_bottom: f32,
+
+    // --- Optional parameters for recursive patterns ---
+
+    /// Recursion depth for recursive patterns (Dichasium, Drepanium, Compound)
+    ///
+    /// - Dichasium/Drepanium: number of branching levels (default: 3-5)
+    /// - Compound patterns: depth of nesting (default: 2)
+    pub recursion_depth: Option<usize>,
+
+    /// Branch ratio for recursive patterns
+    ///
+    /// Each child branch length = parent length × branch_ratio (default: 0.7)
+    pub branch_ratio: Option<f32>,
+
+    /// Angle divergence for recursive branching (degrees)
+    ///
+    /// For Dichasium: angle between Y-shaped branches (default: 30°)
+    /// For Drepanium: spiral angle increment (uses rotation_angle if None)
+    pub angle_divergence: Option<f32>,
 }
 
 impl Default for InflorescenceParams {
@@ -139,6 +159,10 @@ impl Default for InflorescenceParams {
             rotation_angle: 137.5, // Golden angle
             flower_size_top: 0.8,
             flower_size_bottom: 1.0,
+            // Optional recursive parameters (None = use defaults in pattern)
+            recursion_depth: None,
+            branch_ratio: None,
+            angle_divergence: None,
         }
     }
 }

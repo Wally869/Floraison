@@ -13,11 +13,11 @@
 **Description**: Implement dichasium (branching pattern with two branches per node).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/dichasium.rs` created
-- [ ] Recursive branching structure
-- [ ] Parameters for branching ratio (child branch length/angle relative to parent)
-- [ ] Age determinate (top flowers oldest)
-- [ ] Unit test
+- [x] Module `floraison-inflorescence/src/patterns/dichasium.rs` created
+- [x] Recursive branching structure
+- [x] Parameters for branching ratio (child branch length/angle relative to parent)
+- [x] Age determinate (top flowers oldest)
+- [x] Unit test
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -67,11 +67,11 @@ pub fn generate_recursive(
 **Description**: Implement drepanium (branching with single curved branch per node).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/drepanium.rs` created
-- [ ] Similar to dichasium but only one child per node
-- [ ] Creates spiral/helix shape
-- [ ] Age determinate
-- [ ] Unit test
+- [x] Module `floraison-inflorescence/src/patterns/drepanium.rs` created
+- [x] Similar to dichasium but only one child per node
+- [x] Creates spiral/helix shape
+- [x] Age determinate
+- [x] Unit test
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -87,11 +87,11 @@ Similar structure to dichasium but simpler (only one branch per level).
 **Description**: Implement compound raceme and umbel (recursive patterns).
 
 **Acceptance Criteria**:
-- [ ] Modules `compound_raceme.rs` and `compound_umbel.rs` created
-- [ ] Replace each flower in simple pattern with sub-inflorescence
-- [ ] Recursion depth parameter (typically 2)
-- [ ] Each sub-inflorescence is scaled smaller
-- [ ] Unit tests
+- [x] Modules `compound_raceme.rs` and `compound_umbel.rs` created
+- [x] Replace each flower in simple pattern with sub-inflorescence
+- [x] Recursion depth parameter (typically 2)
+- [x] Each sub-inflorescence is scaled smaller
+- [x] Unit tests
 
 **Dependencies**: Tasks 11.1, 11.3
 
@@ -126,7 +126,7 @@ pub fn generate_compound_raceme(params: &InflorescenceParams) -> Mesh {
 **Description**: Support multiple flower models representing different developmental stages.
 
 **Acceptance Criteria**:
-- [ ] Parameter struct `FlowerAging`:
+- [x] Parameter struct `FlowerAging`:
   ```rust
   pub struct FlowerAging {
       pub bud_mesh: Mesh,
@@ -134,12 +134,12 @@ pub fn generate_compound_raceme(params: &InflorescenceParams) -> Mesh {
       pub wilt_mesh: Option<Mesh>,
   }
   ```
-- [ ] Function `interpolate_flower(age: f32, aging: &FlowerAging) -> Mesh`
-  - age = 0.0: bud
-  - age = 1.0: bloom
-  - Intermediate: transition (morph or discrete switch)
-- [ ] Update assembly to use age-appropriate flower
-- [ ] Unit test
+- [x] Function `select_mesh(age: f32, aging: &FlowerAging) -> &Mesh` (discrete switch)
+  - age < 0.3: bud
+  - 0.3 <= age < 0.8: bloom
+  - age >= 0.8: wilt (if available)
+- [x] Update assembly to use age-appropriate flower (`assemble_inflorescence_with_aging`)
+- [x] Unit test
 
 **Dependencies**: Task 11.5
 
@@ -159,8 +159,8 @@ For advanced version, implement mesh morphing (vertex interpolation) if meshes h
 **Deliverable**: Complete inflorescence system with 8 patterns, flower aging, and full integration.
 
 **Testing**:
-- [ ] All 8 patterns generate correctly
-- [ ] Compound patterns show hierarchical structure
-- [ ] Flower aging visible in indeterminate patterns
-- [ ] Stem geometry looks reasonable
-- [ ] Parameters in UI control inflorescence appearance
+- [x] All 8 patterns generate correctly
+- [x] Compound patterns show hierarchical structure
+- [x] Flower aging visible in indeterminate patterns
+- [x] Stem geometry looks reasonable
+- [ ] Parameters in UI control inflorescence appearance (N/A - UI integration not in scope)
