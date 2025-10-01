@@ -54,6 +54,11 @@
 		sceneCtx.setBackgroundColor(settings.backgroundColor);
 		sceneCtx.setAmbientIntensity(settings.ambientIntensity);
 		sceneCtx.setDirectionalIntensity(settings.directionalIntensity);
+		sceneCtx.setAmbientColor(settings.ambientColor);
+		sceneCtx.setDirectionalColor(settings.directionalColor);
+		sceneCtx.setHemisphereSkyColor(settings.hemisphereSkyColor);
+		sceneCtx.setHemisphereGroundColor(settings.hemisphereGroundColor);
+		sceneCtx.setExposure(settings.exposure);
 		sceneCtx.toggleAxesHelper(settings.showAxes);
 		sceneCtx.toggleShadows(settings.enableShadows);
 
@@ -77,6 +82,13 @@
 
 		// Convert WASM mesh to Three.js geometry
 		const geometry = wasmMeshToGeometry(newMesh);
+
+		// Compute bounding box for ground positioning
+		geometry.computeBoundingBox();
+		if (geometry.boundingBox) {
+			const minY = geometry.boundingBox.min.y;
+			sceneCtx.positionGround(minY);
+		}
 
 		// Create enhanced material with translucency (organic petal appearance)
 		const material = new THREE.MeshPhysicalMaterial({

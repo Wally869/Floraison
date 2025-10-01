@@ -49,27 +49,58 @@
 
 			<div class="control-group">
 				<label class="slider-control">
-					<span>Ambient Light</span>
+					<span>Exposure</span>
+					<input
+						type="range"
+						min="0.5"
+						max="2"
+						step="0.1"
+						bind:value={$viewerSettings.exposure}
+					/>
+					<span class="value">{$viewerSettings.exposure.toFixed(1)}</span>
+				</label>
+			</div>
+
+			<div class="control-group">
+				<label class="slider-control">
+					<span>Ambient Intensity</span>
 					<input
 						type="range"
 						min="0"
-						max="1"
+						max="2"
 						step="0.1"
 						bind:value={$viewerSettings.ambientIntensity}
 					/>
 					<span class="value">{$viewerSettings.ambientIntensity.toFixed(1)}</span>
 				</label>
 
+				<label class="color-control">
+					<span>Sky Color</span>
+					<input type="color" bind:value={$viewerSettings.hemisphereSkyColor} />
+				</label>
+
+				<label class="color-control">
+					<span>Ground Color</span>
+					<input type="color" bind:value={$viewerSettings.hemisphereGroundColor} />
+				</label>
+			</div>
+
+			<div class="control-group">
 				<label class="slider-control">
-					<span>Directional Light</span>
+					<span>Directional Intensity</span>
 					<input
 						type="range"
 						min="0"
-						max="1"
+						max="3"
 						step="0.1"
 						bind:value={$viewerSettings.directionalIntensity}
 					/>
 					<span class="value">{$viewerSettings.directionalIntensity.toFixed(1)}</span>
+				</label>
+
+				<label class="color-control">
+					<span>Directional Color</span>
+					<input type="color" bind:value={$viewerSettings.directionalColor} />
 				</label>
 			</div>
 

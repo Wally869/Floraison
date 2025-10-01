@@ -19,8 +19,14 @@ export interface SceneContext {
 	setBackgroundColor: (color: string) => void;
 	setAmbientIntensity: (intensity: number) => void;
 	setDirectionalIntensity: (intensity: number) => void;
+	setAmbientColor: (color: string) => void;
+	setDirectionalColor: (color: string) => void;
+	setHemisphereSkyColor: (color: string) => void;
+	setHemisphereGroundColor: (color: string) => void;
+	setExposure: (value: number) => void;
 	toggleAxesHelper: (visible: boolean) => void;
-	toggleShadows: (enabled: boolean) => void; // NEW
+	toggleShadows: (enabled: boolean) => void;
+	positionGround: (minY: number) => void;
 	resetCamera: () => void;
 }
 
@@ -57,11 +63,21 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	renderer.shadowMap.enabled = true;
 	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-	// Add lighting
-	const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-	scene.add(ambientLight);
+	// Enable tone mapping for realistic lighting (industry standard)
+	renderer.toneMapping = THREE.ACESFilmicToneMapping;
+	renderer.toneMappingExposure = 1.0;
+	renderer.outputColorSpace = THREE.SRGBColorSpace;
 
-	const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+	// Add lighting - hemisphere light for natural outdoor ambient
+	const hemisphereLight = new THREE.HemisphereLight(
+		0x87ceeb, // Sky color (light blue)
+		0x8b7355, // Ground color (brownish earth)
+		0.6
+	);
+	scene.add(hemisphereLight);
+
+	// Main directional light (key light)
+	const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
 	dirLight.position.set(5, 10, 5);
 	dirLight.castShadow = true;
 
@@ -78,12 +94,17 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 
 	scene.add(dirLight);
 
+	// Fill light (softer, opposite side, no shadows)
+	const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+	fillLight.position.set(-5, 5, -5);
+	scene.add(fillLight);
+
 	// Add ground plane for shadow reception
 	const groundGeometry = new THREE.PlaneGeometry(30, 30);
 	const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
 	const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 	ground.rotation.x = -Math.PI / 2;
-	ground.position.y = -5;
+	ground.position.y = 0; // Will be repositioned dynamically based on mesh bounds
 	ground.receiveShadow = true;
 	scene.add(ground);
 
@@ -135,11 +156,33 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	}
 
 	function setAmbientIntensity(intensity: number) {
-		ambientLight.intensity = intensity;
+		hemisphereLight.intensity = intensity;
 	}
 
 	function setDirectionalIntensity(intensity: number) {
 		dirLight.intensity = intensity;
+	}
+
+	function setAmbientColor(color: string) {
+		// For hemisphere light, set sky color
+		hemisphereLight.color = new THREE.Color(color);
+	}
+
+	function setDirectionalColor(color: string) {
+		dirLight.color = new THREE.Color(color);
+		fillLight.color = new THREE.Color(color);
+	}
+
+	function setHemisphereSkyColor(color: string) {
+		hemisphereLight.color = new THREE.Color(color);
+	}
+
+	function setHemisphereGroundColor(color: string) {
+		hemisphereLight.groundColor = new THREE.Color(color);
+	}
+
+	function setExposure(value: number) {
+		renderer.toneMappingExposure = value;
 	}
 
 	function toggleAxesHelper(visible: boolean) {
@@ -149,6 +192,11 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	function toggleShadows(enabled: boolean) {
 		renderer.shadowMap.enabled = enabled;
 		ground.visible = enabled;
+	}
+
+	function positionGround(minY: number) {
+		// Position ground at or slightly below the lowest vertex
+		ground.position.y = minY - 0.1;
 	}
 
 	function resetCamera() {
@@ -168,8 +216,14 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		setBackgroundColor,
 		setAmbientIntensity,
 		setDirectionalIntensity,
+		setAmbientColor,
+		setDirectionalColor,
+		setHemisphereSkyColor,
+		setHemisphereGroundColor,
+		setExposure,
 		toggleAxesHelper,
 		toggleShadows,
+		positionGround,
 		resetCamera
 	};
 }
