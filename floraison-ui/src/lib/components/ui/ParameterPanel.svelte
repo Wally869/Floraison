@@ -17,6 +17,13 @@
 	} from '$lib/stores/parameters';
 	import { presets, presetNames, type PresetName } from '$lib/presets';
 
+	// Props
+	interface Props {
+		open?: boolean;
+	}
+
+	let { open = true }: Props = $props();
+
 	// Component-level reactive variables for color pickers (hex format)
 	let receptacleColor = $state(rgbToHex($receptacleParams.color));
 	let pistilColor = $state(rgbToHex($pistilParams.color));
@@ -109,7 +116,7 @@
 	});
 </script>
 
-<div class="parameter-panel">
+<div class="parameter-panel" class:open>
 	<div class="panel-header">
 		<h2 class="text-2xl font-bold text-gray-800">Flower Parameters</h2>
 		<button
@@ -934,6 +941,28 @@
 		background-color: #f9fafb;
 		border-right: 1px solid #e5e7eb;
 		padding: 1rem;
+
+		/* Mobile: fixed positioned, slides in from left */
+		position: fixed;
+		left: 0;
+		top: 0;
+		z-index: 50;
+		transform: translateX(-100%);
+		transition: transform 0.3s ease-out;
+	}
+
+	/* Desktop: static positioned, always visible */
+	@media (min-width: 768px) {
+		.parameter-panel {
+			position: static;
+			transform: translateX(0);
+			transition: none;
+		}
+	}
+
+	/* Mobile: when open */
+	.parameter-panel.open {
+		transform: translateX(0);
 	}
 
 	.panel-header {
