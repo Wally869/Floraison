@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "floraison-core",
     "floraison-components",
+    "floraison-inflorescence",
     "floraison-wasm",
 ]
 
@@ -30,6 +31,7 @@ js-sys = "0.3"
 # Internal dependencies
 floraison-core = { path = "./floraison-core" }
 floraison-components = { path = "./floraison-components" }
+floraison-inflorescence = { path = "./floraison-inflorescence" }
 
 [profile.release]
 # Optimize for size (important for WASM)

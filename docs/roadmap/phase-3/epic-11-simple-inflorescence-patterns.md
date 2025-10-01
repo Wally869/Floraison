@@ -13,14 +13,14 @@
 **Description**: Implement raceme pattern (single axis, flowers on pedicels).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/raceme.rs` created
-- [ ] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
-- [ ] Flowers spaced evenly along axis
-- [ ] Pedicel length interpolates from top to bottom
-- [ ] Down angle interpolates from top to bottom
-- [ ] Rotation angle applies Fibonacci spiral
-- [ ] Age increases bottom to top (indeterminate)
-- [ ] Unit test verifies branch count and positioning
+- [x] Module `floraison-inflorescence/src/patterns/raceme.rs` created
+- [x] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
+- [x] Flowers spaced evenly along axis
+- [x] Pedicel length interpolates from top to bottom
+- [x] Down angle interpolates from top to bottom
+- [x] Rotation angle applies Fibonacci spiral
+- [x] Age increases bottom to top (indeterminate)
+- [x] Unit test verifies branch count and positioning
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -79,13 +79,13 @@ pub fn generate_branch_points(
 **Description**: Implement spike pattern (like raceme but flowers sessile - no pedicels).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/spike.rs` created
-- [ ] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
-- [ ] Flowers placed directly on axis (length = 0)
-- [ ] Rotation angle still applies
-- [ ] Flower scale interpolates
-- [ ] Age indeterminate
-- [ ] Unit test
+- [x] Module `floraison-inflorescence/src/patterns/spike.rs` created
+- [x] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
+- [x] Flowers placed directly on axis (length = 0)
+- [x] Rotation angle still applies
+- [x] Flower scale interpolates
+- [x] Age indeterminate
+- [x] Unit test
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -101,14 +101,14 @@ Very similar to raceme, but branch length is always 0 (or very small). Flowers a
 **Description**: Implement umbel pattern (all pedicels from single point, umbrella-like).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/umbel.rs` created
-- [ ] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
-- [ ] All branches originate from top of axis
-- [ ] Spread out in umbrella shape
-- [ ] Rotation angle determines angular spacing
-- [ ] Down angle determines spread
-- [ ] All flowers same age (determinate)
-- [ ] Unit test
+- [x] Module `floraison-inflorescence/src/patterns/umbel.rs` created
+- [x] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
+- [x] All branches originate from top of axis
+- [x] Spread out in umbrella shape
+- [x] Rotation angle determines angular spacing
+- [x] Down angle determines spread
+- [x] All flowers same age (determinate)
+- [x] Unit test
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -155,12 +155,12 @@ pub fn generate_branch_points(
 **Description**: Implement corymb pattern (pedicels of varying length, flat-topped).
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/patterns/corymb.rs` created
-- [ ] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
-- [ ] Branches along axis like raceme
-- [ ] Pedicel length adjusted so all flowers reach same height
-- [ ] Age indeterminate
-- [ ] Unit test
+- [x] Module `floraison-inflorescence/src/patterns/corymb.rs` created
+- [x] Function `generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint>`
+- [x] Branches along axis like raceme
+- [x] Pedicel length adjusted so all flowers reach same height
+- [x] Age indeterminate
+- [x] Unit test
 
 **Dependencies**: Task 10.1, 10.3
 
@@ -184,15 +184,15 @@ let length = (target_height - sample.position.y) / direction.y.max(0.01);
 **Description**: Combine axis, branches, and flowers into complete inflorescence mesh.
 
 **Acceptance Criteria**:
-- [ ] Module `floraison-inflorescence/src/assembly.rs` created
-- [ ] Function `assemble_inflorescence(params: &InflorescenceParams, flower_mesh: &Mesh) -> Mesh`
+- [x] Module `floraison-inflorescence/src/assembly.rs` created
+- [x] Function `assemble_inflorescence(params: &InflorescenceParams, flower_mesh: &Mesh) -> Mesh`
   - Generates axis curve from parameters
   - Calls pattern-specific generator to get branch points
   - Instantiates flower at each branch point
   - Generates stem geometry (cylinder along axis and branches)
   - Merges all into single mesh
-- [ ] Proper transformations applied
-- [ ] Unit test
+- [x] Proper transformations applied
+- [x] Unit test
 
 **Dependencies**: Tasks 11.1-11.4
 

@@ -1,6 +1,6 @@
 # Implementation Roadmap
 
-**Status**: 🚀 In Progress - Phase 2
+**Status**: 🚀 In Progress - Phase 3
 **Last Updated**: 2025-10-01
 
 ## Progress Summary
@@ -49,6 +49,16 @@
 - 🎉 **Epic 8 Complete!** Floral Diagram System finished!
 - ✅ **Task 9.1**: Split View Layout (done during Epic 8)
 - ✅ **Task 9.3**: Loading States and Error Handling (done during Epic 8)
+- ✅ **Task 10.1**: Inflorescence Data Structures (floraison-inflorescence crate)
+- ✅ **Task 10.2**: 3D Axis Curve Generation (constant curvature reconstruction)
+- ✅ **Task 10.3**: Axis Parameterization (AxisCurve with Frenet frames)
+- 🎉 **Epic 10 Complete!** Inflorescence Foundation finished!
+- ✅ **Task 11.1**: Raceme Pattern Generator (pedicels along axis, Fibonacci spiral)
+- ✅ **Task 11.2**: Spike Pattern Generator (sessile flowers, no pedicels)
+- ✅ **Task 11.3**: Umbel Pattern Generator (umbrella shape, single origin)
+- ✅ **Task 11.4**: Corymb Pattern Generator (flat-topped, varying pedicel lengths)
+- ✅ **Task 11.5**: Inflorescence Assembly Function (stems, pedicels, flower placement)
+- 🎉 **Epic 11 Complete!** Simple Inflorescence Patterns finished!
 
 ## Overview
 
@@ -104,8 +114,8 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 | Epic | Title | Effort | Tasks | Status |
 |------|-------|--------|-------|--------|
-| [Epic 10](roadmap/phase-3/epic-10-inflorescence-foundation.md) | Inflorescence Foundation | 8-10 hours | 3 | ⏳ Pending |
-| [Epic 11](roadmap/phase-3/epic-11-simple-inflorescence-patterns.md) | Simple Inflorescence Patterns | 10-12 hours | 5 | ⏳ Pending |
+| [Epic 10](roadmap/phase-3/epic-10-inflorescence-foundation.md) | Inflorescence Foundation | 8-10 hours | 3 | ✅ Complete |
+| [Epic 11](roadmap/phase-3/epic-11-simple-inflorescence-patterns.md) | Simple Inflorescence Patterns | 10-12 hours | 5 | ✅ Complete |
 | [Epic 12](roadmap/phase-3/epic-12-complex-patterns-polish.md) | Complex Patterns & Polish | 8-10 hours | 4 | ⏳ Pending |
 
 **Phase 3 Total**: 26-32 hours
@@ -167,4 +177,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 8/15 epics complete • 36/78 tasks complete • 🎉 Phase 1 COMPLETE! • Phase 2: 80% complete! 🎉
+**Progress**: 10/15 epics complete • 44/78 tasks complete • 🎉 Phase 1 COMPLETE! • Phase 2: 80% complete! • Phase 3: 67% complete! 🎉

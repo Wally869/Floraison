@@ -1,0 +1,24 @@
+[package]
+name = "floraison-inflorescence"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+# Math and geometry
+glam = { workspace = true }
+
+# Internal dependencies
+floraison-core = { workspace = true }
+
+# Serialization (optional, for WASM)
+serde = { workspace = true, optional = true }
+
+[features]
+default = []
+serde = ["dep:serde", "glam/serde", "floraison-core/serde"]
+
+[dev-dependencies]
+serde_json = { workspace = true }
