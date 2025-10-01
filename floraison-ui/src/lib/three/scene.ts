@@ -6,6 +6,7 @@
 
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { PMREMGenerator } from 'three';
 
 export interface SceneContext {
 	scene: THREE.Scene;
@@ -19,6 +20,7 @@ export interface SceneContext {
 	setAmbientIntensity: (intensity: number) => void;
 	setDirectionalIntensity: (intensity: number) => void;
 	toggleAxesHelper: (visible: boolean) => void;
+	toggleShadows: (enabled: boolean) => void; // NEW
 	resetCamera: () => void;
 }
 
@@ -51,13 +53,52 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	renderer.setPixelRatio(window.devicePixelRatio);
 
+	// Enable shadows with soft shadow mapping
+	renderer.shadowMap.enabled = true;
+	renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
 	// Add lighting
 	const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 	scene.add(ambientLight);
 
 	const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
 	dirLight.position.set(5, 10, 5);
+	dirLight.castShadow = true;
+
+	// Configure shadow camera for optimal shadow quality
+	dirLight.shadow.mapSize.width = 2048;
+	dirLight.shadow.mapSize.height = 2048;
+	dirLight.shadow.camera.near = 0.5;
+	dirLight.shadow.camera.far = 50;
+	dirLight.shadow.camera.left = -10;
+	dirLight.shadow.camera.right = 10;
+	dirLight.shadow.camera.top = 10;
+	dirLight.shadow.camera.bottom = -10;
+	dirLight.shadow.bias = -0.001;
+
 	scene.add(dirLight);
+
+	// Add ground plane for shadow reception
+	const groundGeometry = new THREE.PlaneGeometry(30, 30);
+	const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
+	const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+	ground.rotation.x = -Math.PI / 2;
+	ground.position.y = -5;
+	ground.receiveShadow = true;
+	scene.add(ground);
+
+	// Setup environment map for reflections (neutral studio lighting)
+	const pmremGenerator = new PMREMGenerator(renderer);
+	pmremGenerator.compileEquirectangularShader();
+
+	// Create simple neutral environment
+	const envScene = new THREE.Scene();
+	envScene.background = new THREE.Color(0xffffff);
+	const envMap = pmremGenerator.fromScene(envScene).texture;
+	scene.environment = envMap;
+	scene.environmentIntensity = 0.5; // Subtle reflections
+
+	pmremGenerator.dispose();
 
 	// Add axes helper (initially hidden)
 	const axesHelper = new THREE.AxesHelper(10);
@@ -105,6 +146,11 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		axesHelper.visible = visible;
 	}
 
+	function toggleShadows(enabled: boolean) {
+		renderer.shadowMap.enabled = enabled;
+		ground.visible = enabled;
+	}
+
 	function resetCamera() {
 		camera.position.set(10, 10, 10);
 		camera.lookAt(0, 0, 0);
@@ -123,6 +169,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		setAmbientIntensity,
 		setDirectionalIntensity,
 		toggleAxesHelper,
+		toggleShadows,
 		resetCamera
 	};
 }

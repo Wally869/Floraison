@@ -33,6 +33,11 @@
 					<input type="checkbox" bind:checked={$viewerSettings.wireframe} />
 					<span>Wireframe</span>
 				</label>
+
+				<label class="toggle-control">
+					<input type="checkbox" bind:checked={$viewerSettings.enableShadows} />
+					<span>Enable Shadows</span>
+				</label>
 			</div>
 
 			<div class="control-group">

@@ -55,9 +55,10 @@
 		sceneCtx.setAmbientIntensity(settings.ambientIntensity);
 		sceneCtx.setDirectionalIntensity(settings.directionalIntensity);
 		sceneCtx.toggleAxesHelper(settings.showAxes);
+		sceneCtx.toggleShadows(settings.enableShadows);
 
 		// Update wireframe on existing mesh
-		if (flowerMesh && flowerMesh.material instanceof THREE.MeshStandardMaterial) {
+		if (flowerMesh && flowerMesh.material instanceof THREE.MeshPhysicalMaterial) {
 			flowerMesh.material.wireframe = settings.wireframe;
 		}
 	});
@@ -77,17 +78,36 @@
 		// Convert WASM mesh to Three.js geometry
 		const geometry = wasmMeshToGeometry(newMesh);
 
-		// Create material (golden color, double-sided for proper rendering)
-		const material = new THREE.MeshStandardMaterial({
+		// Create enhanced material with translucency (organic petal appearance)
+		const material = new THREE.MeshPhysicalMaterial({
 			color: 0xffcc00,
 			side: THREE.DoubleSide,
-			metalness: 0.1,
-			roughness: 0.7,
+
+			// Base PBR properties
+			metalness: 0.0, // Petals are not metallic
+			roughness: 0.6, // Slightly rough surface
+
+			// Translucency (subsurface scattering approximation)
+			transmission: 0.0, // No full transparency
+			thickness: 0.5, // Controls SSS depth
+			ior: 1.4, // Index of refraction (organic material)
+
+			// Sheen for petal-like appearance
+			sheen: 0.5,
+			sheenRoughness: 0.5,
+			sheenColor: new THREE.Color(0xffeecc), // Slight warm tint
+
+			// Clearcoat for waxy surface
+			clearcoat: 0.3,
+			clearcoatRoughness: 0.4,
+
 			wireframe: $viewerSettings.wireframe
 		});
 
 		// Create mesh and add to scene
 		flowerMesh = new THREE.Mesh(geometry, material);
+		flowerMesh.castShadow = true;
+		flowerMesh.receiveShadow = true; // Petals can shadow each other
 		sceneCtx.scene.add(flowerMesh);
 
 		// Frame camera to show entire flower
