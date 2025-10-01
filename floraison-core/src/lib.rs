@@ -20,11 +20,8 @@ pub mod math {
     /// Bézier curve evaluation
     pub mod bezier;
 
-    /// B-spline curves and surfaces (placeholder)
-    pub mod bspline {
-        //! B-spline surface evaluation for petals
-        // Will be implemented in Task 6.1
-    }
+    /// B-spline curves and surfaces
+    pub mod bspline;
 
     /// 3D curve reconstruction (placeholder)
     pub mod curves {

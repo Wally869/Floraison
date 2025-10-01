@@ -337,25 +337,45 @@ pub struct FlowerParams {
 }
 
 impl FlowerParams {
-    /// Create parameters for a lily-like flower
+    /// Create parameters for a lily-like flower with B-spline petal deformations
     pub fn lily() -> Self {
         Self {
             diagram: FloralDiagram::lily(),
             receptacle: ReceptacleParams::default(),
             pistil: PistilParams::default(),
             stamen: StamenParams::default(),
-            petal: PetalParams::default(),
+            petal: PetalParams {
+                length: 3.0,
+                width: 1.2,
+                tip_sharpness: 0.4,
+                base_width: 0.4,
+                curl: 0.4,           // Gentle upward curl
+                twist: 15.0,         // Slight twist for organic look
+                ruffle_freq: 0.0,
+                ruffle_amp: 0.0,
+                resolution: 20,      // Higher resolution for smooth curves
+            },
         }
     }
 
-    /// Create parameters for a 5-petal flower (rose-like)
+    /// Create parameters for a 5-petal flower (rose-like) with ruffled edges
     pub fn five_petal() -> Self {
         Self {
             diagram: FloralDiagram::five_petal(),
             receptacle: ReceptacleParams::default(),
             pistil: PistilParams::default(),
             stamen: StamenParams::slender(),
-            petal: PetalParams::wide(),
+            petal: PetalParams {
+                length: 2.5,
+                width: 2.0,
+                tip_sharpness: 0.2,
+                base_width: 0.8,
+                curl: 0.2,           // Slight curl
+                twist: 5.0,          // Minimal twist
+                ruffle_freq: 3.0,    // 3 waves along edges
+                ruffle_amp: 0.15,    // Visible ruffle
+                resolution: 24,      // High resolution for ruffle detail
+            },
         }
     }
 

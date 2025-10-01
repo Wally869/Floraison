@@ -31,6 +31,12 @@
 - ✅ **Task 5.5**: ThreeViewer Svelte Component with reactive mesh updates
 - ✅ **Task 5.6**: Main App Page loading WASM and displaying flower
 - 🎉 **Epic 5 Complete!** Frontend Foundation finished - Phase 1 MVP achieved!
+- ✅ **Task 6.1**: B-spline basis functions with Cox-de Boor algorithm
+- ✅ **Task 6.2**: B-spline surface evaluation with derivatives and normals
+- ✅ **Task 6.3**: Petal control point grid generation (9×5 grid)
+- ✅ **Task 6.4**: Petal deformations (curl, twist, ruffle)
+- ✅ **Task 6.5**: Complete B-spline petal generator integration
+- 🎉 **Epic 6 Complete!** Advanced Petal Geometry (B-splines) finished!
 
 ## Overview
 
@@ -71,7 +77,7 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 | Epic | Title | Effort | Tasks | Status |
 |------|-------|--------|-------|--------|
-| [Epic 6](roadmap/phase-2/epic-06-advanced-petal-geometry.md) | Advanced Petal Geometry (B-splines) | 10-12 hours | 5 | ⏳ Pending |
+| [Epic 6](roadmap/phase-2/epic-06-advanced-petal-geometry.md) | Advanced Petal Geometry (B-splines) | 10-12 hours | 5 | ✅ Complete |
 | [Epic 7](roadmap/phase-2/epic-07-complete-floral-components.md) | Complete Floral Components | 8-10 hours | 4 | ⏳ Pending |
 | [Epic 8](roadmap/phase-2/epic-08-floral-diagram-system.md) | Floral Diagram System | 6-8 hours | 4 | ⏳ Pending |
 | [Epic 9](roadmap/phase-2/epic-09-ui-enhancement.md) | UI Enhancement | 6-8 hours | 4 | ⏳ Pending |
@@ -149,4 +155,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 5/15 epics complete • 20/78 tasks complete • 🎉 Phase 1 COMPLETE! 🎉
+**Progress**: 6/15 epics complete • 26/78 tasks complete • 🎉 Phase 1 COMPLETE! • Epic 6 COMPLETE! 🎉
