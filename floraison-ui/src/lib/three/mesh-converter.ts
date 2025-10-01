@@ -23,6 +23,7 @@ export function wasmMeshToGeometry(meshData: MeshData): THREE.BufferGeometry {
 	const positions = meshData.positions();
 	const normals = meshData.normals();
 	const uvs = meshData.uvs();
+	const colors = meshData.colors();
 	const indices = meshData.indices();
 
 	// Set position attribute (stride 3: x, y, z)
@@ -33,6 +34,9 @@ export function wasmMeshToGeometry(meshData: MeshData): THREE.BufferGeometry {
 
 	// Set UV attribute (stride 2: u, v)
 	geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
+
+	// Set color attribute (stride 3: r, g, b)
+	geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
 	// Set index buffer
 	geometry.setIndex(new THREE.BufferAttribute(indices, 1));

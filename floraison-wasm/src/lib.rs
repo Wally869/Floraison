@@ -116,6 +116,7 @@ pub struct MeshData {
     positions: Vec<f32>,
     normals: Vec<f32>,
     uvs: Vec<f32>,
+    colors: Vec<f32>,
     indices: Vec<u32>,
 }
 
@@ -140,6 +141,12 @@ impl MeshData {
             .flat_map(|v| [v.x, v.y])
             .collect();
 
+        // Flatten Vec<Vec3> colors to Vec<f32> with stride 3
+        let colors: Vec<f32> = mesh.colors
+            .iter()
+            .flat_map(|v| [v.x, v.y, v.z])
+            .collect();
+
         // Copy indices directly
         let indices = mesh.indices.clone();
 
@@ -147,6 +154,7 @@ impl MeshData {
             positions,
             normals,
             uvs,
+            colors,
             indices,
         }
     }
@@ -167,6 +175,11 @@ impl MeshData {
     /// Get UV coordinates as Float32Array
     pub fn uvs(&self) -> js_sys::Float32Array {
         js_sys::Float32Array::from(&self.uvs[..])
+    }
+
+    /// Get vertex colors as Float32Array
+    pub fn colors(&self) -> js_sys::Float32Array {
+        js_sys::Float32Array::from(&self.colors[..])
     }
 
     /// Get triangle indices as Uint32Array

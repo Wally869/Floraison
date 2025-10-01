@@ -80,7 +80,7 @@
 
 		// Create enhanced material with translucency (organic petal appearance)
 		const material = new THREE.MeshPhysicalMaterial({
-			color: 0xffcc00,
+			vertexColors: true, // Use per-vertex colors from geometry
 			side: THREE.DoubleSide,
 
 			// Base PBR properties
