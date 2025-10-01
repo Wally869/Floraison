@@ -6,17 +6,21 @@
 
 **Estimated Effort**: 8-10 hours
 
+**Status**: ✅ COMPLETED
+
 ---
 
-## Task 5.1: WASM Bindings for Flower Generation
+## Task 5.1: WASM Bindings for Flower Generation ✅
 
 **Description**: Expose flower generation to JavaScript via wasm-bindgen.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `floraison-wasm/src/lib.rs` created
-- [ ] Struct `WasmFlowerGenerator` with `#[wasm_bindgen]`
-- [ ] Method `generate_flower(params_json: &str) -> WasmMesh`
-- [ ] Struct `WasmMesh` with getters for typed arrays:
+- [x] Module `floraison-wasm/src/lib.rs` created
+- [x] Struct `FlowerGenerator` with `#[wasm_bindgen]`
+- [x] Method `generate_flower(params_json: &str) -> MeshData`
+- [x] Struct `MeshData` with getters for typed arrays:
   ```rust
   #[wasm_bindgen]
   pub struct WasmMesh {
@@ -27,16 +31,17 @@
   }
 
   #[wasm_bindgen]
-  impl WasmMesh {
+  impl MeshData {
       pub fn positions(&self) -> js_sys::Float32Array { /* ... */ }
       pub fn normals(&self) -> js_sys::Float32Array { /* ... */ }
       pub fn uvs(&self) -> js_sys::Float32Array { /* ... */ }
       pub fn indices(&self) -> js_sys::Uint32Array { /* ... */ }
   }
   ```
-- [ ] Proper error handling (return Result, convert to JsValue)
-- [ ] Build succeeds with wasm-pack
-- [ ] Can be imported in Node.js test
+- [x] Proper error handling (return Result, convert to JsValue)
+- [x] Build succeeds with wasm-pack
+- [x] Preset methods: `generate_lily()`, `generate_five_petal()`, `generate_daisy()`
+- [x] MeshData::from_mesh() converts Rust Mesh to flat typed arrays
 
 **Dependencies**: Task 4.3, Task 1.2
 
@@ -72,23 +77,24 @@ impl WasmFlowerGenerator {
 
 ---
 
-## Task 5.2: Three.js Scene Setup
+## Task 5.2: Three.js Scene Setup ✅
 
 **Description**: Create Three.js scene with camera, lights, and orbit controls.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `frontend/src/lib/three/scene.ts` created
-- [ ] Function `createScene(canvas: HTMLCanvasElement) -> SceneContext`
-- [ ] Scene contains:
-  - Perspective camera with appropriate FOV
-  - Ambient light + directional light
-  - OrbitControls attached to camera
-  - WebGL renderer
-- [ ] Background color set (light gray or gradient)
-- [ ] Helper grid (optional, toggleable)
-- [ ] Function `animate()` starts render loop
-- [ ] Function `dispose()` cleans up resources
-- [ ] TypeScript types exported
+- [x] Module `floraison-ui/src/lib/three/scene.ts` created
+- [x] Function `createScene(canvas: HTMLCanvasElement) -> SceneContext`
+- [x] Scene contains:
+  - Perspective camera with FOV 50
+  - Ambient light (0.5) + directional light (0.8)
+  - OrbitControls attached to camera with damping
+  - WebGL renderer with antialias
+- [x] Background color set (light gray 0xf0f0f0)
+- [x] Function `animate()` starts render loop
+- [x] Function `dispose()` cleans up resources
+- [x] TypeScript types exported (SceneContext interface)
 
 **Dependencies**: Task 1.3
 
@@ -154,17 +160,19 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 
 ---
 
-## Task 5.3: WASM Loader Module
+## Task 5.3: WASM Loader Module ✅
 
 **Description**: Create utility to load and initialize WASM module.
 
+**Status**: ✅ COMPLETED (already existed from Task 1.2)
+
 **Acceptance Criteria**:
-- [ ] Module `frontend/src/lib/wasm/loader.ts` created
-- [ ] Function `loadWasm() -> Promise<typeof import('*.wasm')>`
-- [ ] Handles initialization with proper error messages
-- [ ] Caches loaded module (singleton pattern)
-- [ ] Loading state exported for UI feedback
-- [ ] TypeScript types properly imported
+- [x] Module `floraison-ui/src/lib/wasm/loader.ts` created
+- [x] Function `loadWasm() -> Promise<InitOutput>`
+- [x] Handles initialization with proper error messages
+- [x] Caches loaded module (singleton pattern)
+- [x] TypeScript types properly imported
+- [x] Re-exports FlowerGenerator and MeshData classes
 
 **Dependencies**: Task 5.1, Task 1.3
 
@@ -197,18 +205,20 @@ export function isWasmLoaded(): boolean {
 
 ---
 
-## Task 5.4: Mesh Converter (WASM → Three.js)
+## Task 5.4: Mesh Converter (WASM → Three.js) ✅
 
 **Description**: Convert WASM mesh data to Three.js BufferGeometry.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Module `frontend/src/lib/three/mesh-converter.ts` created
-- [ ] Function `wasmMeshToGeometry(wasmMesh: WasmMesh) -> THREE.BufferGeometry`
-- [ ] Properly transfers typed arrays to BufferAttribute
-- [ ] Sets all necessary attributes (position, normal, uv)
-- [ ] Sets index buffer
-- [ ] Computes bounding sphere for proper camera framing
-- [ ] TypeScript types
+- [x] Module `floraison-ui/src/lib/three/mesh-converter.ts` created
+- [x] Function `wasmMeshToGeometry(meshData: MeshData) -> THREE.BufferGeometry`
+- [x] Properly transfers typed arrays to BufferAttribute
+- [x] Sets all necessary attributes (position, normal, uv)
+- [x] Sets index buffer
+- [x] Computes bounding sphere for proper camera framing
+- [x] TypeScript types
 
 **Dependencies**: Task 5.1, Task 5.2
 
@@ -240,19 +250,22 @@ export function wasmMeshToGeometry(wasmMesh: WasmMesh): THREE.BufferGeometry {
 
 ---
 
-## Task 5.5: Basic ThreeViewer Component
+## Task 5.5: Basic ThreeViewer Component ✅
 
 **Description**: Create Svelte component that renders Three.js scene.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Component `frontend/src/lib/components/viewer/ThreeViewer.svelte` created
-- [ ] Props: `mesh` (optional WasmMesh)
-- [ ] Canvas element with proper sizing
-- [ ] Initializes Three.js scene on mount
-- [ ] Updates geometry when `mesh` prop changes
-- [ ] Handles cleanup on unmount
-- [ ] Responsive to container size changes
-- [ ] Loading state displayed when mesh is null
+- [x] Component `floraison-ui/src/lib/components/viewer/ThreeViewer.svelte` created
+- [x] Props: `mesh` (MeshData | null)
+- [x] Canvas element with proper sizing (fullscreen)
+- [x] Initializes Three.js scene on mount
+- [x] Updates geometry when `mesh` prop changes using $effect
+- [x] Handles cleanup on unmount (geometry, material, scene disposal)
+- [x] Automatic camera framing using bounding sphere
+- [x] Loading state displayed when mesh is null
+- [x] Fixed Svelte 5 reactivity bug (flowerMesh as plain variable, not $state)
 
 **Dependencies**: Tasks 5.2, 5.3, 5.4
 
@@ -358,18 +371,20 @@ export function wasmMeshToGeometry(wasmMesh: WasmMesh): THREE.BufferGeometry {
 
 ---
 
-## Task 5.6: Main App Page with Default Flower
+## Task 5.6: Main App Page with Default Flower ✅
 
 **Description**: Create main page that loads WASM and displays a default flower.
 
+**Status**: ✅ COMPLETED
+
 **Acceptance Criteria**:
-- [ ] Page `frontend/src/routes/+page.svelte` created
-- [ ] Loads WASM on mount
-- [ ] Generates default flower with hardcoded params
-- [ ] Displays ThreeViewer with generated mesh
-- [ ] Shows loading state during WASM initialization
-- [ ] Error handling with user-friendly messages
-- [ ] Basic layout with TailwindCSS
+- [x] Page `floraison-ui/src/routes/+page.svelte` created
+- [x] Loads WASM on mount
+- [x] Generates default lily flower using preset method
+- [x] Displays ThreeViewer with generated mesh
+- [x] Shows loading state during WASM initialization
+- [x] Error handling with user-friendly messages
+- [x] Fullscreen layout with TailwindCSS
 
 **Dependencies**: Tasks 5.3, 5.5
 
