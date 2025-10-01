@@ -23,11 +23,8 @@ pub mod math {
     /// B-spline curves and surfaces
     pub mod bspline;
 
-    /// 3D curve reconstruction (placeholder)
-    pub mod curves {
-        //! 3D curve reconstruction from 2D input
-        // Will be implemented in Task 10.2
-    }
+    /// 3D curve utilities (Catmull-Rom splines, etc.)
+    pub mod curves;
 }
 
 /// Geometric primitives and mesh generation
@@ -39,6 +36,9 @@ pub mod geometry {
 
     /// Surface of revolution generator
     pub mod surface_revolution;
+
+    /// Sweep surface generator (extrude profile along curve)
+    pub mod sweep;
 
     /// Tessellation utilities (placeholder)
     pub mod tessellation {

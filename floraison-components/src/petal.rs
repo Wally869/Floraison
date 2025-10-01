@@ -14,6 +14,7 @@ use serde::{Deserialize, Serialize};
 /// # Example
 /// ```
 /// use floraison_components::petal::{PetalParams, generate};
+/// use floraison_components::Vec3;
 ///
 /// let params = PetalParams {
 ///     length: 3.0,
@@ -25,6 +26,7 @@ use serde::{Deserialize, Serialize};
 ///     ruffle_freq: 0.0,
 ///     ruffle_amp: 0.0,
 ///     resolution: 16,
+///     color: Vec3::ONE,
 /// };
 ///
 /// let mesh = generate(&params);
@@ -60,6 +62,9 @@ pub struct PetalParams {
 
     /// Tessellation resolution (samples per parametric direction)
     pub resolution: usize,
+
+    /// RGB color in 0.0-1.0 range
+    pub color: Vec3,
 }
 
 impl Default for PetalParams {
@@ -75,6 +80,7 @@ impl Default for PetalParams {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,  // White
         }
     }
 }
@@ -92,6 +98,7 @@ impl PetalParams {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 20,
+            color: Vec3::ONE,
         }
     }
 
@@ -107,6 +114,7 @@ impl PetalParams {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         }
     }
 
@@ -122,6 +130,7 @@ impl PetalParams {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 12,
+            color: Vec3::ONE,
         }
     }
 }
@@ -381,6 +390,7 @@ pub fn apply_ruffle(control_points: &mut Vec<Vec<Vec3>>, frequency: f32, amplitu
 ///
 /// ```
 /// use floraison_components::petal::{PetalParams, generate};
+/// use floraison_components::Vec3;
 ///
 /// let params = PetalParams {
 ///     length: 3.0,
@@ -392,6 +402,7 @@ pub fn apply_ruffle(control_points: &mut Vec<Vec<Vec3>>, frequency: f32, amplitu
 ///     ruffle_freq: 2.0,
 ///     ruffle_amp: 0.1,
 ///     resolution: 16,
+///     color: Vec3::ONE,
 /// };
 ///
 /// let petal = generate(&params);
@@ -447,7 +458,7 @@ pub fn generate(params: &PetalParams) -> Mesh {
             let normal = surface.normal(u, v);
             let uv_coord = Vec2::new(u, v);
 
-            mesh.add_vertex(pos, normal, uv_coord);
+            mesh.add_vertex(pos, normal, uv_coord, params.color);
         }
     }
 
@@ -472,7 +483,7 @@ pub fn generate(params: &PetalParams) -> Mesh {
         let pos = mesh.positions[i];
         let normal = -mesh.normals[i];  // Flip normal
         let uv = mesh.uvs[i];
-        mesh.add_vertex(pos, normal, uv);
+        mesh.add_vertex(pos, normal, uv, params.color);
     }
 
     // Add back face triangles (reversed winding)
@@ -568,6 +579,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
     let mut positions = Vec::new();
     let mut normals = Vec::new();
     let mut uvs = Vec::new();
+    let mut colors = Vec::new();
     let mut indices = Vec::new();
 
     // Calculate bounding box for UV mapping
@@ -590,6 +602,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
         (center.x - min_x) / width,
         (center.y - min_y) / height,
     ));
+    colors.push(Vec3::ONE);  // White default color
 
     // Add outline vertices
     for point in outline {
@@ -599,6 +612,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
             (point.x - min_x) / width,
             (point.y - min_y) / height,
         ));
+        colors.push(Vec3::ONE);  // White default color
     }
 
     // Create fan triangles from center
@@ -614,6 +628,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
         positions,
         normals,
         uvs,
+        colors,
         indices,
     }
 }
@@ -703,6 +718,7 @@ mod tests {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         };
 
         let mesh = generate(&params);
@@ -804,6 +820,7 @@ mod tests {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         };
 
         let rounded_params = PetalParams {
@@ -816,6 +833,7 @@ mod tests {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         };
 
         let sharp_mesh = generate(&sharp_params);
@@ -879,6 +897,7 @@ mod tests {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         };
 
         let grid = generate_control_grid(&params);
@@ -915,6 +934,7 @@ mod tests {
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             resolution: 16,
+            color: Vec3::ONE,
         };
 
         let grid = generate_control_grid(&params);

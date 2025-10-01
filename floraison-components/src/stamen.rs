@@ -5,6 +5,8 @@
 
 use crate::{Mesh, Vec2, Vec3, Mat4};
 use floraison_core::geometry::surface_revolution::{surface_of_revolution, uv_sphere};
+use floraison_core::geometry::sweep::sweep_along_curve;
+use floraison_core::math::curves::sample_catmull_rom_curve;
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -22,6 +24,7 @@ use serde::{Deserialize, Serialize};
 ///     anther_width: 0.08,
 ///     anther_height: 0.08,
 ///     segments: 10,
+///     filament_curve: None,  // Straight filament
 /// };
 ///
 /// let mesh = generate(&params);
@@ -30,7 +33,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct StamenParams {
-    /// Length of the filament (stalk)
+    /// Length of the filament (stalk) - used only for straight filaments
     pub filament_length: f32,
 
     /// Radius of the filament
@@ -47,6 +50,17 @@ pub struct StamenParams {
 
     /// Number of segments around the circumference
     pub segments: usize,
+
+    /// Color of the stamen
+    pub color: Vec3,
+
+    /// Optional 3D curve for the filament path
+    ///
+    /// If None, creates a straight vertical filament of length `filament_length`.
+    /// If Some, sweeps the filament along the curve (ignores `filament_length` field).
+    /// The curve should be specified as Catmull-Rom control points.
+    #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
+    pub filament_curve: Option<Vec<Vec3>>,
 }
 
 impl Default for StamenParams {
@@ -59,6 +73,8 @@ impl Default for StamenParams {
             anther_width: 0.07,
             anther_height: 0.07,
             segments: 10,
+            color: Vec3::ONE,
+            filament_curve: None,
         }
     }
 }
@@ -73,6 +89,8 @@ impl StamenParams {
             anther_width: 0.1,
             anther_height: 0.1,
             segments: 10,
+            color: Vec3::ONE,
+            filament_curve: None,
         }
     }
 
@@ -85,6 +103,8 @@ impl StamenParams {
             anther_width: 0.05,
             anther_height: 0.05,
             segments: 8,
+            color: Vec3::ONE,
+            filament_curve: None,
         }
     }
 
@@ -97,13 +117,16 @@ impl StamenParams {
             anther_width: 0.06,
             anther_height: 0.06,
             segments: 10,
+            color: Vec3::ONE,
+            filament_curve: None,
         }
     }
 }
 
 /// Generate a stamen mesh from parameters
 ///
-/// Creates a cylindrical filament with an ellipsoid anther at the top.
+/// Creates a filament with an ellipsoid anther at the top.
+/// The filament can be straight (using `filament_length`) or curved (using `filament_curve`).
 ///
 /// # Arguments
 ///
@@ -122,20 +145,47 @@ impl StamenParams {
 /// assert!(stamen.triangle_count() > 0);
 /// ```
 pub fn generate(params: &StamenParams) -> Mesh {
-    // Create the filament (thin cylinder)
-    let filament_profile = vec![
-        Vec2::new(params.filament_radius, 0.0),
-        Vec2::new(params.filament_radius, params.filament_length),
-    ];
+    // Generate filament based on whether curve is provided
+    let (mut filament, tip_position) = if let Some(ref curve_points) = params.filament_curve {
+        // Curved filament: sweep profile along curve
+        assert!(
+            curve_points.len() >= 4,
+            "Filament curve requires at least 4 control points"
+        );
 
-    let mut filament = surface_of_revolution(&filament_profile, params.segments);
+        // Sample curve using Catmull-Rom spline
+        let sampled_curve = sample_catmull_rom_curve(curve_points, 20);
+
+        // Create cylindrical profile (constant radius)
+        let profile = vec![
+            Vec2::new(params.filament_radius, 0.0),
+            Vec2::new(params.filament_radius, 1.0),
+        ];
+
+        let filament_mesh = sweep_along_curve(&profile, &sampled_curve, params.segments, params.color);
+
+        // Tip position is at the end of the curve
+        let tip_pos = *sampled_curve.last().unwrap();
+
+        (filament_mesh, tip_pos)
+    } else {
+        // Straight filament: surface of revolution
+        let filament_profile = vec![
+            Vec2::new(params.filament_radius, 0.0),
+            Vec2::new(params.filament_radius, params.filament_length),
+        ];
+
+        let filament_mesh = surface_of_revolution(&filament_profile, params.segments, params.color);
+        let tip_pos = Vec3::new(0.0, params.filament_length, 0.0);
+
+        (filament_mesh, tip_pos)
+    };
 
     // Create the anther as a sphere that will be scaled to an ellipsoid
     let anther_base_radius = params.anther_width.max(params.anther_height);
-    let mut anther = uv_sphere(anther_base_radius, 6, params.segments);
+    let mut anther = uv_sphere(anther_base_radius, 6, params.segments, params.color);
 
     // Scale the sphere to create an ellipsoid
-    // The sphere has radius anther_base_radius, we need to scale each axis appropriately
     let scale_x = params.anther_width / anther_base_radius;
     let scale_y = params.anther_length / anther_base_radius;
     let scale_z = params.anther_height / anther_base_radius;
@@ -143,8 +193,8 @@ pub fn generate(params: &StamenParams) -> Mesh {
     let anther_scale = Mat4::from_scale(Vec3::new(scale_x, scale_y, scale_z));
     anther.transform(&anther_scale);
 
-    // Position the anther at the top of the filament
-    let anther_position = Mat4::from_translation(Vec3::new(0.0, params.filament_length, 0.0));
+    // Position the anther at the tip
+    let anther_position = Mat4::from_translation(tip_position);
     anther.transform(&anther_position);
 
     // Merge filament and anther
@@ -259,6 +309,8 @@ mod tests {
             anther_width: 0.08,
             anther_height: 0.08,
             segments: 10,
+            color: Vec3::ONE,
+            filament_curve: None,
         };
 
         let mesh = generate(&params);
@@ -291,6 +343,8 @@ mod tests {
             anther_width: 0.1,     // Wide in X
             anther_height: 0.06,   // Narrow in Z
             segments: 12,
+            color: Vec3::ONE,
+            filament_curve: None,
         };
 
         let mesh = generate(&params);
@@ -353,5 +407,63 @@ mod tests {
             avg_radius,
             params.filament_radius
         );
+    }
+
+    #[test]
+    fn test_curved_stamen() {
+        // Create a curved filament using Catmull-Rom control points
+        let curve = vec![
+            Vec3::new(0.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.5, 0.0),
+            Vec3::new(0.2, 1.0, 0.1),
+            Vec3::new(0.3, 1.5, 0.3),
+        ];
+
+        let params = StamenParams {
+            filament_length: 2.0, // Ignored when curve is provided
+            filament_radius: 0.05,
+            anther_length: 0.3,
+            anther_width: 0.08,
+            anther_height: 0.08,
+            segments: 10,
+            color: Vec3::ONE,
+            filament_curve: Some(curve),
+        };
+
+        let mesh = generate(&params);
+
+        assert!(mesh.vertex_count() > 0, "Should have vertices");
+        assert!(mesh.triangle_count() > 0, "Should have triangles");
+
+        // Check geometry validity
+        for pos in &mesh.positions {
+            assert!(pos.is_finite(), "Position should be finite");
+        }
+
+        for normal in &mesh.normals {
+            assert!(normal.is_finite(), "Normal should be finite");
+        }
+    }
+
+    #[test]
+    #[should_panic(expected = "at least 4 control points")]
+    fn test_curved_stamen_too_few_points() {
+        let curve = vec![
+            Vec3::new(0.0, 0.0, 0.0),
+            Vec3::new(0.0, 1.0, 0.0),
+        ];
+
+        let params = StamenParams {
+            filament_length: 2.0,
+            filament_radius: 0.05,
+            anther_length: 0.3,
+            anther_width: 0.08,
+            anther_height: 0.08,
+            segments: 10,
+            color: Vec3::ONE,
+            filament_curve: Some(curve),
+        };
+
+        generate(&params); // Should panic
     }
 }

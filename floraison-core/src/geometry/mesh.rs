@@ -44,6 +44,9 @@ pub struct Mesh {
     /// Vertex UV texture coordinates
     pub uvs: Vec<Vec2>,
 
+    /// Vertex colors (RGB in 0.0-1.0 range)
+    pub colors: Vec<Vec3>,
+
     /// Triangle indices (every 3 indices form one triangle)
     pub indices: Vec<u32>,
 }
@@ -83,6 +86,7 @@ impl Mesh {
             positions: Vec::with_capacity(vertex_capacity),
             normals: Vec::with_capacity(vertex_capacity),
             uvs: Vec::with_capacity(vertex_capacity),
+            colors: Vec::with_capacity(vertex_capacity),
             indices: Vec::with_capacity(index_capacity),
         }
     }
@@ -93,6 +97,7 @@ impl Mesh {
     /// * `position` - 3D position of the vertex
     /// * `normal` - Surface normal at the vertex (should be normalized)
     /// * `uv` - Texture coordinates
+    /// * `color` - RGB color in 0.0-1.0 range
     ///
     /// # Returns
     /// The index of the newly added vertex
@@ -103,14 +108,15 @@ impl Mesh {
     /// use floraison_core::{Vec3, Vec2};
     ///
     /// let mut mesh = Mesh::new();
-    /// let idx = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
+    /// let idx = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
     /// assert_eq!(idx, 0);
     /// ```
-    pub fn add_vertex(&mut self, position: Vec3, normal: Vec3, uv: Vec2) -> u32 {
+    pub fn add_vertex(&mut self, position: Vec3, normal: Vec3, uv: Vec2, color: Vec3) -> u32 {
         let index = self.positions.len() as u32;
         self.positions.push(position);
         self.normals.push(normal);
         self.uvs.push(uv);
+        self.colors.push(color);
         index
     }
 
@@ -220,6 +226,7 @@ impl Mesh {
         self.positions.extend_from_slice(&other.positions);
         self.normals.extend_from_slice(&other.normals);
         self.uvs.extend_from_slice(&other.uvs);
+        self.colors.extend_from_slice(&other.colors);
 
         // Append indices with offset
         self.indices
@@ -420,8 +427,8 @@ mod tests {
     #[test]
     fn test_add_vertex() {
         let mut mesh = Mesh::new();
-        let idx0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-        let idx1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::new(1.0, 0.0));
+        let idx0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let idx1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::new(1.0, 0.0), Vec3::ONE);
 
         assert_eq!(idx0, 0);
         assert_eq!(idx1, 1);
@@ -435,9 +442,9 @@ mod tests {
     #[test]
     fn test_add_triangle() {
         let mut mesh = Mesh::new();
-        let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-        let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
-        let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO);
+        let v0 = mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         mesh.add_triangle(v0, v1, v2);
 
@@ -449,10 +456,10 @@ mod tests {
     #[test]
     fn test_add_quad() {
         let mut mesh = Mesh::new();
-        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-        let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
-        let v3 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
+        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v3 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         mesh.add_quad(v0, v1, v2, v3);
 
@@ -463,15 +470,15 @@ mod tests {
     #[test]
     fn test_merge_meshes() {
         let mut mesh1 = Mesh::new();
-        let v0 = mesh1.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-        let v1 = mesh1.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
-        let v2 = mesh1.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO);
+        let v0 = mesh1.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh1.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh1.add_vertex(Vec3::Z, Vec3::Y, Vec2::ZERO, Vec3::ONE);
         mesh1.add_triangle(v0, v1, v2);
 
         let mut mesh2 = Mesh::new();
-        let v0 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-        let v1 = mesh2.add_vertex(Vec3::new(3.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
-        let v2 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO);
+        let v0 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh2.add_vertex(Vec3::new(3.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh2.add_vertex(Vec3::new(2.0, 0.0, 1.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
         mesh2.add_triangle(v0, v1, v2);
 
         let original_vertex_count = mesh1.vertex_count();
@@ -500,9 +507,9 @@ mod tests {
         let mut mesh = Mesh::new();
         // Create a horizontal triangle in the XZ plane (should have Y-up normal)
         // Counter-clockwise winding when viewed from above
-        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v1 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO);
-        let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
+        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh.add_vertex(Vec3::new(0.0, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
         mesh.add_triangle(v0, v1, v2);
 
         mesh.compute_normals();
@@ -531,10 +538,10 @@ mod tests {
     fn test_compute_normals_shared_vertex() {
         let mut mesh = Mesh::new();
         // Create two triangles sharing a vertex (forming a tent)
-        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v2 = mesh.add_vertex(Vec3::new(0.5, 1.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v3 = mesh.add_vertex(Vec3::new(0.5, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO);
+        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh.add_vertex(Vec3::new(0.5, 1.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v3 = mesh.add_vertex(Vec3::new(0.5, 0.0, 1.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
 
         mesh.add_triangle(v0, v1, v2); // Front triangle
         mesh.add_triangle(v0, v3, v1); // Bottom triangle
@@ -557,9 +564,9 @@ mod tests {
     fn test_compute_normals_degenerate_triangle() {
         let mut mesh = Mesh::new();
         // Create a degenerate triangle (collinear points)
-        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
-        let v2 = mesh.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO);
+        let v0 = mesh.add_vertex(Vec3::new(0.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v1 = mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
+        let v2 = mesh.add_vertex(Vec3::new(2.0, 0.0, 0.0), Vec3::ZERO, Vec2::ZERO, Vec3::ONE);
         mesh.add_triangle(v0, v1, v2);
 
         // Should not panic
@@ -574,7 +581,7 @@ mod tests {
     #[test]
     fn test_transform_translation() {
         let mut mesh = Mesh::new();
-        mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
+        mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         let transform = Mat4::from_translation(Vec3::new(1.0, 2.0, 3.0));
         mesh.transform(&transform);
@@ -587,7 +594,7 @@ mod tests {
     #[test]
     fn test_transform_rotation() {
         let mut mesh = Mesh::new();
-        mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO);
+        mesh.add_vertex(Vec3::new(1.0, 0.0, 0.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         // Rotate 90 degrees around Z-axis
         let transform = Mat4::from_rotation_z(std::f32::consts::PI / 2.0);
@@ -606,7 +613,7 @@ mod tests {
     #[test]
     fn test_transform_scale_uniform() {
         let mut mesh = Mesh::new();
-        mesh.add_vertex(Vec3::new(1.0, 2.0, 3.0), Vec3::Y, Vec2::ZERO);
+        mesh.add_vertex(Vec3::new(1.0, 2.0, 3.0), Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         let transform = Mat4::from_scale(Vec3::splat(2.0));
         mesh.transform(&transform);
@@ -619,7 +626,7 @@ mod tests {
     #[test]
     fn test_transform_scale_nonuniform() {
         let mut mesh = Mesh::new();
-        mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
+        mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         // Non-uniform scale
         let transform = Mat4::from_scale(Vec3::new(2.0, 0.5, 1.0));
@@ -633,8 +640,8 @@ mod tests {
     #[test]
     fn test_clear() {
         let mut mesh = Mesh::new();
-        mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO);
-        mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO);
+        mesh.add_vertex(Vec3::ZERO, Vec3::Y, Vec2::ZERO, Vec3::ONE);
+        mesh.add_vertex(Vec3::X, Vec3::Y, Vec2::ZERO, Vec3::ONE);
 
         mesh.clear();
 

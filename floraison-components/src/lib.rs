@@ -25,8 +25,5 @@ pub mod diagram;
 /// Flower assembly and component positioning
 pub mod assembly;
 
-/// Sepal generator (placeholder)
-pub mod sepal {
-    //! Sepal generator (reuses petal logic)
-    // Will be implemented in Task 7.1
-}
+/// Sepal generator (reuses petal logic)
+pub mod sepal;

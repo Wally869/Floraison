@@ -107,7 +107,7 @@ use std::f32::consts::PI;
 ///
 /// let sphere = surface_of_revolution(&profile, 16);
 /// ```
-pub fn surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh {
+pub fn surface_of_revolution(profile: &[Vec2], segments: usize, color: Vec3) -> Mesh {
     assert!(!profile.is_empty(), "Profile cannot be empty");
     assert!(segments >= 3, "Need at least 3 segments for revolution");
 
@@ -149,7 +149,7 @@ pub fn surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh {
             let normal = Vec3::Y;
             let uv = Vec2::new(u, v);
 
-            mesh.add_vertex(pos, normal, uv);
+            mesh.add_vertex(pos, normal, uv, color);
         }
     }
 
@@ -215,9 +215,9 @@ pub fn surface_of_revolution(profile: &[Vec2], segments: usize) -> Mesh {
 /// let cyl = cylinder(1.0, 5.0, 16);
 /// assert!(cyl.vertex_count() > 0);
 /// ```
-pub fn cylinder(radius: f32, height: f32, segments: usize) -> Mesh {
+pub fn cylinder(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh {
     let profile = vec![Vec2::new(radius, 0.0), Vec2::new(radius, height)];
-    surface_of_revolution(&profile, segments)
+    surface_of_revolution(&profile, segments, color)
 }
 
 /// Create a cone mesh
@@ -238,9 +238,9 @@ pub fn cylinder(radius: f32, height: f32, segments: usize) -> Mesh {
 /// let cone = cone(1.0, 2.0, 16);
 /// assert!(cone.vertex_count() > 0);
 /// ```
-pub fn cone(radius: f32, height: f32, segments: usize) -> Mesh {
+pub fn cone(radius: f32, height: f32, segments: usize, color: Vec3) -> Mesh {
     let profile = vec![Vec2::new(radius, 0.0), Vec2::new(0.0, height)];
-    surface_of_revolution(&profile, segments)
+    surface_of_revolution(&profile, segments, color)
 }
 
 /// Create a UV sphere mesh
@@ -261,7 +261,7 @@ pub fn cone(radius: f32, height: f32, segments: usize) -> Mesh {
 /// let sphere = uv_sphere(1.0, 8, 16);
 /// assert!(sphere.vertex_count() > 0);
 /// ```
-pub fn uv_sphere(radius: f32, rings: usize, segments: usize) -> Mesh {
+pub fn uv_sphere(radius: f32, rings: usize, segments: usize, color: Vec3) -> Mesh {
     assert!(rings >= 2, "Need at least 2 rings for sphere");
 
     // Create semicircle profile from south pole to north pole
@@ -275,7 +275,7 @@ pub fn uv_sphere(radius: f32, rings: usize, segments: usize) -> Mesh {
         })
         .collect();
 
-    surface_of_revolution(&profile, segments)
+    surface_of_revolution(&profile, segments, color)
 }
 
 #[cfg(test)]
@@ -286,7 +286,7 @@ mod tests {
 
     #[test]
     fn test_cylinder() {
-        let mesh = cylinder(1.0, 2.0, 8);
+        let mesh = cylinder(1.0, 2.0, 8, Vec3::ONE);
 
         // Should have 2 rings of 8 vertices each
         assert_eq!(mesh.vertex_count(), 16);
@@ -310,7 +310,7 @@ mod tests {
 
     #[test]
     fn test_cone() {
-        let mesh = cone(2.0, 3.0, 8);
+        let mesh = cone(2.0, 3.0, 8, Vec3::ONE);
 
         // Should have 2 rings of 8 vertices each
         assert_eq!(mesh.vertex_count(), 16);
@@ -337,7 +337,7 @@ mod tests {
 
     #[test]
     fn test_uv_sphere() {
-        let mesh = uv_sphere(1.0, 4, 8);
+        let mesh = uv_sphere(1.0, 4, 8, Vec3::ONE);
 
         // Should have 5 rings (including poles) of 8 vertices each
         assert_eq!(mesh.vertex_count(), 40);
@@ -357,7 +357,7 @@ mod tests {
     fn test_surface_of_revolution_simple() {
         let profile = vec![Vec2::new(1.0, 0.0), Vec2::new(1.5, 1.0), Vec2::new(1.0, 2.0)];
 
-        let mesh = surface_of_revolution(&profile, 6);
+        let mesh = surface_of_revolution(&profile, 6, Vec3::ONE);
 
         // 3 rings × 6 segments = 18 vertices
         assert_eq!(mesh.vertex_count(), 18);
@@ -370,7 +370,7 @@ mod tests {
     fn test_uv_mapping() {
         let profile = vec![Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)];
 
-        let mesh = surface_of_revolution(&profile, 4);
+        let mesh = surface_of_revolution(&profile, 4, Vec3::ONE);
 
         // Check UV coordinates
         // Bottom ring should have v=0, top ring should have v=1
@@ -390,7 +390,7 @@ mod tests {
 
     #[test]
     fn test_normals_computed() {
-        let mesh = cylinder(1.0, 2.0, 8);
+        let mesh = cylinder(1.0, 2.0, 8, Vec3::ONE);
 
         // All normals should be normalized
         for normal in &mesh.normals {
@@ -418,21 +418,21 @@ mod tests {
     #[test]
     #[should_panic(expected = "Profile cannot be empty")]
     fn test_empty_profile_panics() {
-        surface_of_revolution(&[], 8);
+        surface_of_revolution(&[], 8, Vec3::ONE);
     }
 
     #[test]
     #[should_panic(expected = "Need at least 3 segments")]
     fn test_too_few_segments_panics() {
         let profile = vec![Vec2::new(1.0, 0.0), Vec2::new(1.0, 1.0)];
-        surface_of_revolution(&profile, 2);
+        surface_of_revolution(&profile, 2, Vec3::ONE);
     }
 
     #[test]
     fn test_single_point_profile() {
         // A single point should create a degenerate mesh
         let profile = vec![Vec2::new(1.0, 0.0)];
-        let mesh = surface_of_revolution(&profile, 8);
+        let mesh = surface_of_revolution(&profile, 8, Vec3::ONE);
 
         // Should have 8 vertices (one ring)
         assert_eq!(mesh.vertex_count(), 8);
@@ -450,7 +450,7 @@ mod tests {
             Vec2::new(0.0, 2.0),  // Top point
         ];
 
-        let mesh = surface_of_revolution(&profile, 8);
+        let mesh = surface_of_revolution(&profile, 8, Vec3::ONE);
 
         // 3 rings × 8 segments = 24 vertices
         assert_eq!(mesh.vertex_count(), 24);
@@ -472,7 +472,7 @@ mod tests {
             Vec2::new(0.3, 1.2),
         ];
 
-        let mesh = surface_of_revolution(&profile, 12);
+        let mesh = surface_of_revolution(&profile, 12, Vec3::ONE);
 
         // 5 rings × 12 segments = 60 vertices
         assert_eq!(mesh.vertex_count(), 60);

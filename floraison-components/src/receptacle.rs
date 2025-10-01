@@ -3,7 +3,7 @@
 //! The receptacle is the base structure of a flower where all other components attach.
 //! It's generated using surface of revolution with a smooth Bézier curve profile.
 
-use crate::{Mesh, Vec2};
+use crate::{Mesh, Vec2, Vec3};
 use floraison_core::geometry::surface_revolution::surface_of_revolution;
 use floraison_core::math::bezier::sample_cubic_2d;
 
@@ -56,6 +56,9 @@ pub struct ReceptacleParams {
 
     /// Number of samples along the profile curve (affects smoothness)
     pub profile_samples: usize,
+
+    /// Color of the receptacle
+    pub color: Vec3,
 }
 
 impl Default for ReceptacleParams {
@@ -71,6 +74,7 @@ impl Default for ReceptacleParams {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         }
     }
 }
@@ -86,6 +90,7 @@ impl ReceptacleParams {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 4,
+            color: Vec3::ONE,
         }
     }
 
@@ -99,6 +104,7 @@ impl ReceptacleParams {
             bulge_position: 0.6,
             segments: 20,
             profile_samples: 10,
+            color: Vec3::ONE,
         }
     }
 
@@ -112,6 +118,7 @@ impl ReceptacleParams {
             bulge_position: 0.3,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         }
     }
 }
@@ -160,7 +167,7 @@ pub fn generate(params: &ReceptacleParams) -> Mesh {
     let profile = sample_cubic_2d(p0, p1, p2, p3, params.profile_samples);
 
     // Revolve the profile around the Y-axis
-    surface_of_revolution(&profile, params.segments)
+    surface_of_revolution(&profile, params.segments, params.color)
 }
 
 #[cfg(test)]
@@ -243,6 +250,7 @@ mod tests {
             bulge_position: 0.5,
             segments: 8,
             profile_samples: 4,
+            color: Vec3::ONE,
         };
 
         let mesh = generate(&params);

@@ -374,6 +374,7 @@ impl FlowerParams {
                 ruffle_freq: 0.0,
                 ruffle_amp: 0.0,
                 resolution: 20,      // Higher resolution for smooth curves
+                color: Vec3::ONE,    // White petals
             },
         }
     }
@@ -395,6 +396,7 @@ impl FlowerParams {
                 ruffle_freq: 3.0,    // 3 waves along edges
                 ruffle_amp: 0.15,    // Visible ruffle
                 resolution: 24,      // High resolution for ruffle detail
+                color: Vec3::ONE,    // White petals
             },
         }
     }
@@ -508,6 +510,7 @@ mod tests {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         };
 
         let mapper = ReceptacleMapper::from_params(&params);
@@ -535,6 +538,7 @@ mod tests {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         };
 
         let mapper = ReceptacleMapper::from_params(&params);
@@ -605,6 +609,7 @@ mod tests {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         };
 
         let mapper = ReceptacleMapper::from_params(&params);
@@ -646,6 +651,7 @@ mod tests {
             bulge_position: 0.5,
             segments: 16,
             profile_samples: 8,
+            color: Vec3::ONE,
         };
 
         let mapper = ReceptacleMapper::from_params(&params);
