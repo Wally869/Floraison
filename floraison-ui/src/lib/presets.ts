@@ -1,0 +1,453 @@
+/**
+ * Flower Presets
+ *
+ * Pre-configured parameter sets for common flower types.
+ * Each preset defines the complete set of parameters needed to generate
+ * a specific flower variety.
+ */
+
+import type { FlowerParams } from './stores/parameters';
+
+export interface FlowerPreset {
+	name: string;
+	description: string;
+	params: FlowerParams;
+}
+
+/**
+ * Lily preset
+ *
+ * Classic lily with 6 elegant petals, subtle curl, and minimal twist.
+ * Simple and symmetrical structure with central pistil.
+ */
+export const lilyPreset: FlowerPreset = {
+	name: 'Lily',
+	description: '6 elegant petals with gentle curl',
+	params: {
+		diagram: {
+			receptacle_height: 1.0,
+			receptacle_radius: 0.25,
+			petal_whorls: [
+				{
+					count: 6,
+					radius: 1.0,
+					height: 0.8,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			stamen_whorls: [
+				{
+					count: 6,
+					radius: 0.6,
+					height: 0.6,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.523599 // 30 degrees offset
+				}
+			],
+			pistil_whorls: [
+				{
+					count: 1,
+					radius: 0.0,
+					height: 0.5,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			sepal_whorls: []
+		},
+		receptacle: {
+			height: 1.0,
+			base_radius: 0.25,
+			bulge_radius: 0.35,
+			top_radius: 0.15,
+			bulge_position: 0.5,
+			segments: 16,
+			profile_samples: 8,
+			color: [0.9, 0.95, 0.9] // Light greenish
+		},
+		pistil: {
+			length: 2.0,
+			base_radius: 0.08,
+			tip_radius: 0.06,
+			stigma_radius: 0.12,
+			segments: 12,
+			color: [0.95, 0.9, 0.3] // Yellow-green
+		},
+		stamen: {
+			filament_length: 1.5,
+			filament_radius: 0.04,
+			anther_length: 0.25,
+			anther_width: 0.07,
+			anther_height: 0.07,
+			segments: 10,
+			color: [0.95, 0.75, 0.2] // Golden
+		},
+		petal: {
+			length: 3.0,
+			width: 1.2,
+			tip_sharpness: 0.4,
+			base_width: 0.4,
+			curl: 0.4,
+			twist: 15.0,
+			ruffle_freq: 0.0,
+			ruffle_amp: 0.0,
+			resolution: 20,
+			color: [1.0, 1.0, 1.0] // White
+		}
+	}
+};
+
+/**
+ * Rose preset
+ *
+ * Many layered petals with ruffled edges.
+ * Compact structure with numerous stamens.
+ */
+export const rosePreset: FlowerPreset = {
+	name: 'Rose',
+	description: 'Layered petals with ruffled edges',
+	params: {
+		diagram: {
+			receptacle_height: 0.8,
+			receptacle_radius: 0.4,
+			petal_whorls: [
+				{
+					count: 24,
+					radius: 1.0,
+					height: 0.6,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			stamen_whorls: [
+				{
+					count: 20,
+					radius: 0.5,
+					height: 0.4,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			pistil_whorls: [],
+			sepal_whorls: [
+				{
+					count: 5,
+					radius: 1.2,
+					height: 0.3,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			]
+		},
+		receptacle: {
+			height: 0.8,
+			base_radius: 0.4,
+			bulge_radius: 0.5,
+			top_radius: 0.3,
+			bulge_position: 0.6,
+			segments: 16,
+			profile_samples: 8,
+			color: [0.3, 0.6, 0.3] // Green
+		},
+		pistil: {
+			length: 1.0,
+			base_radius: 0.1,
+			tip_radius: 0.08,
+			stigma_radius: 0.15,
+			segments: 12,
+			color: [0.95, 0.9, 0.3]
+		},
+		stamen: {
+			filament_length: 0.8,
+			filament_radius: 0.03,
+			anther_length: 0.15,
+			anther_width: 0.06,
+			anther_height: 0.06,
+			segments: 10,
+			color: [0.95, 0.8, 0.2]
+		},
+		petal: {
+			length: 2.5,
+			width: 2.0,
+			tip_sharpness: 0.2,
+			base_width: 0.8,
+			curl: 0.8,
+			twist: 5.0,
+			ruffle_freq: 3.0,
+			ruffle_amp: 0.15,
+			resolution: 24,
+			color: [0.95, 0.2, 0.3] // Red
+		}
+	}
+};
+
+/**
+ * Daisy preset
+ *
+ * Many simple petals in spiral arrangement.
+ * Flat disc-like receptacle with numerous stamens in center.
+ */
+export const daisyPreset: FlowerPreset = {
+	name: 'Daisy',
+	description: 'Simple ray petals around flat disc',
+	params: {
+		diagram: {
+			receptacle_height: 0.5,
+			receptacle_radius: 0.8,
+			petal_whorls: [
+				{
+					count: 21,
+					radius: 1.5,
+					height: 0.4,
+					pattern: 'GoldenSpiral',
+					rotation_offset: 0.0
+				}
+			],
+			stamen_whorls: [
+				{
+					count: 34,
+					radius: 0.7,
+					height: 0.3,
+					pattern: 'GoldenSpiral',
+					rotation_offset: 0.5
+				}
+			],
+			pistil_whorls: [
+				{
+					count: 13,
+					radius: 0.4,
+					height: 0.2,
+					pattern: 'GoldenSpiral',
+					rotation_offset: 1.0
+				}
+			],
+			sepal_whorls: []
+		},
+		receptacle: {
+			height: 0.5,
+			base_radius: 0.8,
+			bulge_radius: 0.8,
+			top_radius: 0.8,
+			bulge_position: 0.5,
+			segments: 16,
+			profile_samples: 4,
+			color: [0.4, 0.6, 0.3]
+		},
+		pistil: {
+			length: 1.0,
+			base_radius: 0.05,
+			tip_radius: 0.04,
+			stigma_radius: 0.08,
+			segments: 8,
+			color: [0.85, 0.7, 0.2]
+		},
+		stamen: {
+			filament_length: 0.6,
+			filament_radius: 0.02,
+			anther_length: 0.12,
+			anther_width: 0.04,
+			anther_height: 0.04,
+			segments: 8,
+			color: [0.9, 0.75, 0.2]
+		},
+		petal: {
+			length: 2.0,
+			width: 0.6,
+			tip_sharpness: 0.3,
+			base_width: 0.3,
+			curl: 0.0,
+			twist: 0.0,
+			ruffle_freq: 0.0,
+			ruffle_amp: 0.0,
+			resolution: 12,
+			color: [1.0, 1.0, 1.0] // White
+		}
+	}
+};
+
+/**
+ * Tulip preset
+ *
+ * 6 cup-shaped petals forming elegant chalice.
+ * Strong upward curl creates characteristic tulip shape.
+ */
+export const tulipPreset: FlowerPreset = {
+	name: 'Tulip',
+	description: 'Cup-shaped with 6 elegant petals',
+	params: {
+		diagram: {
+			receptacle_height: 0.8,
+			receptacle_radius: 0.3,
+			petal_whorls: [
+				{
+					count: 6,
+					radius: 0.8,
+					height: 0.6,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			stamen_whorls: [
+				{
+					count: 6,
+					radius: 0.4,
+					height: 0.5,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.523599
+				}
+			],
+			pistil_whorls: [
+				{
+					count: 1,
+					radius: 0.0,
+					height: 0.4,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			sepal_whorls: []
+		},
+		receptacle: {
+			height: 0.8,
+			base_radius: 0.3,
+			bulge_radius: 0.35,
+			top_radius: 0.25,
+			bulge_position: 0.4,
+			segments: 16,
+			profile_samples: 8,
+			color: [0.4, 0.65, 0.3]
+		},
+		pistil: {
+			length: 1.5,
+			base_radius: 0.12,
+			tip_radius: 0.1,
+			stigma_radius: 0.15,
+			segments: 12,
+			color: [0.85, 0.9, 0.3]
+		},
+		stamen: {
+			filament_length: 1.2,
+			filament_radius: 0.05,
+			anther_length: 0.3,
+			anther_width: 0.08,
+			anther_height: 0.08,
+			segments: 10,
+			color: [0.2, 0.2, 0.3] // Dark
+		},
+		petal: {
+			length: 3.5,
+			width: 1.8,
+			tip_sharpness: 0.5,
+			base_width: 0.7,
+			curl: -0.6, // Negative curl creates cup shape
+			twist: 0.0,
+			ruffle_freq: 0.0,
+			ruffle_amp: 0.0,
+			resolution: 20,
+			color: [0.95, 0.3, 0.4] // Pink-red
+		}
+	}
+};
+
+/**
+ * Orchid preset
+ *
+ * Complex asymmetric petals with dramatic twists.
+ * Fewer petals but highly detailed and ornate.
+ */
+export const orchidPreset: FlowerPreset = {
+	name: 'Orchid',
+	description: 'Exotic twisted petals',
+	params: {
+		diagram: {
+			receptacle_height: 0.6,
+			receptacle_radius: 0.2,
+			petal_whorls: [
+				{
+					count: 5,
+					radius: 1.2,
+					height: 0.5,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			stamen_whorls: [
+				{
+					count: 3,
+					radius: 0.3,
+					height: 0.4,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			pistil_whorls: [
+				{
+					count: 1,
+					radius: 0.0,
+					height: 0.3,
+					pattern: 'EvenlySpaced',
+					rotation_offset: 0.0
+				}
+			],
+			sepal_whorls: []
+		},
+		receptacle: {
+			height: 0.6,
+			base_radius: 0.2,
+			bulge_radius: 0.25,
+			top_radius: 0.15,
+			bulge_position: 0.5,
+			segments: 16,
+			profile_samples: 8,
+			color: [0.5, 0.7, 0.4]
+		},
+		pistil: {
+			length: 1.2,
+			base_radius: 0.06,
+			tip_radius: 0.05,
+			stigma_radius: 0.1,
+			segments: 12,
+			color: [0.95, 0.9, 0.4]
+		},
+		stamen: {
+			filament_length: 1.0,
+			filament_radius: 0.04,
+			anther_length: 0.2,
+			anther_width: 0.08,
+			anther_height: 0.08,
+			segments: 10,
+			color: [0.9, 0.85, 0.3]
+		},
+		petal: {
+			length: 4.0,
+			width: 1.5,
+			tip_sharpness: 0.7,
+			base_width: 0.5,
+			curl: 0.3,
+			twist: 35.0, // Dramatic twist
+			ruffle_freq: 2.0,
+			ruffle_amp: 0.2,
+			resolution: 24,
+			color: [0.85, 0.4, 0.75] // Purple-pink
+		}
+	}
+};
+
+/**
+ * All available presets
+ */
+export const presets: Record<string, FlowerPreset> = {
+	lily: lilyPreset,
+	rose: rosePreset,
+	daisy: daisyPreset,
+	tulip: tulipPreset,
+	orchid: orchidPreset
+};
+
+/**
+ * Preset names in display order
+ */
+export const presetNames = ['lily', 'rose', 'daisy', 'tulip', 'orchid', 'custom'] as const;
+
+export type PresetName = (typeof presetNames)[number];

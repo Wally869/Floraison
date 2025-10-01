@@ -1,0 +1,829 @@
+<script lang="ts">
+	import {
+		diagramParams,
+		receptacleParams,
+		pistilParams,
+		stamenParams,
+		petalParams,
+		resetToDefaults,
+		loadParams,
+		rgbToHex,
+		hexToRgb,
+		allParams
+	} from '$lib/stores/parameters';
+	import { presets, presetNames, type PresetName } from '$lib/presets';
+
+	// Component-level reactive variables for color pickers (hex format)
+	let receptacleColor = $state(rgbToHex($receptacleParams.color));
+	let pistilColor = $state(rgbToHex($pistilParams.color));
+	let stamenColor = $state(rgbToHex($stamenParams.color));
+	let petalColor = $state(rgbToHex($petalParams.color));
+
+	// Preset selection
+	let selectedPreset = $state<PresetName>('lily');
+	let lastLoadedParams: string | null = null;
+
+	// Update store when color picker changes
+	function updateReceptacleColor(hex: string) {
+		receptacleColor = hex;
+		$receptacleParams.color = hexToRgb(hex);
+	}
+
+	function updatePistilColor(hex: string) {
+		pistilColor = hex;
+		$pistilParams.color = hexToRgb(hex);
+	}
+
+	function updateStamenColor(hex: string) {
+		stamenColor = hex;
+		$stamenParams.color = hexToRgb(hex);
+	}
+
+	function updatePetalColor(hex: string) {
+		petalColor = hex;
+		$petalParams.color = hexToRgb(hex);
+	}
+
+	// Load selected preset
+	function loadPreset() {
+		if (selectedPreset === 'custom') return;
+
+		const preset = presets[selectedPreset];
+		if (preset) {
+			loadParams(preset.params);
+			lastLoadedParams = JSON.stringify($allParams);
+
+			// Update color pickers to match loaded preset
+			receptacleColor = rgbToHex(preset.params.receptacle.color);
+			pistilColor = rgbToHex(preset.params.pistil.color);
+			stamenColor = rgbToHex(preset.params.stamen.color);
+			petalColor = rgbToHex(preset.params.petal.color);
+		}
+	}
+
+	// Detect parameter changes to auto-switch to "Custom"
+	$effect(() => {
+		const currentParams = JSON.stringify($allParams);
+
+		// If params changed and we're not on custom already
+		if (
+			selectedPreset !== 'custom' &&
+			lastLoadedParams !== null &&
+			currentParams !== lastLoadedParams
+		) {
+			selectedPreset = 'custom';
+		}
+	});
+
+	// Load lily preset on mount
+	$effect(() => {
+		if (lastLoadedParams === null) {
+			loadPreset();
+		}
+	});
+</script>
+
+<div class="parameter-panel">
+	<div class="panel-header">
+		<h2 class="text-2xl font-bold text-gray-800">Flower Parameters</h2>
+		<button
+			onclick={resetToDefaults}
+			class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+		>
+			Reset
+		</button>
+	</div>
+
+	<!-- Preset Selector -->
+	<div class="preset-selector">
+		<label for="preset-select" class="preset-label">Preset:</label>
+		<select
+			id="preset-select"
+			bind:value={selectedPreset}
+			onchange={loadPreset}
+			class="preset-dropdown"
+		>
+			{#each presetNames as presetName}
+				<option value={presetName}>
+					{presetName === 'custom'
+						? 'Custom'
+						: presets[presetName]?.name || presetName.charAt(0).toUpperCase() + presetName.slice(1)}
+				</option>
+			{/each}
+		</select>
+		{#if selectedPreset !== 'custom' && presets[selectedPreset]}
+			<p class="preset-description">{presets[selectedPreset].description}</p>
+		{/if}
+	</div>
+
+	<!-- Flower Structure Section -->
+	<details open>
+		<summary class="section-header">Flower Structure</summary>
+		<div class="section-content">
+			<div class="param-group">
+				<label for="pistil-count">
+					<span class="param-label">Pistils</span>
+					<span class="param-value">{$diagramParams.pistilCount}</span>
+				</label>
+				<input
+					id="pistil-count"
+					type="number"
+					min="0"
+					max="5"
+					bind:value={$diagramParams.pistilCount}
+					class="param-input"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-count">
+					<span class="param-label">Stamens</span>
+					<span class="param-value">{$diagramParams.stamenCount}</span>
+				</label>
+				<input
+					id="stamen-count"
+					type="range"
+					min="0"
+					max="30"
+					bind:value={$diagramParams.stamenCount}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-count">
+					<span class="param-label">Petals</span>
+					<span class="param-value">{$diagramParams.petalCount}</span>
+				</label>
+				<input
+					id="petal-count"
+					type="range"
+					min="3"
+					max="30"
+					bind:value={$diagramParams.petalCount}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="sepal-count">
+					<span class="param-label">Sepals</span>
+					<span class="param-value">{$diagramParams.sepalCount}</span>
+				</label>
+				<input
+					id="sepal-count"
+					type="range"
+					min="0"
+					max="10"
+					bind:value={$diagramParams.sepalCount}
+					class="param-slider"
+				/>
+			</div>
+		</div>
+	</details>
+
+	<!-- Receptacle Section -->
+	<details>
+		<summary class="section-header">Receptacle</summary>
+		<div class="section-content">
+			<div class="param-group">
+				<label for="rec-height">
+					<span class="param-label">Height</span>
+					<span class="param-value">{$receptacleParams.height.toFixed(2)}</span>
+				</label>
+				<input
+					id="rec-height"
+					type="range"
+					min="0.2"
+					max="2.0"
+					step="0.1"
+					bind:value={$receptacleParams.height}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-base-radius">
+					<span class="param-label">Base Radius</span>
+					<span class="param-value">{$receptacleParams.base_radius.toFixed(2)}</span>
+				</label>
+				<input
+					id="rec-base-radius"
+					type="range"
+					min="0.1"
+					max="1.0"
+					step="0.05"
+					bind:value={$receptacleParams.base_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-bulge-radius">
+					<span class="param-label">Bulge Radius</span>
+					<span class="param-value">{$receptacleParams.bulge_radius.toFixed(2)}</span>
+				</label>
+				<input
+					id="rec-bulge-radius"
+					type="range"
+					min="0.1"
+					max="1.0"
+					step="0.05"
+					bind:value={$receptacleParams.bulge_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-top-radius">
+					<span class="param-label">Top Radius</span>
+					<span class="param-value">{$receptacleParams.top_radius.toFixed(2)}</span>
+				</label>
+				<input
+					id="rec-top-radius"
+					type="range"
+					min="0.05"
+					max="0.8"
+					step="0.05"
+					bind:value={$receptacleParams.top_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-bulge-pos">
+					<span class="param-label">Bulge Position</span>
+					<span class="param-value">{$receptacleParams.bulge_position.toFixed(2)}</span>
+				</label>
+				<input
+					id="rec-bulge-pos"
+					type="range"
+					min="0.0"
+					max="1.0"
+					step="0.1"
+					bind:value={$receptacleParams.bulge_position}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-segments">
+					<span class="param-label">Segments</span>
+					<span class="param-value">{$receptacleParams.segments}</span>
+				</label>
+				<input
+					id="rec-segments"
+					type="range"
+					min="8"
+					max="32"
+					step="2"
+					bind:value={$receptacleParams.segments}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="rec-color">
+					<span class="param-label">Color</span>
+				</label>
+				<input
+					id="rec-color"
+					type="color"
+					value={receptacleColor}
+					onchange={(e) => updateReceptacleColor(e.currentTarget.value)}
+					class="param-color"
+				/>
+			</div>
+		</div>
+	</details>
+
+	<!-- Pistil Section -->
+	<details>
+		<summary class="section-header">Pistil</summary>
+		<div class="section-content">
+			<div class="param-group">
+				<label for="pistil-length">
+					<span class="param-label">Length</span>
+					<span class="param-value">{$pistilParams.length.toFixed(2)}</span>
+				</label>
+				<input
+					id="pistil-length"
+					type="range"
+					min="0.5"
+					max="4.0"
+					step="0.1"
+					bind:value={$pistilParams.length}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-base-radius">
+					<span class="param-label">Base Radius</span>
+					<span class="param-value">{$pistilParams.base_radius.toFixed(3)}</span>
+				</label>
+				<input
+					id="pistil-base-radius"
+					type="range"
+					min="0.02"
+					max="0.2"
+					step="0.01"
+					bind:value={$pistilParams.base_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-tip-radius">
+					<span class="param-label">Tip Radius</span>
+					<span class="param-value">{$pistilParams.tip_radius.toFixed(3)}</span>
+				</label>
+				<input
+					id="pistil-tip-radius"
+					type="range"
+					min="0.02"
+					max="0.2"
+					step="0.01"
+					bind:value={$pistilParams.tip_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-stigma-radius">
+					<span class="param-label">Stigma Radius</span>
+					<span class="param-value">{$pistilParams.stigma_radius.toFixed(3)}</span>
+				</label>
+				<input
+					id="pistil-stigma-radius"
+					type="range"
+					min="0.05"
+					max="0.3"
+					step="0.01"
+					bind:value={$pistilParams.stigma_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-segments">
+					<span class="param-label">Segments</span>
+					<span class="param-value">{$pistilParams.segments}</span>
+				</label>
+				<input
+					id="pistil-segments"
+					type="range"
+					min="6"
+					max="20"
+					step="2"
+					bind:value={$pistilParams.segments}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-color">
+					<span class="param-label">Color</span>
+				</label>
+				<input
+					id="pistil-color"
+					type="color"
+					value={pistilColor}
+					onchange={(e) => updatePistilColor(e.currentTarget.value)}
+					class="param-color"
+				/>
+			</div>
+		</div>
+	</details>
+
+	<!-- Stamen Section -->
+	<details>
+		<summary class="section-header">Stamen</summary>
+		<div class="section-content">
+			<div class="param-group">
+				<label for="stamen-filament-length">
+					<span class="param-label">Filament Length</span>
+					<span class="param-value">{$stamenParams.filament_length.toFixed(2)}</span>
+				</label>
+				<input
+					id="stamen-filament-length"
+					type="range"
+					min="0.3"
+					max="3.0"
+					step="0.1"
+					bind:value={$stamenParams.filament_length}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-filament-radius">
+					<span class="param-label">Filament Radius</span>
+					<span class="param-value">{$stamenParams.filament_radius.toFixed(3)}</span>
+				</label>
+				<input
+					id="stamen-filament-radius"
+					type="range"
+					min="0.02"
+					max="0.1"
+					step="0.01"
+					bind:value={$stamenParams.filament_radius}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-anther-length">
+					<span class="param-label">Anther Length</span>
+					<span class="param-value">{$stamenParams.anther_length.toFixed(3)}</span>
+				</label>
+				<input
+					id="stamen-anther-length"
+					type="range"
+					min="0.1"
+					max="0.5"
+					step="0.05"
+					bind:value={$stamenParams.anther_length}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-anther-width">
+					<span class="param-label">Anther Width</span>
+					<span class="param-value">{$stamenParams.anther_width.toFixed(3)}</span>
+				</label>
+				<input
+					id="stamen-anther-width"
+					type="range"
+					min="0.05"
+					max="0.2"
+					step="0.01"
+					bind:value={$stamenParams.anther_width}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-segments">
+					<span class="param-label">Segments</span>
+					<span class="param-value">{$stamenParams.segments}</span>
+				</label>
+				<input
+					id="stamen-segments"
+					type="range"
+					min="6"
+					max="20"
+					step="2"
+					bind:value={$stamenParams.segments}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-color">
+					<span class="param-label">Color</span>
+				</label>
+				<input
+					id="stamen-color"
+					type="color"
+					value={stamenColor}
+					onchange={(e) => updateStamenColor(e.currentTarget.value)}
+					class="param-color"
+				/>
+			</div>
+		</div>
+	</details>
+
+	<!-- Petal Section -->
+	<details>
+		<summary class="section-header">Petal</summary>
+		<div class="section-content">
+			<div class="param-group">
+				<label for="petal-length">
+					<span class="param-label">Length</span>
+					<span class="param-value">{$petalParams.length.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-length"
+					type="range"
+					min="1.0"
+					max="5.0"
+					step="0.1"
+					bind:value={$petalParams.length}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-width">
+					<span class="param-label">Width</span>
+					<span class="param-value">{$petalParams.width.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-width"
+					type="range"
+					min="0.5"
+					max="3.0"
+					step="0.1"
+					bind:value={$petalParams.width}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-tip-sharpness">
+					<span class="param-label">Tip Sharpness</span>
+					<span class="param-value">{$petalParams.tip_sharpness.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-tip-sharpness"
+					type="range"
+					min="0.0"
+					max="1.0"
+					step="0.1"
+					bind:value={$petalParams.tip_sharpness}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-base-width">
+					<span class="param-label">Base Width</span>
+					<span class="param-value">{$petalParams.base_width.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-base-width"
+					type="range"
+					min="0.1"
+					max="1.0"
+					step="0.1"
+					bind:value={$petalParams.base_width}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-curl">
+					<span class="param-label">Curl</span>
+					<span class="param-value">{$petalParams.curl.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-curl"
+					type="range"
+					min="-1.0"
+					max="1.0"
+					step="0.1"
+					bind:value={$petalParams.curl}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-twist">
+					<span class="param-label">Twist (deg)</span>
+					<span class="param-value">{$petalParams.twist.toFixed(1)}</span>
+				</label>
+				<input
+					id="petal-twist"
+					type="range"
+					min="-45"
+					max="45"
+					step="5"
+					bind:value={$petalParams.twist}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-ruffle-freq">
+					<span class="param-label">Ruffle Frequency</span>
+					<span class="param-value">{$petalParams.ruffle_freq.toFixed(1)}</span>
+				</label>
+				<input
+					id="petal-ruffle-freq"
+					type="range"
+					min="0.0"
+					max="5.0"
+					step="0.5"
+					bind:value={$petalParams.ruffle_freq}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-ruffle-amp">
+					<span class="param-label">Ruffle Amplitude</span>
+					<span class="param-value">{$petalParams.ruffle_amp.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-ruffle-amp"
+					type="range"
+					min="0.0"
+					max="0.5"
+					step="0.05"
+					bind:value={$petalParams.ruffle_amp}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-resolution">
+					<span class="param-label">Resolution</span>
+					<span class="param-value">{$petalParams.resolution}</span>
+				</label>
+				<input
+					id="petal-resolution"
+					type="range"
+					min="8"
+					max="32"
+					step="2"
+					bind:value={$petalParams.resolution}
+					class="param-slider"
+				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-color">
+					<span class="param-label">Color</span>
+				</label>
+				<input
+					id="petal-color"
+					type="color"
+					value={petalColor}
+					onchange={(e) => updatePetalColor(e.currentTarget.value)}
+					class="param-color"
+				/>
+			</div>
+		</div>
+	</details>
+</div>
+
+<style>
+	.parameter-panel {
+		width: 320px;
+		height: 100vh;
+		overflow-y: auto;
+		background-color: #f9fafb;
+		border-right: 1px solid #e5e7eb;
+		padding: 1rem;
+	}
+
+	.panel-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+		padding-bottom: 1rem;
+		border-bottom: 2px solid #e5e7eb;
+	}
+
+	details {
+		margin-bottom: 0.5rem;
+		background-color: white;
+		border-radius: 0.5rem;
+		border: 1px solid #e5e7eb;
+	}
+
+	details[open] {
+		box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+	}
+
+	.section-header {
+		cursor: pointer;
+		padding: 0.75rem 1rem;
+		font-weight: 600;
+		color: #374151;
+		user-select: none;
+		transition: background-color 0.15s;
+	}
+
+	.section-header:hover {
+		background-color: #f3f4f6;
+	}
+
+	details[open] .section-header {
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.section-content {
+		padding: 1rem;
+	}
+
+	.param-group {
+		margin-bottom: 1rem;
+	}
+
+	.param-group:last-child {
+		margin-bottom: 0;
+	}
+
+	.param-group label {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 0.25rem;
+		font-size: 0.875rem;
+		color: #6b7280;
+	}
+
+	.param-label {
+		font-weight: 500;
+	}
+
+	.param-value {
+		font-family: 'Courier New', monospace;
+		font-size: 0.875rem;
+		color: #374151;
+		background-color: #f3f4f6;
+		padding: 0.125rem 0.5rem;
+		border-radius: 0.25rem;
+	}
+
+	.param-slider {
+		width: 100%;
+		height: 1.5rem;
+		cursor: pointer;
+	}
+
+	.param-input {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.375rem;
+		font-size: 0.875rem;
+	}
+
+	.param-input:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.param-color {
+		width: 100%;
+		height: 2.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.375rem;
+		cursor: pointer;
+	}
+
+	/* Custom scrollbar */
+	.parameter-panel::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	.parameter-panel::-webkit-scrollbar-track {
+		background: #f3f4f6;
+	}
+
+	.parameter-panel::-webkit-scrollbar-thumb {
+		background: #d1d5db;
+		border-radius: 4px;
+	}
+
+	.parameter-panel::-webkit-scrollbar-thumb:hover {
+		background: #9ca3af;
+	}
+
+	/* Preset Selector Styles */
+	.preset-selector {
+		margin-bottom: 1rem;
+		padding: 1rem;
+		background-color: white;
+		border-radius: 0.5rem;
+		border: 1px solid #e5e7eb;
+	}
+
+	.preset-label {
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #374151;
+		margin-bottom: 0.5rem;
+	}
+
+	.preset-dropdown {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.375rem;
+		background-color: white;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: border-color 0.15s;
+	}
+
+	.preset-dropdown:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	.preset-description {
+		margin-top: 0.5rem;
+		font-size: 0.75rem;
+		color: #6b7280;
+		font-style: italic;
+	}
+</style>
