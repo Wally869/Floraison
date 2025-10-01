@@ -7,6 +7,16 @@
 
 import { writable, derived, type Readable } from 'svelte/store';
 
+// Re-export inflorescence store for convenience
+export {
+	inflorescenceParams,
+	resetInflorescenceParams,
+	isRecursivePattern,
+	getRecursiveDefaults,
+	type InflorescenceParams,
+	type PatternType
+} from './inflorescence';
+
 // ============================================================================
 // TypeScript Types (matching Rust structs)
 // ============================================================================

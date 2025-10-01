@@ -13,11 +13,11 @@
 **Description**: Add parameter panel for inflorescence editing.
 
 **Acceptance Criteria**:
-- [ ] New section in ParameterPanel for inflorescence
-- [ ] Pattern type dropdown
-- [ ] Parameters relevant to selected pattern
-- [ ] Toggle between single flower / inflorescence mode
-- [ ] UI disables irrelevant parameters
+- [x] New section in ParameterPanel for inflorescence
+- [x] Pattern type dropdown
+- [x] Parameters relevant to selected pattern
+- [x] Toggle between single flower / inflorescence mode
+- [x] UI disables irrelevant parameters (conditional rendering for recursive params)
 
 **Dependencies**: Task 8.2, 11.5
 
@@ -30,14 +30,14 @@
 **Description**: Add presets for common inflorescence types.
 
 **Acceptance Criteria**:
-- [ ] At least 5 inflorescence presets:
-  - Lily (raceme)
-  - Lavender (spike)
-  - Cherry blossom (umbel)
-  - Hydrangea (corymb)
-  - Cimicifuga (compound raceme)
-- [ ] Preset dropdown includes inflorescence presets
-- [ ] Loading preset updates all params including inflorescence
+- [x] At least 5 inflorescence presets:
+  - Lily Raceme (raceme)
+  - Lavender Spike (spike)
+  - Cherry Umbel (umbel)
+  - Hydrangea Corymb (corymb)
+  - Astilbe Plume (compound raceme)
+- [x] Preset dropdown includes inflorescence presets (separate optgroup)
+- [x] Loading preset updates all params including inflorescence
 
 **Dependencies**: Task 8.4, 11.5
 

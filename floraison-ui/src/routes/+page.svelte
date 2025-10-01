@@ -3,7 +3,7 @@
 	import ThreeViewer from '$lib/components/viewer/ThreeViewer.svelte';
 	import ParameterPanel from '$lib/components/ui/ParameterPanel.svelte';
 	import { loadWasm, FlowerGenerator, type MeshData } from '$lib/wasm/loader';
-	import { allParams } from '$lib/stores/parameters';
+	import { allParams, inflorescenceParams } from '$lib/stores/parameters';
 
 	let mesh: MeshData | null = $state(null);
 	let loading = $state(true);
@@ -27,9 +27,10 @@
 		}
 	});
 
-	// Regenerate flower when parameters change (debounced)
+	// Regenerate flower/inflorescence when parameters change (debounced)
 	$effect(() => {
 		const params = $allParams;
+		const infloParams = $inflorescenceParams;
 
 		// Don't regenerate until WASM is loaded
 		if (!generator || loading) return;
@@ -45,12 +46,24 @@
 			error = '';
 
 			try {
-				const paramsJson = JSON.stringify(params);
-				console.log('Generating flower with params:', paramsJson);
-
 				// Performance profiling
 				const startTime = performance.now();
-				mesh = generator!.generate_flower(paramsJson);
+
+				if (infloParams.enabled) {
+					// Generate inflorescence
+					const infloJson = JSON.stringify(infloParams);
+					const flowerJson = JSON.stringify(params);
+					console.log('Generating inflorescence with params:', { inflo: infloJson, flower: flowerJson });
+
+					mesh = generator!.generate_inflorescence(infloJson, flowerJson);
+				} else {
+					// Generate single flower
+					const paramsJson = JSON.stringify(params);
+					console.log('Generating flower with params:', paramsJson);
+
+					mesh = generator!.generate_flower(paramsJson);
+				}
+
 				const endTime = performance.now();
 				const genTime = endTime - startTime;
 
@@ -59,7 +72,7 @@
 					const positions = mesh.positions();
 					const indices = mesh.indices();
 
-					console.log('✓ Flower generated:', {
+					console.log(`✓ ${infloParams.enabled ? 'Inflorescence' : 'Flower'} generated:`, {
 						time: `${genTime.toFixed(2)}ms`,
 						vertices: positions.length / 3,
 						triangles: indices.length / 3
@@ -71,8 +84,8 @@
 					}
 				}
 			} catch (e) {
-				console.error('Failed to generate flower:', e);
-				error = e instanceof Error ? e.message : 'Failed to generate flower';
+				console.error(`Failed to generate ${infloParams.enabled ? 'inflorescence' : 'flower'}:`, e);
+				error = e instanceof Error ? e.message : `Failed to generate ${infloParams.enabled ? 'inflorescence' : 'flower'}`;
 			} finally {
 				regenerating = false;
 			}

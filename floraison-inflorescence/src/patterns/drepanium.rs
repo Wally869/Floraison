@@ -17,6 +17,7 @@ struct BranchNode {
     direction: Vec3,
     length: f32,
     depth: usize,
+    cumulative_angle: f32, // Total rotation accumulated for helix
 }
 
 /// Generate branch points for a drepanium (scorpioid cyme) pattern
@@ -47,15 +48,23 @@ pub fn generate_branch_points(
 
     // Start from top of axis (determinate)
     let sample = axis.sample_at_t(1.0);
+
+    // Get fixed axis for helix rotation (tangent from Frenet frame)
+    let helix_axis = sample.tangent;
+
+    // Get initial perpendicular direction for helix
+    let initial_perpendicular = sample.binormal;
+
     let root = BranchNode {
         position: sample.position,
         direction: sample.normal,
         length: params.branch_length_top,
         depth: 0,
+        cumulative_angle: 0.0,
     };
 
-    // Build spiral recursively
-    let nodes = build_spiral_recursive(&root, max_depth, branch_ratio, spiral_angle);
+    // Build spiral recursively with fixed helix axis
+    let nodes = build_spiral_recursive(&root, max_depth, branch_ratio, spiral_angle, helix_axis, initial_perpendicular);
 
     // Convert nodes to branch points
     nodes_to_branch_points(nodes, max_depth, params)
@@ -67,6 +76,8 @@ fn build_spiral_recursive(
     max_depth: usize,
     branch_ratio: f32,
     spiral_angle: f32,
+    helix_axis: Vec3,
+    initial_perpendicular: Vec3,
 ) -> Vec<BranchNode> {
     // Base case: reached maximum depth
     if node.depth >= max_depth {
@@ -76,19 +87,19 @@ fn build_spiral_recursive(
     // Calculate next branch position
     let branch_end = node.position + node.direction * node.length;
 
-    // Compute child direction (spiral rotation)
-    // Rotate around the parent direction axis
-    let rotation = Quat::from_axis_angle(node.direction.normalize(), spiral_angle.to_radians());
+    // Compute child direction using fixed helix axis
+    // Accumulate rotation angle for smooth helix
+    let child_cumulative_angle = node.cumulative_angle + spiral_angle;
 
-    // Also apply a slight downward tilt for natural droop
-    let perpendicular = if node.direction.y.abs() < 0.9 {
-        Vec3::Y.cross(node.direction).normalize()
-    } else {
-        Vec3::X.cross(node.direction).normalize()
-    };
-    let tilt_rotation = Quat::from_axis_angle(perpendicular, -15.0_f32.to_radians());
+    // Rotate initial perpendicular around helix axis by cumulative angle
+    let rotation = Quat::from_axis_angle(helix_axis, child_cumulative_angle.to_radians());
+    let rotated_perpendicular = (rotation * initial_perpendicular).normalize();
 
-    let child_dir = (tilt_rotation * rotation * node.direction).normalize();
+    // Apply slight downward tilt (-15°) for natural droop
+    let tilt_axis = helix_axis.cross(rotated_perpendicular).normalize();
+    let tilt_rotation = Quat::from_axis_angle(tilt_axis, -15.0_f32.to_radians());
+
+    let child_dir = (tilt_rotation * rotated_perpendicular).normalize();
 
     // Create child node
     let child = BranchNode {
@@ -96,11 +107,12 @@ fn build_spiral_recursive(
         direction: child_dir,
         length: node.length * branch_ratio,
         depth: node.depth + 1,
+        cumulative_angle: child_cumulative_angle,
     };
 
     // Recurse on child (single branch only - scorpioid)
     let mut result = vec![node.clone()];
-    result.extend(build_spiral_recursive(&child, max_depth, branch_ratio, spiral_angle));
+    result.extend(build_spiral_recursive(&child, max_depth, branch_ratio, spiral_angle, helix_axis, initial_perpendicular));
 
     result
 }

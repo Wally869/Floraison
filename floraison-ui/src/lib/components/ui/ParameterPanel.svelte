@@ -9,7 +9,10 @@
 		loadParams,
 		rgbToHex,
 		hexToRgb,
-		allParams
+		allParams,
+		inflorescenceParams,
+		isRecursivePattern,
+		getRecursiveDefaults
 	} from '$lib/stores/parameters';
 	import { presets, presetNames, type PresetName } from '$lib/presets';
 
@@ -59,6 +62,14 @@
 			pistilColor = rgbToHex(preset.params.pistil.color);
 			stamenColor = rgbToHex(preset.params.stamen.color);
 			petalColor = rgbToHex(preset.params.petal.color);
+
+			// Load inflorescence params if present
+			if (preset.inflorescence) {
+				$inflorescenceParams = preset.inflorescence;
+			} else {
+				// Disable inflorescence mode for flower-only presets
+				$inflorescenceParams.enabled = false;
+			}
 
 			// Wait for stores to update, THEN snapshot params
 			setTimeout(() => {
@@ -113,18 +124,256 @@
 			onchange={loadPreset}
 			class="preset-dropdown"
 		>
-			{#each presetNames as presetName}
-				<option value={presetName}>
-					{presetName === 'custom'
-						? 'Custom'
-						: presets[presetName]?.name || presetName.charAt(0).toUpperCase() + presetName.slice(1)}
-				</option>
-			{/each}
+			<optgroup label="Single Flowers">
+				<option value="lily">{presets['lily'].name}</option>
+				<option value="rose">{presets['rose'].name}</option>
+				<option value="daisy">{presets['daisy'].name}</option>
+				<option value="tulip">{presets['tulip'].name}</option>
+				<option value="orchid">{presets['orchid'].name}</option>
+			</optgroup>
+			<optgroup label="Inflorescences">
+				<option value="lily-raceme">{presets['lily-raceme'].name}</option>
+				<option value="lavender-spike">{presets['lavender-spike'].name}</option>
+				<option value="cherry-umbel">{presets['cherry-umbel'].name}</option>
+				<option value="hydrangea-corymb">{presets['hydrangea-corymb'].name}</option>
+				<option value="astilbe-plume">{presets['astilbe-plume'].name}</option>
+			</optgroup>
+			<option value="custom">Custom</option>
 		</select>
 		{#if selectedPreset !== 'custom' && presets[selectedPreset]}
 			<p class="preset-description">{presets[selectedPreset].description}</p>
 		{/if}
 	</div>
+
+	<!-- Generation Mode Toggle -->
+	<details open>
+		<summary class="section-header">Generation Mode</summary>
+		<div class="section-content">
+			<div class="mode-toggle">
+				<label class="mode-option">
+					<input type="radio" bind:group={$inflorescenceParams.enabled} value={false} />
+					<span>Single Flower</span>
+				</label>
+				<label class="mode-option">
+					<input type="radio" bind:group={$inflorescenceParams.enabled} value={true} />
+					<span>Inflorescence</span>
+				</label>
+			</div>
+		</div>
+	</details>
+
+	<!-- Inflorescence Parameters (conditional) -->
+	{#if $inflorescenceParams.enabled}
+		<details open>
+			<summary class="section-header">Inflorescence Pattern</summary>
+			<div class="section-content">
+				<div class="param-group">
+					<label for="inflo-pattern" class="param-label">Pattern Type</label>
+					<select id="inflo-pattern" bind:value={$inflorescenceParams.pattern} class="param-select">
+						<optgroup label="Simple Patterns">
+							<option value="Raceme">Raceme (stalked along axis)</option>
+							<option value="Spike">Spike (sessile along axis)</option>
+							<option value="Umbel">Umbel (umbrella-like)</option>
+							<option value="Corymb">Corymb (flat-topped)</option>
+						</optgroup>
+						<optgroup label="Determinate Patterns">
+							<option value="Dichasium">Dichasium (Y-branching)</option>
+							<option value="Drepanium">Drepanium (spiral helix)</option>
+						</optgroup>
+						<optgroup label="Compound Patterns">
+							<option value="CompoundRaceme">Compound Raceme</option>
+							<option value="CompoundUmbel">Compound Umbel</option>
+						</optgroup>
+					</select>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-axis-length">
+						<span class="param-label">Axis Length</span>
+						<span class="param-value">{$inflorescenceParams.axis_length.toFixed(1)}</span>
+					</label>
+					<input
+						id="inflo-axis-length"
+						type="range"
+						min="1"
+						max="20"
+						step="0.5"
+						bind:value={$inflorescenceParams.axis_length}
+						class="param-slider"
+					/>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-branch-count">
+						<span class="param-label">Branch Count</span>
+						<span class="param-value">{$inflorescenceParams.branch_count}</span>
+					</label>
+					<input
+						id="inflo-branch-count"
+						type="range"
+						min="3"
+						max="30"
+						bind:value={$inflorescenceParams.branch_count}
+						class="param-slider"
+					/>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-rotation">
+						<span class="param-label">Rotation Angle (deg)</span>
+						<span class="param-value">{$inflorescenceParams.rotation_angle.toFixed(1)}°</span>
+					</label>
+					<input
+						id="inflo-rotation"
+						type="range"
+						min="0"
+						max="360"
+						step="5"
+						bind:value={$inflorescenceParams.rotation_angle}
+						class="param-slider"
+					/>
+					<div class="preset-buttons">
+						<button
+							class="preset-btn"
+							onclick={() => ($inflorescenceParams.rotation_angle = 137.5)}
+						>
+							Golden (137.5°)
+						</button>
+						<button
+							class="preset-btn"
+							onclick={() =>
+								($inflorescenceParams.rotation_angle =
+									360 / $inflorescenceParams.branch_count)}
+						>
+							Even
+						</button>
+					</div>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-branch-length-top">
+						<span class="param-label">Branch Length (Top)</span>
+						<span class="param-value">{$inflorescenceParams.branch_length_top.toFixed(2)}</span>
+					</label>
+					<input
+						id="inflo-branch-length-top"
+						type="range"
+						min="0.1"
+						max="3.0"
+						step="0.1"
+						bind:value={$inflorescenceParams.branch_length_top}
+						class="param-slider"
+					/>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-branch-length-bottom">
+						<span class="param-label">Branch Length (Bottom)</span>
+						<span class="param-value">{$inflorescenceParams.branch_length_bottom.toFixed(2)}</span>
+					</label>
+					<input
+						id="inflo-branch-length-bottom"
+						type="range"
+						min="0.1"
+						max="3.0"
+						step="0.1"
+						bind:value={$inflorescenceParams.branch_length_bottom}
+						class="param-slider"
+					/>
+				</div>
+
+				<div class="param-group">
+					<label for="inflo-flower-size-top">
+						<span class="param-label">Flower Size (Top)</span>
+						<span class="param-value">{$inflorescenceParams.flower_size_top.toFixed(2)}</span>
+					</label>
+					<input
+						id="inflo-flower-size-top"
+						type="range"
+						min="0.3"
+						max="1.5"
+						step="0.05"
+						bind:value={$inflorescenceParams.flower_size_top}
+						class="param-slider"
+					/>
+				</div>
+
+				<!-- Recursive pattern parameters (conditional) -->
+				{#if isRecursivePattern($inflorescenceParams.pattern)}
+					<div class="recursive-params">
+						<p class="section-subtitle">Recursive Parameters</p>
+
+						<div class="param-group">
+							<label for="inflo-recursion-depth">
+								<span class="param-label">Recursion Depth</span>
+								<span class="param-value"
+									>{$inflorescenceParams.recursion_depth ??
+										getRecursiveDefaults($inflorescenceParams.pattern).recursion_depth}</span
+								>
+							</label>
+							<input
+								id="inflo-recursion-depth"
+								type="range"
+								min="1"
+								max="5"
+								bind:value={$inflorescenceParams.recursion_depth}
+								class="param-slider"
+							/>
+							{#if $inflorescenceParams.pattern === 'CompoundRaceme' || $inflorescenceParams.pattern === 'CompoundUmbel'}
+								<p class="param-help param-warning">⚠ Depth > 2 not supported for compound patterns (clamped automatically)</p>
+							{:else}
+								<p class="param-help">⚠ Values > 3 may be slow</p>
+							{/if}
+						</div>
+
+						<div class="param-group">
+							<label for="inflo-branch-ratio">
+								<span class="param-label">Branch Ratio</span>
+								<span class="param-value"
+									>{(
+										$inflorescenceParams.branch_ratio ??
+										getRecursiveDefaults($inflorescenceParams.pattern).branch_ratio
+									).toFixed(2)}</span
+								>
+							</label>
+							<input
+								id="inflo-branch-ratio"
+								type="range"
+								min="0.3"
+								max="0.95"
+								step="0.05"
+								bind:value={$inflorescenceParams.branch_ratio}
+								class="param-slider"
+							/>
+						</div>
+
+						{#if $inflorescenceParams.pattern === 'Dichasium'}
+							<div class="param-group">
+								<label for="inflo-angle-div">
+									<span class="param-label">Angle Divergence (deg)</span>
+									<span class="param-value"
+										>{(
+											$inflorescenceParams.angle_divergence ??
+											getRecursiveDefaults($inflorescenceParams.pattern).angle_divergence
+										).toFixed(1)}°</span
+									>
+								</label>
+								<input
+									id="inflo-angle-div"
+									type="range"
+									min="10"
+									max="60"
+									step="5"
+									bind:value={$inflorescenceParams.angle_divergence}
+									class="param-slider"
+								/>
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
+		</details>
+	{/if}
 
 	<!-- Flower Structure Section -->
 	<details open>
@@ -858,5 +1107,101 @@
 		font-size: 0.75rem;
 		color: #9ca3af;
 		font-style: italic;
+	}
+
+	.param-warning {
+		color: #f59e0b;
+		font-weight: 500;
+	}
+
+	/* Mode toggle styles */
+	.mode-toggle {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.mode-option {
+		flex: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0.5rem;
+		border: 2px solid #d1d5db;
+		border-radius: 0.375rem;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.mode-option:has(input:checked) {
+		border-color: #3b82f6;
+		background-color: #eff6ff;
+	}
+
+	.mode-option input[type='radio'] {
+		margin-right: 0.5rem;
+		cursor: pointer;
+	}
+
+	.mode-option span {
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #374151;
+	}
+
+	/* Select dropdown styles */
+	.param-select {
+		width: 100%;
+		padding: 0.5rem;
+		border: 1px solid #d1d5db;
+		border-radius: 0.375rem;
+		background-color: white;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: border-color 0.15s;
+	}
+
+	.param-select:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+	}
+
+	/* Preset button styles */
+	.preset-buttons {
+		display: flex;
+		gap: 0.5rem;
+		margin-top: 0.5rem;
+	}
+
+	.preset-btn {
+		flex: 1;
+		padding: 0.375rem 0.75rem;
+		background-color: #f3f4f6;
+		border: 1px solid #d1d5db;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+		color: #374151;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.preset-btn:hover {
+		background-color: #e5e7eb;
+		border-color: #9ca3af;
+	}
+
+	/* Recursive params section */
+	.recursive-params {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	.section-subtitle {
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #6b7280;
+		margin-bottom: 0.75rem;
 	}
 </style>

@@ -53,8 +53,11 @@ pub fn generate_branch_points(
         depth: 0,
     };
 
+    // Use binormal from Frenet frame for consistent branching plane
+    let branching_axis = sample.binormal;
+
     // Build binary tree recursively
-    let nodes = build_tree_recursive(&root, max_depth, branch_ratio, angle_div);
+    let nodes = build_tree_recursive(&root, max_depth, branch_ratio, angle_div, branching_axis);
 
     // Convert nodes to branch points
     nodes_to_branch_points(nodes, max_depth, params)
@@ -66,6 +69,7 @@ fn build_tree_recursive(
     max_depth: usize,
     branch_ratio: f32,
     angle_divergence: f32,
+    branching_axis: Vec3,
 ) -> Vec<BranchNode> {
     // Base case: reached maximum depth (leaf node)
     if node.depth >= max_depth {
@@ -75,12 +79,8 @@ fn build_tree_recursive(
     // Calculate branch endpoint
     let branch_end = node.position + node.direction * node.length;
 
-    // Find perpendicular vector for rotation axis
-    let perpendicular = if node.direction.y.abs() < 0.9 {
-        Vec3::Y.cross(node.direction).normalize()
-    } else {
-        Vec3::X.cross(node.direction).normalize()
-    };
+    // Use fixed branching axis from Frenet frame (consistent branching plane)
+    let perpendicular = branching_axis;
 
     // Left branch: rotate +angle_divergence around perpendicular
     let left_rotation = Quat::from_axis_angle(perpendicular, angle_divergence.to_radians());
@@ -106,8 +106,8 @@ fn build_tree_recursive(
 
     // Recurse on both children
     let mut result = vec![node.clone()];
-    result.extend(build_tree_recursive(&left_child, max_depth, branch_ratio, angle_divergence));
-    result.extend(build_tree_recursive(&right_child, max_depth, branch_ratio, angle_divergence));
+    result.extend(build_tree_recursive(&left_child, max_depth, branch_ratio, angle_divergence, branching_axis));
+    result.extend(build_tree_recursive(&right_child, max_depth, branch_ratio, angle_divergence, branching_axis));
 
     result
 }

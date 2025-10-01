@@ -67,6 +67,8 @@
 - ✅ **Task 9.2**: Viewer Controls UI (axes, background, lights, wireframe, reset camera)
 - ✅ **Task 9.4**: Performance Optimization (profiling, metrics documentation)
 - 🎉 **Epic 9 Complete!** UI Enhancement finished! Phase 2 COMPLETE!
+- ✅ **Task 14.1**: Inflorescence UI Panel (mode toggle, pattern dropdown, parameters)
+- ✅ **Task 14.2**: Inflorescence Presets (5 presets: Lily Raceme, Lavender Spike, Cherry Umbel, Hydrangea Corymb, Astilbe Plume)
 
 ## Overview
 
@@ -185,4 +187,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 12/15 epics complete • 50/78 tasks complete • 🎉 Phase 1 COMPLETE! • 🎉 Phase 2 COMPLETE! • 🎉 Phase 3 COMPLETE! 🎉
+**Progress**: 12/15 epics complete • 52/78 tasks complete • 🎉 Phase 1 COMPLETE! • 🎉 Phase 2 COMPLETE! • 🎉 Phase 3 COMPLETE! • Phase 4: 50% in progress 🎉

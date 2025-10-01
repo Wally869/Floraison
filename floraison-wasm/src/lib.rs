@@ -6,6 +6,7 @@
 use wasm_bindgen::prelude::*;
 use floraison_components::assembly::{FlowerParams, generate_flower};
 use floraison_core::geometry::mesh::Mesh;
+use floraison_inflorescence::{InflorescenceParams, assembly, aging::FlowerAging};
 
 /// Initialize the WASM module
 /// Sets up panic hook for better error messages in the browser console
@@ -61,6 +62,67 @@ impl FlowerGenerator {
         let params = FlowerParams::daisy();
         let mesh = generate_flower(&params);
         Ok(MeshData::from_mesh(&mesh))
+    }
+
+    /// Generate an inflorescence (multi-flower structure) from JSON parameters
+    ///
+    /// # Arguments
+    /// * `inflo_params_json` - JSON string containing InflorescenceParams
+    /// * `flower_params_json` - JSON string containing FlowerParams for individual flowers
+    ///
+    /// # Returns
+    /// Mesh data for the complete inflorescence structure
+    pub fn generate_inflorescence(
+        &self,
+        inflo_params_json: &str,
+        flower_params_json: &str,
+    ) -> Result<MeshData, JsValue> {
+        // Parse inflorescence parameters
+        let mut inflo_params: InflorescenceParams = serde_json::from_str(inflo_params_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse inflorescence parameters: {}", e)))?;
+
+        // Validate and clamp recursion depth for compound patterns (memory safety)
+        use floraison_inflorescence::PatternType;
+        match inflo_params.pattern {
+            PatternType::CompoundRaceme | PatternType::CompoundUmbel => {
+                if let Some(depth) = inflo_params.recursion_depth {
+                    if depth > 2 {
+                        web_sys::console::warn_1(&JsValue::from_str(
+                            &format!("Recursion depth {} too high for compound patterns (memory limits). Clamping to 2.", depth)
+                        ));
+                        inflo_params.recursion_depth = Some(2);
+                    }
+                }
+            }
+            _ => {}
+        }
+
+        // Parse flower parameters
+        let flower_params: FlowerParams = serde_json::from_str(flower_params_json)
+            .map_err(|e| JsValue::from_str(&format!("Failed to parse flower parameters: {}", e)))?;
+
+        // Generate flower mesh for bloom stage
+        let flower_mesh = generate_flower(&flower_params);
+
+        // Create aging struct (MVP: use same mesh for all stages)
+        let aging = FlowerAging {
+            bud_mesh: flower_mesh.clone(),
+            bloom_mesh: flower_mesh.clone(),
+            wilt_mesh: Some(flower_mesh.clone()),
+        };
+
+        // Stem color (green)
+        let stem_color = floraison_core::Vec3::new(0.3, 0.6, 0.3);
+
+        // Generate inflorescence mesh
+        let inflo_mesh = assembly::assemble_inflorescence_with_aging(
+            &inflo_params,
+            &aging,
+            stem_color,
+        );
+
+        // Convert to WASM mesh data
+        Ok(MeshData::from_mesh(&inflo_mesh))
     }
 }
 

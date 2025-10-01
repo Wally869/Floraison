@@ -15,6 +15,7 @@ wasm-opt = ["-O", "--enable-bulk-memory", "--enable-nontrapping-float-to-int"]
 [dependencies]
 floraison-core = { workspace = true, features = ["serde"] }
 floraison-components = { workspace = true, features = ["serde"] }
+floraison-inflorescence = { workspace = true, features = ["serde"] }
 
 wasm-bindgen = { workspace = true }
 serde = { workspace = true }
@@ -22,3 +23,4 @@ serde_json = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 console_error_panic_hook = { workspace = true }
 js-sys = { workspace = true }
+web-sys = { workspace = true }
