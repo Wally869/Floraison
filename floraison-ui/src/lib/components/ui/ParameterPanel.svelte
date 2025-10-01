@@ -316,11 +316,7 @@
 								bind:value={$inflorescenceParams.recursion_depth}
 								class="param-slider"
 							/>
-							{#if $inflorescenceParams.pattern === 'CompoundRaceme' || $inflorescenceParams.pattern === 'CompoundUmbel'}
-								<p class="param-help param-warning">⚠ Depth > 2 not supported for compound patterns (clamped automatically)</p>
-							{:else}
-								<p class="param-help">⚠ Values > 3 may be slow</p>
-							{/if}
+							<p class="param-help">💡 Higher values create more complex structures (may be slower)</p>
 						</div>
 
 						<div class="param-group">
@@ -1094,11 +1090,6 @@
 		font-size: 0.75rem;
 		color: #9ca3af;
 		font-style: italic;
-	}
-
-	.param-warning {
-		color: #f59e0b;
-		font-weight: 500;
 	}
 
 	/* Mode toggle styles */

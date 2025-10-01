@@ -132,7 +132,7 @@ pub fn generate_stem_along_axis(axis_points: &[Vec3], radius: f32, color: Vec3) 
 ///
 /// # Returns
 /// Mesh of the pedicel geometry
-fn generate_pedicel(
+pub fn generate_pedicel(
     branch: &crate::BranchPoint,
     radius: f32,
     color: Vec3,

@@ -78,24 +78,8 @@ impl FlowerGenerator {
         flower_params_json: &str,
     ) -> Result<MeshData, JsValue> {
         // Parse inflorescence parameters
-        let mut inflo_params: InflorescenceParams = serde_json::from_str(inflo_params_json)
+        let inflo_params: InflorescenceParams = serde_json::from_str(inflo_params_json)
             .map_err(|e| JsValue::from_str(&format!("Failed to parse inflorescence parameters: {}", e)))?;
-
-        // Validate and clamp recursion depth for compound patterns (memory safety)
-        use floraison_inflorescence::PatternType;
-        match inflo_params.pattern {
-            PatternType::CompoundRaceme | PatternType::CompoundUmbel => {
-                if let Some(depth) = inflo_params.recursion_depth {
-                    if depth > 2 {
-                        web_sys::console::warn_1(&JsValue::from_str(
-                            &format!("Recursion depth {} too high for compound patterns (memory limits). Clamping to 2.", depth)
-                        ));
-                        inflo_params.recursion_depth = Some(2);
-                    }
-                }
-            }
-            _ => {}
-        }
 
         // Parse flower parameters
         let flower_params: FlowerParams = serde_json::from_str(flower_params_json)

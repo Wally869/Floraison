@@ -61,6 +61,12 @@ pub fn generate_compound_raceme(
 
     // For each primary branch, create sub-raceme
     for branch in &primary_branches {
+        // Generate pedicel connecting main axis to sub-inflorescence
+        if branch.length > 0.01 {
+            let pedicel = assembly::generate_pedicel(branch, 0.05, stem_color);
+            final_mesh.merge(&pedicel);
+        }
+
         // Scale down parameters for sub-inflorescence
         let sub_params = InflorescenceParams {
             axis_length: params.axis_length * 0.4,
