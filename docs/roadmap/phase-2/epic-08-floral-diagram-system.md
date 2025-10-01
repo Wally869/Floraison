@@ -13,12 +13,12 @@
 **Description**: Create Svelte store for floral diagram parameters with reactivity.
 
 **Acceptance Criteria**:
-- [ ] Store module `frontend/src/lib/stores/parameters.ts` created
-- [ ] Writable store for `FloralDiagram`
-- [ ] Writable stores for each component type parameters
-- [ ] Derived store that combines all parameters into JSON for WASM
-- [ ] Default values loaded on init
-- [ ] TypeScript types match Rust structs
+- [x] Store module `frontend/src/lib/stores/parameters.ts` created
+- [x] Writable store for `FloralDiagram`
+- [x] Writable stores for each component type parameters
+- [x] Derived store that combines all parameters into JSON for WASM
+- [x] Default values loaded on init
+- [x] TypeScript types match Rust structs
 
 **Dependencies**: Task 4.1
 
@@ -69,16 +69,16 @@ export const allParams = derived(
 **Description**: Create UI panel with sliders/inputs for all flower parameters.
 
 **Acceptance Criteria**:
-- [ ] Component `frontend/src/lib/components/ui/ParameterPanel.svelte` created
-- [ ] Organized into sections (Diagram, Receptacle, Pistil, Stamen, Petal)
-- [ ] Each parameter has:
+- [x] Component `frontend/src/lib/components/ui/ParameterPanel.svelte` created
+- [x] Organized into sections (Diagram, Receptacle, Pistil, Stamen, Petal)
+- [x] Each parameter has:
   - Label
   - Input (slider for 0-1 values, number input for counts)
   - Current value display
-- [ ] Binds to parameter stores
-- [ ] Styled with TailwindCSS
-- [ ] Collapsible sections (optional)
-- [ ] Responsive layout
+- [x] Binds to parameter stores
+- [x] Styled with TailwindCSS
+- [x] Collapsible sections (optional)
+- [x] Responsive layout
 
 **Dependencies**: Task 8.1
 
@@ -150,11 +150,11 @@ export const allParams = derived(
 **Description**: Connect parameter store to flower regeneration with debouncing.
 
 **Acceptance Criteria**:
-- [ ] Update main page to subscribe to `allParams` store
-- [ ] Debounce regeneration (300-500ms delay after last change)
-- [ ] Show "Generating..." indicator during regeneration
-- [ ] Handle errors gracefully
-- [ ] Camera maintains position during updates (doesn't reset)
+- [x] Update main page to subscribe to `allParams` store
+- [x] Debounce regeneration (300-500ms delay after last change)
+- [x] Show "Generating..." indicator during regeneration
+- [x] Handle errors gracefully
+- [x] Camera maintains position during updates (doesn't reset)
 
 **Dependencies**: Task 8.1, 5.6
 
@@ -189,16 +189,16 @@ $: regenerateFlower($allParams);
 **Description**: Create preset parameter sets for common flower types.
 
 **Acceptance Criteria**:
-- [ ] Module `frontend/src/lib/presets.ts` with exported presets
-- [ ] At least 5 presets:
+- [x] Module `frontend/src/lib/presets.ts` with exported presets
+- [x] At least 5 presets:
   - Lily (default)
   - Rose (many petals, layered)
   - Daisy (simple, flat petals)
   - Tulip (6 petals, cup shape)
   - Orchid (complex petal shapes)
-- [ ] Dropdown in UI to select preset
-- [ ] Selecting preset updates all parameter stores
-- [ ] "Custom" option when user modifies preset
+- [x] Dropdown in UI to select preset
+- [x] Selecting preset updates all parameter stores
+- [x] "Custom" option when user modifies preset
 
 **Dependencies**: Task 8.1, 8.2
 

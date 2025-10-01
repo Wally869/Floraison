@@ -42,6 +42,13 @@
 - ✅ **Task 7.3**: Enhanced Stamen with curved filaments
 - ✅ **Task 7.4**: Color parameters for all components
 - 🎉 **Epic 7 Complete!** Complete Floral Components finished!
+- ✅ **Task 8.1**: Diagram Parameter Store with Svelte stores
+- ✅ **Task 8.2**: Parameter Panel Component with collapsible sections
+- ✅ **Task 8.3**: Regenerate on Parameter Change with debouncing
+- ✅ **Task 8.4**: Preset Flowers (5 presets: Lily, Rose, Daisy, Tulip, Orchid)
+- 🎉 **Epic 8 Complete!** Floral Diagram System finished!
+- ✅ **Task 9.1**: Split View Layout (done during Epic 8)
+- ✅ **Task 9.3**: Loading States and Error Handling (done during Epic 8)
 
 ## Overview
 
@@ -84,8 +91,8 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 |------|-------|--------|-------|--------|
 | [Epic 6](roadmap/phase-2/epic-06-advanced-petal-geometry.md) | Advanced Petal Geometry (B-splines) | 10-12 hours | 5 | ✅ Complete |
 | [Epic 7](roadmap/phase-2/epic-07-complete-floral-components.md) | Complete Floral Components | 8-10 hours | 4 | ✅ Complete |
-| [Epic 8](roadmap/phase-2/epic-08-floral-diagram-system.md) | Floral Diagram System | 6-8 hours | 4 | ⏳ Pending |
-| [Epic 9](roadmap/phase-2/epic-09-ui-enhancement.md) | UI Enhancement | 6-8 hours | 4 | ⏳ Pending |
+| [Epic 8](roadmap/phase-2/epic-08-floral-diagram-system.md) | Floral Diagram System | 6-8 hours | 4 | ✅ Complete |
+| [Epic 9](roadmap/phase-2/epic-09-ui-enhancement.md) | UI Enhancement | 6-8 hours | 4 | 🟡 In Progress (2/4) |
 
 **Phase 2 Total**: 26-32 hours
 
@@ -160,4 +167,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 7/15 epics complete • 30/78 tasks complete • 🎉 Phase 1 COMPLETE! • Epic 7 COMPLETE! 🎉
+**Progress**: 8/15 epics complete • 36/78 tasks complete • 🎉 Phase 1 COMPLETE! • Phase 2: 80% complete! 🎉
