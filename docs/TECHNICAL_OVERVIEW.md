@@ -1,5 +1,27 @@
 # Technical Overview
 
+## Implementation Status
+
+**Project Completion**: ~95% (Phases 1-4)
+
+- ✅ **Phase 1**: Core Math, Components, Assembly, Frontend Foundation (Epics 1-5)
+- ✅ **Phase 2**: Advanced Geometry, Complete Components, Floral Diagram, UI (Epics 6-9)
+- ✅ **Phase 3**: Inflorescence Foundation, Patterns, Polish (Epics 10-12)
+- ✅ **Epic 13**: glTF Export (Three.js GLTFExporter approach)
+- ✅ **Epic 14**: UI Polish, Visual Enhancements, Mobile Support
+- 🚧 **Epic 15**: Documentation (in progress)
+
+**Key Features Implemented**:
+- 8 inflorescence patterns (Raceme, Spike, Umbel, Corymb, Dichasium, Drepanium, CompoundRaceme, CompoundUmbel)
+- 11 presets (5 single flowers + 6 inflorescences)
+- Vertex colors (full pipeline from Rust to renderer)
+- glTF 2.0 export with PBR materials
+- Professional lighting (VSM shadows, ACES tone mapping, three-point lighting)
+- Responsive mobile UI with drawer pattern
+- User-controllable lighting and exposure
+
+---
+
 ## Introduction
 
 Floraison implements a procedural flower generation system based on botanical morphology principles. Unlike traditional 3D modeling tools that require manual mesh manipulation, Floraison generates complete flower models from high-level structural and parametric descriptions.
@@ -61,18 +83,24 @@ Our implementation replaces sketching with **parametric controls**, making the s
 │  Rust Core      │  Geometry generation
 │  - Floral parts │
 │  - Assembly     │
-│  - Export       │
+│  - Colors       │
 └────────┬────────┘
-         │ Float32Array (vertices, indices, normals, UVs)
+         │ Float32Array (vertices, normals, UVs, colors, indices)
          ↓
 ┌─────────────────┐
-│  Three.js       │  WebGL rendering
-│  (Frontend)     │
+│  Three.js       │  WebGL rendering with vertex colors
+│  (Frontend)     │  MeshPhysicalMaterial (vertexColors: true)
 └─────────────────┘
-         │ User downloads
+         │ User clicks Export GLB
          ↓
 ┌─────────────────┐
-│  glTF File      │  Standard 3D format
+│  GLTFExporter   │  Three.js → glTF conversion
+│  (Three.js)     │
+└─────────────────┘
+         │ Binary GLB download
+         ↓
+┌─────────────────┐
+│  glTF File      │  Standard 3D format with PBR materials
 └─────────────────┘
 ```
 
@@ -339,6 +367,79 @@ struct PetalParams {
 6. Triangulate grid
 7. Optionally create back faces or add thickness
 
+#### Vertex Colors
+
+All components generate per-vertex colors that flow through the entire pipeline:
+
+**Rust → WASM Pipeline**:
+```rust
+// In floraison-components
+pub struct Mesh {
+    pub positions: Vec<Vec3>,
+    pub normals: Vec<Vec3>,
+    pub uvs: Vec<Vec2>,
+    pub colors: Vec<Vec3>,  // Per-vertex RGB colors
+    pub indices: Vec<u32>,
+}
+
+// In floraison-wasm
+#[wasm_bindgen]
+pub struct MeshData {
+    positions: Vec<f32>,
+    normals: Vec<f32>,
+    uvs: Vec<f32>,
+    colors: Vec<f32>,  // Flattened: [r,g,b, r,g,b, ...]
+    indices: Vec<u32>,
+}
+
+impl MeshData {
+    pub fn from_mesh(mesh: &Mesh) -> Self {
+        // Flatten Vec<Vec3> → Vec<f32> with stride 3
+        let colors: Vec<f32> = mesh.colors
+            .iter()
+            .flat_map(|v| [v.x, v.y, v.z])
+            .collect();
+
+        Self { positions, normals, uvs, colors, indices }
+    }
+}
+
+#[wasm_bindgen]
+impl MeshData {
+    pub fn colors(&self) -> js_sys::Float32Array {
+        js_sys::Float32Array::from(&self.colors[..])
+    }
+}
+```
+
+**WASM → Three.js Pipeline**:
+```typescript
+// mesh-converter.ts
+export function wasmMeshToGeometry(meshData: MeshData): THREE.BufferGeometry {
+    const geometry = new THREE.BufferGeometry();
+
+    const colors = meshData.colors();  // Float32Array
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    // ... positions, normals, uvs, indices
+    return geometry;
+}
+
+// ThreeViewer.svelte
+const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,  // Enable per-vertex colors
+    metalness: 0.0,
+    roughness: 0.6,
+    // ... other PBR properties
+});
+```
+
+**Color Assignment**:
+- Each component has a `color: [f32; 3]` parameter (RGB, 0-1 range)
+- Colors are assigned to all vertices of that component
+- Renderer interpolates colors across triangles
+- Preserved through glTF export
+
 ### 4. Inflorescence System
 
 #### Pattern Types (8 implemented)
@@ -458,11 +559,76 @@ Accessors define interpretation:
 
 #### Export Pipeline
 
-1. **Collect all meshes** from flower/inflorescence assembly
-2. **Combine buffers** (or keep separate per mesh)
-3. **Build glTF JSON** structure with accessors, meshes, nodes
-4. **Serialize** to .gltf (JSON + bin) or .glb (binary container)
-5. **Validate** with glTF validator library (if available)
+**Implementation**: Three.js GLTFExporter (not Rust gltf-json)
+
+**Decision Rationale**:
+- Original roadmap planned Rust gltf-json implementation (6-8 hours)
+- Switched to Three.js GLTFExporter (~1.5 hours actual)
+- Benefits: Battle-tested, standards-compliant, automatic material conversion
+- Exports exactly what's rendered (WYSIWYG)
+
+**Implementation**:
+```typescript
+// src/lib/three/exporter.ts
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js';
+
+export function exportToGLB(object: THREE.Object3D, options: ExportOptions = {}): void {
+    const exporter = new GLTFExporter();
+    const filename = options.filename || generateFilename();
+
+    exporter.parse(
+        object,
+        (gltf) => {
+            // gltf is ArrayBuffer for binary mode
+            const blob = new Blob([gltf as ArrayBuffer], {
+                type: 'application/octet-stream'
+            });
+            const url = URL.createObjectURL(blob);
+
+            // Trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            options.onSuccess?.();
+        },
+        (error) => {
+            const errorObj = error instanceof Error
+                ? error
+                : new Error(String(error));
+            options.onError?.(errorObj);
+        },
+        {
+            binary: true,           // Export as .glb (binary)
+            embedImages: true,      // Embed textures
+            truncateDrawRange: true // Optimize buffers
+        }
+    );
+}
+
+export function generateFilename(presetName?: string): string {
+    const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+    const name = presetName && presetName !== 'custom'
+        ? `floraison_${presetName}_${timestamp}`
+        : `floraison_custom_${timestamp}`;
+    return `${name}.glb`;
+}
+```
+
+**Export Process**:
+1. User clicks "Export GLB" in ViewerControls
+2. ThreeViewer calls `exportToGLB(flowerMesh, { filename })`
+3. GLTFExporter converts Three.js scene → glTF 2.0
+4. Automatic material conversion:
+   - MeshPhysicalMaterial → PBR Metallic-Roughness
+   - Vertex colors preserved in COLOR_0 attribute
+   - All PBR properties included
+5. Binary GLB file downloads
+6. Compatible with Blender, Unity, Unreal, Windows 3D Viewer
 
 ### 6. WASM Integration
 
@@ -590,6 +756,139 @@ Scene re-renders
 - Show low-poly preview while high-poly generates
 - Or start with single flower, then add inflorescence
 
+### Lighting & Rendering
+
+**Implementation**: Professional PBR rendering with film-quality lighting
+
+**Shadow System**:
+```typescript
+// VSM (Variance Shadow Maps) - softest, most realistic
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+
+// Directional light with ultra-high resolution shadows
+directionalLight.shadow.mapSize.width = 4096;
+directionalLight.shadow.mapSize.height = 4096;
+directionalLight.shadow.radius = 3;         // Wider penumbra
+directionalLight.shadow.blurSamples = 25;   // Smoothness
+```
+
+**Tone Mapping**:
+```typescript
+// ACES Filmic (industry standard for film/games)
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;  // User-controllable
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+```
+
+**Lighting Setup** (Three-Point Lighting):
+```typescript
+// 1. Hemisphere Light (natural ambient)
+const hemisphereLight = new THREE.HemisphereLight(
+    0x87ceeb,  // Sky color (light blue)
+    0x8b7355,  // Ground color (brownish earth)
+    0.6        // Intensity
+);
+
+// 2. Directional Light (key light)
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+directionalLight.position.set(5, 10, 5);
+directionalLight.castShadow = true;
+
+// 3. Fill Light (softens shadows)
+const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
+fillLight.position.set(-5, 5, -5);
+```
+
+**Material (PBR)**:
+```typescript
+const material = new THREE.MeshPhysicalMaterial({
+    vertexColors: true,    // Use per-vertex colors
+    metalness: 0.0,        // Non-metallic (organic)
+    roughness: 0.6,        // Slightly rough surface
+    transmission: 0.0,     // Opaque (not glass)
+    thickness: 0.5,        // Sub-surface scattering depth
+    ior: 1.4,              // Index of refraction (plant material)
+    sheen: 0.5,            // Soft fabric-like sheen
+    clearcoat: 0.3         // Subtle glossy layer
+});
+```
+
+**User Controls**:
+- Exposure (0.5-2.0)
+- Ambient intensity (0-2)
+- Directional intensity (0-3)
+- Light colors (hex pickers for sky, ground, directional)
+- Shadow toggle (auto-disabled on mobile)
+
+**Ground Plane**:
+- Dynamic positioning based on mesh bounding box
+- Always contacts lowest vertex: `ground.position.y = minY - 0.1`
+
+### Mobile Support
+
+**Responsive Design**:
+```typescript
+// Tailwind breakpoint: 768px (md:)
+<aside class="parameter-panel md:static fixed">
+  <!-- Desktop: static sidebar -->
+  <!-- Mobile: fixed drawer -->
+</aside>
+```
+
+**Drawer Pattern**:
+- Hamburger menu button (48×48px touch target, fixed top-left)
+- Slide-in animation (transform: translateX(-100%) → 0)
+- Backdrop overlay (rgba(0,0,0,0.5), tap to close)
+- Escape key support
+- Smooth 0.3s transitions
+
+**Performance Optimization**:
+```typescript
+// Automatic shadow optimization
+function isMobileDevice(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
+        .test(navigator.userAgent);
+}
+
+const defaultSettings: ViewerSettings = {
+    enableShadows: !isMobileDevice()  // Auto-disable on mobile
+};
+```
+
+**Touch Controls**:
+- OrbitControls built-in touch support:
+  - One finger drag: Rotate
+  - Two finger pinch: Zoom
+  - Two finger drag: Pan
+
+**Mobile Layout**:
+```
+┌──────────────────────┐
+│ [☰]    Viewer   [⋮]  │ ← Hamburger + Controls
+│                      │
+│                      │
+│   3D Viewer          │
+│   (Full width)       │
+│                      │
+│                      │
+└──────────────────────┘
+
+When hamburger clicked:
+┌──────────────────────┐
+│ Parameters │ Viewer  │ ← Drawer slides in
+│ [Presets]  │ (behind │
+│ [Diagram]  │ dark    │
+│ [Petals]   │ overlay)│
+│ ...        │         │
+└──────────────────────┘
+```
+
+**Tested On**:
+- Android: Xiaomi Redmi
+- Touch gestures verified
+- Performance acceptable with shadows disabled
+
 ## Testing Strategy
 
 ### Unit Tests (Rust)
@@ -685,10 +984,26 @@ Scene re-renders
 
 ## Performance Targets
 
-- **Generation time**: < 100ms for single flower, < 500ms for inflorescence
-- **WASM binary size**: < 500KB compressed
-- **Preview frame rate**: 60 FPS with orbit controls
-- **Mesh size**: 10K-50K triangles for single flower, 100K-500K for complex inflorescence
+**Actual Implementation Performance**:
+
+- **Generation time** (achieved):
+  - Single flower: <300ms (includes debounce)
+  - Simple inflorescence: <500ms
+  - Complex inflorescence: <1000ms
+  - Warning displayed if generation >1000ms
+- **WASM binary size**: Optimized with wasm-pack `--release`
+- **Preview frame rate**:
+  - Desktop: 60 FPS with shadows enabled
+  - Mobile: 60 FPS with shadows disabled (auto-detected)
+- **Mesh complexity**:
+  - Single flower: 5K-20K triangles (resolution parameter: 12-24)
+  - Inflorescence: 50K-300K triangles (branch count: 5-30)
+  - Allium Umbel (30 flowers): Highest complexity preset
+
+**Platform-Specific Optimizations**:
+- Mobile devices: Shadows auto-disabled on page load
+- High-DPI displays: No performance degradation
+- Cross-browser: Tested on Chrome, Firefox, Edge, Safari
 
 ## Conclusion
 

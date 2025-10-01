@@ -108,6 +108,7 @@ floraison/
 
 ## Documentation
 
+- [User Guide](docs/USER_GUIDE.md) - Complete user manual with parameter reference and tips
 - [Technical Overview](docs/TECHNICAL_OVERVIEW.md) - Architecture and implementation details
 - [Implementation Roadmap](docs/ROADMAP.md) - Development plan and progress
 
