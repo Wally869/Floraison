@@ -41,6 +41,7 @@ pub enum ArrangementPattern {
 ///     height: 0.5,
 ///     pattern: ArrangementPattern::EvenlySpaced,
 ///     rotation_offset: 0.0,
+///     tilt_angle: 0.0,
 /// };
 /// ```
 #[derive(Debug, Clone)]
@@ -61,6 +62,18 @@ pub struct ComponentWhorl {
     /// Initial rotation offset in radians
     /// Allows rotating the entire whorl
     pub rotation_offset: f32,
+
+    /// Tilt angle in radians for component orientation
+    ///
+    /// Controls how components are tilted relative to the receptacle surface normal:
+    /// - `0.0` = upright (parallel to central pistil axis)
+    /// - `PI/4` = 45° tilt
+    /// - `PI/2` = horizontal (spreading perpendicular to pistil)
+    ///
+    /// Primarily used for stamens and pistils to control their spread.
+    /// Petals and sepals typically use 0.0 (perpendicular to surface).
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub tilt_angle: f32,
 }
 
 impl ComponentWhorl {
@@ -141,6 +154,7 @@ impl FloralDiagram {
     /// - 6 stamens in one whorl (alternating with petals)
     /// - 1 central pistil
     pub fn lily() -> Self {
+        use std::f32::consts::PI;
         Self {
             receptacle_height: 1.0,
             receptacle_radius: 0.3,
@@ -150,13 +164,15 @@ impl FloralDiagram {
                 height: 0.8,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             stamen_whorls: vec![ComponentWhorl {
                 count: 6,
                 radius: 0.6,
                 height: 0.6,
                 pattern: ArrangementPattern::EvenlySpaced,
-                rotation_offset: std::f32::consts::PI / 6.0, // Offset by 30° to alternate
+                rotation_offset: PI / 6.0, // Offset by 30° to alternate
+                tilt_angle: PI / 2.0, // Lilies: stamens spread horizontally
             }],
             pistil_whorls: vec![ComponentWhorl {
                 count: 1,
@@ -164,6 +180,7 @@ impl FloralDiagram {
                 height: 0.5,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
         }
@@ -176,6 +193,7 @@ impl FloralDiagram {
     /// - 10 stamens in two whorls
     /// - 1 central pistil
     pub fn five_petal() -> Self {
+        use std::f32::consts::PI;
         Self {
             receptacle_height: 0.8,
             receptacle_radius: 0.4,
@@ -185,6 +203,7 @@ impl FloralDiagram {
                 height: 0.6,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             stamen_whorls: vec![
                 ComponentWhorl {
@@ -193,13 +212,15 @@ impl FloralDiagram {
                     height: 0.5,
                     pattern: ArrangementPattern::EvenlySpaced,
                     rotation_offset: 0.0,
+                    tilt_angle: PI / 3.0, // ~60° spread
                 },
                 ComponentWhorl {
                     count: 5,
                     radius: 0.5,
                     height: 0.4,
                     pattern: ArrangementPattern::EvenlySpaced,
-                    rotation_offset: std::f32::consts::PI / 5.0,
+                    rotation_offset: PI / 5.0,
+                    tilt_angle: PI / 4.0, // ~45° spread
                 },
             ],
             pistil_whorls: vec![ComponentWhorl {
@@ -208,6 +229,7 @@ impl FloralDiagram {
                 height: 0.3,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
         }
@@ -220,6 +242,7 @@ impl FloralDiagram {
     /// - Many stamens in spiral at center
     /// - Multiple pistils in spiral
     pub fn daisy() -> Self {
+        use std::f32::consts::PI;
         Self {
             receptacle_height: 0.5,
             receptacle_radius: 0.8,
@@ -229,6 +252,7 @@ impl FloralDiagram {
                 height: 0.4,
                 pattern: ArrangementPattern::GoldenSpiral,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             stamen_whorls: vec![ComponentWhorl {
                 count: 34,
@@ -236,6 +260,7 @@ impl FloralDiagram {
                 height: 0.3,
                 pattern: ArrangementPattern::GoldenSpiral,
                 rotation_offset: 0.5,
+                tilt_angle: PI / 6.0, // ~30° slightly upward
             }],
             pistil_whorls: vec![ComponentWhorl {
                 count: 13,
@@ -243,6 +268,7 @@ impl FloralDiagram {
                 height: 0.2,
                 pattern: ArrangementPattern::GoldenSpiral,
                 rotation_offset: 1.0,
+                tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
         }
@@ -255,6 +281,7 @@ impl FloralDiagram {
     /// - 4 stamens alternating with petals
     /// - 1 central pistil
     pub fn four_petal() -> Self {
+        use std::f32::consts::PI;
         Self {
             receptacle_height: 0.6,
             receptacle_radius: 0.3,
@@ -263,7 +290,8 @@ impl FloralDiagram {
                 radius: 1.0,
                 height: 0.5,
                 pattern: ArrangementPattern::EvenlySpaced,
-                rotation_offset: std::f32::consts::PI / 4.0, // 45° offset for cross pattern
+                rotation_offset: PI / 4.0, // 45° offset for cross pattern
+                tilt_angle: 0.0,
             }],
             stamen_whorls: vec![ComponentWhorl {
                 count: 4,
@@ -271,6 +299,7 @@ impl FloralDiagram {
                 height: 0.4,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: PI / 4.0, // ~45° spread
             }],
             pistil_whorls: vec![ComponentWhorl {
                 count: 1,
@@ -278,6 +307,7 @@ impl FloralDiagram {
                 height: 0.3,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: 0.0,
+                tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
         }
@@ -311,6 +341,7 @@ mod tests {
             height: 0.5,
             pattern: ArrangementPattern::EvenlySpaced,
             rotation_offset: 0.0,
+            tilt_angle: 0.0,
         };
 
         let angles = whorl.calculate_angles();
@@ -332,6 +363,7 @@ mod tests {
             height: 0.5,
             pattern: ArrangementPattern::GoldenSpiral,
             rotation_offset: 0.0,
+            tilt_angle: 0.0,
         };
 
         let angles = whorl.calculate_angles();
@@ -353,6 +385,7 @@ mod tests {
             height: 0.5,
             pattern: ArrangementPattern::EvenlySpaced,
             rotation_offset: std::f32::consts::PI / 4.0,
+            tilt_angle: 0.0,
         };
 
         let angles = whorl.calculate_angles();
@@ -417,6 +450,7 @@ mod tests {
             height: 0.5,
             pattern: ArrangementPattern::CustomOffset(1.0),
             rotation_offset: 0.0,
+            tilt_angle: 0.0,
         };
 
         let angles = whorl.calculate_angles();

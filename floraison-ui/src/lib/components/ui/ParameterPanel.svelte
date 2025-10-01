@@ -22,6 +22,7 @@
 	// Preset selection
 	let selectedPreset = $state<PresetName>('lily');
 	let lastLoadedParams: string | null = null;
+	let isLoadingPreset = false;
 
 	// Update store when color picker changes
 	function updateReceptacleColor(hex: string) {
@@ -50,20 +51,29 @@
 
 		const preset = presets[selectedPreset];
 		if (preset) {
+			isLoadingPreset = true;
 			loadParams(preset.params);
-			lastLoadedParams = JSON.stringify($allParams);
 
 			// Update color pickers to match loaded preset
 			receptacleColor = rgbToHex(preset.params.receptacle.color);
 			pistilColor = rgbToHex(preset.params.pistil.color);
 			stamenColor = rgbToHex(preset.params.stamen.color);
 			petalColor = rgbToHex(preset.params.petal.color);
+
+			// Wait for stores to update, THEN snapshot params
+			setTimeout(() => {
+				lastLoadedParams = JSON.stringify($allParams);
+				isLoadingPreset = false;
+			}, 100);
 		}
 	}
 
 	// Detect parameter changes to auto-switch to "Custom"
 	$effect(() => {
 		const currentParams = JSON.stringify($allParams);
+
+		// Skip detection during preset load
+		if (isLoadingPreset) return;
 
 		// If params changed and we're not on custom already
 		if (
@@ -178,6 +188,22 @@
 					bind:value={$diagramParams.sepalCount}
 					class="param-slider"
 				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-tilt">
+					<span class="param-label">Stamen Tilt (deg)</span>
+					<span class="param-value">{$diagramParams.stamenTilt}°</span>
+				</label>
+				<input
+					id="stamen-tilt"
+					type="range"
+					min="0"
+					max="90"
+					bind:value={$diagramParams.stamenTilt}
+					class="param-slider"
+				/>
+				<p class="param-help">0° = upright, 90° = spreading</p>
 			</div>
 		</div>
 	</details>
@@ -824,6 +850,13 @@
 		margin-top: 0.5rem;
 		font-size: 0.75rem;
 		color: #6b7280;
+		font-style: italic;
+	}
+
+	.param-help {
+		margin-top: 0.25rem;
+		font-size: 0.75rem;
+		color: #9ca3af;
 		font-style: italic;
 	}
 </style>

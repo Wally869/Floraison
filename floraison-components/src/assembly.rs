@@ -53,6 +53,10 @@ pub struct ComponentPlacement {
 
     /// Scale multiplier for this component
     pub scale: f32,
+
+    /// Tilt angle in radians for component orientation
+    /// Controls how the component tilts relative to the receptacle surface
+    pub tilt_angle: f32,
 }
 
 /// 3D transformation (position, rotation, scale)
@@ -202,6 +206,19 @@ impl ReceptacleMapper {
     /// 3D transform with position on receptacle surface and orientation
     pub fn map_to_3d(&self, placement: &ComponentPlacement) -> Transform3D {
         let height = placement.height * self.height;
+
+        // Special case: pistils at center (radius ≈ 0) should be positioned on the central axis
+        // and oriented straight up, not following the receptacle surface
+        if placement.component_type == ComponentType::Pistil && placement.radius < 0.001 {
+            let position = Vec3::new(0.0, height, 0.0);
+
+            // Pistil points straight up (identity rotation)
+            // Local Y-axis aligned with global Y-axis
+            let rotation = Quat::IDENTITY;
+
+            return Transform3D::with_scale(position, rotation, placement.scale);
+        }
+
         let receptacle_radius = self.radius_at_height(height);
 
         // Compute position in cylindrical coordinates
@@ -211,13 +228,43 @@ impl ReceptacleMapper {
             receptacle_radius * placement.angle.sin(),
         );
 
-        // Compute rotation to align component with surface
-        // We want the component's local Y-axis to point along the surface normal
+        // Stamens and pistils: tiltable components that start upright
+        // - tilt_angle = 0 → points straight up (parallel to pistil)
+        // - tilt_angle = π/2 → points radially outward (spreading)
+        if placement.component_type == ComponentType::Stamen ||
+           placement.component_type == ComponentType::Pistil {
 
-        // For a surface of revolution, the normal at any point is found by:
-        // 1. Computing the 2D normal to the profile curve
-        // 2. Rotating that normal around the Y-axis to the placement angle
+            // Compute azimuthal tangent (direction around the flower)
+            let azimuthal_tangent = Vec3::new(
+                -placement.angle.sin(),
+                0.0,
+                placement.angle.cos(),
+            ).normalize();
 
+            // Start with upright orientation (local Y = global Y)
+            // Then rotate around azimuthal tangent by -tilt_angle:
+            // - 0° keeps it upright
+            // - 90° rotates it to point radially outward
+            // (negative angle ensures outward rotation, not inward)
+            let base_up = Vec3::Y;
+            let tilt_rotation = Quat::from_axis_angle(azimuthal_tangent, -placement.tilt_angle);
+            let local_y = tilt_rotation * base_up;
+
+            // Build orthonormal basis
+            // Local Y-axis: direction stamen/pistil points (after tilt)
+            // Local X-axis: azimuthal tangent (around flower)
+            // Local Z-axis: perpendicular to both
+            let local_x = azimuthal_tangent;
+            let local_z = local_x.cross(local_y).normalize();
+            let local_y = local_z.cross(local_x).normalize(); // Re-orthogonalize
+
+            let rotation_matrix = Mat3::from_cols(local_x, local_y, local_z);
+            let rotation = Quat::from_mat3(&rotation_matrix);
+
+            return Transform3D::with_scale(position, rotation, placement.scale);
+        }
+
+        // Petals and sepals: follow receptacle surface normal
         // Get tangent to the generating curve in 2D: (dr/dt, dy/dt)
         let tangent_2d = self.tangent_at_height(height);
 
@@ -284,6 +331,7 @@ impl FloralDiagram {
                     angle,
                     height: whorl.height,
                     scale: 1.0,
+                    tilt_angle: whorl.tilt_angle,
                 });
             }
         }
@@ -298,6 +346,7 @@ impl FloralDiagram {
                     angle,
                     height: whorl.height,
                     scale: 1.0,
+                    tilt_angle: whorl.tilt_angle,
                 });
             }
         }
@@ -312,6 +361,7 @@ impl FloralDiagram {
                     angle,
                     height: whorl.height,
                     scale: 1.0,
+                    tilt_angle: whorl.tilt_angle,
                 });
             }
         }
@@ -326,6 +376,7 @@ impl FloralDiagram {
                     angle,
                     height: whorl.height,
                     scale: 1.0,
+                    tilt_angle: whorl.tilt_angle,
                 });
             }
         }
@@ -550,6 +601,7 @@ mod tests {
             angle: 0.0,
             height: 0.5,
             scale: 1.0,
+            tilt_angle: 0.0,
         };
 
         let transform = mapper.map_to_3d(&placement);
@@ -623,6 +675,7 @@ mod tests {
                 angle,
                 height: 0.5,
                 scale: 1.0,
+                tilt_angle: 0.0,
             };
 
             let transform = mapper.map_to_3d(&placement);
@@ -662,6 +715,7 @@ mod tests {
             angle: 0.0,
             height: 0.5,
             scale: 1.0,
+            tilt_angle: 0.0,
         };
 
         let transform = mapper.map_to_3d(&placement);

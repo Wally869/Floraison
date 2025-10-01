@@ -33,7 +33,8 @@ export const lilyPreset: FlowerPreset = {
 					radius: 1.0,
 					height: 0.8,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			stamen_whorls: [
@@ -42,7 +43,8 @@ export const lilyPreset: FlowerPreset = {
 					radius: 0.6,
 					height: 0.6,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.523599 // 30 degrees offset
+					rotation_offset: 0.523599, // 30 degrees offset
+					tilt_angle: 1.5708 // PI/2 - horizontal spreading (lily characteristic)
 				}
 			],
 			pistil_whorls: [
@@ -51,7 +53,8 @@ export const lilyPreset: FlowerPreset = {
 					radius: 0.0,
 					height: 0.5,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			sepal_whorls: []
@@ -117,7 +120,8 @@ export const rosePreset: FlowerPreset = {
 					radius: 1.0,
 					height: 0.6,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			stamen_whorls: [
@@ -126,7 +130,8 @@ export const rosePreset: FlowerPreset = {
 					radius: 0.5,
 					height: 0.4,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 1.047 // PI/3 - moderate upward angle
 				}
 			],
 			pistil_whorls: [],
@@ -136,7 +141,8 @@ export const rosePreset: FlowerPreset = {
 					radius: 1.2,
 					height: 0.3,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			]
 		},
@@ -201,7 +207,8 @@ export const daisyPreset: FlowerPreset = {
 					radius: 1.5,
 					height: 0.4,
 					pattern: 'GoldenSpiral',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			stamen_whorls: [
@@ -210,7 +217,8 @@ export const daisyPreset: FlowerPreset = {
 					radius: 0.7,
 					height: 0.3,
 					pattern: 'GoldenSpiral',
-					rotation_offset: 0.5
+					rotation_offset: 0.5,
+					tilt_angle: 0.524 // PI/6 - slight upward angle
 				}
 			],
 			pistil_whorls: [
@@ -219,7 +227,8 @@ export const daisyPreset: FlowerPreset = {
 					radius: 0.4,
 					height: 0.2,
 					pattern: 'GoldenSpiral',
-					rotation_offset: 1.0
+					rotation_offset: 1.0,
+					tilt_angle: 0.0
 				}
 			],
 			sepal_whorls: []
@@ -285,7 +294,8 @@ export const tulipPreset: FlowerPreset = {
 					radius: 0.8,
 					height: 0.6,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			stamen_whorls: [
@@ -294,7 +304,8 @@ export const tulipPreset: FlowerPreset = {
 					radius: 0.4,
 					height: 0.5,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.523599
+					rotation_offset: 0.523599,
+					tilt_angle: 0.785 // PI/4 - moderate spread
 				}
 			],
 			pistil_whorls: [
@@ -303,7 +314,8 @@ export const tulipPreset: FlowerPreset = {
 					radius: 0.0,
 					height: 0.4,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			sepal_whorls: []
@@ -369,7 +381,8 @@ export const orchidPreset: FlowerPreset = {
 					radius: 1.2,
 					height: 0.5,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			stamen_whorls: [
@@ -378,7 +391,8 @@ export const orchidPreset: FlowerPreset = {
 					radius: 0.3,
 					height: 0.4,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 1.047 // PI/3 - dramatic spread for exotic flower
 				}
 			],
 			pistil_whorls: [
@@ -387,7 +401,8 @@ export const orchidPreset: FlowerPreset = {
 					radius: 0.0,
 					height: 0.3,
 					pattern: 'EvenlySpaced',
-					rotation_offset: 0.0
+					rotation_offset: 0.0,
+					tilt_angle: 0.0
 				}
 			],
 			sepal_whorls: []

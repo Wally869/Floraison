@@ -16,6 +16,7 @@ export interface DiagramParams {
 	stamenCount: number;
 	petalCount: number;
 	sepalCount: number;
+	stamenTilt: number; // Tilt angle in degrees (0-90)
 }
 
 export interface ReceptacleParams {
@@ -70,6 +71,7 @@ interface ComponentWhorl {
 	height: number;
 	pattern: 'EvenlySpaced' | 'GoldenSpiral' | { CustomOffset: number };
 	rotation_offset: number;
+	tilt_angle: number; // Tilt angle in radians
 }
 
 // Rust-compatible FloralDiagram structure
@@ -99,7 +101,8 @@ const defaultDiagramParams: DiagramParams = {
 	pistilCount: 1,
 	stamenCount: 6,
 	petalCount: 6,
-	sepalCount: 0
+	sepalCount: 0,
+	stamenTilt: 90 // Default: 90° horizontal spreading (like lily)
 };
 
 const defaultReceptacleParams: ReceptacleParams = {
@@ -165,7 +168,12 @@ export const petalParams = writable<PetalParams>(defaultPetalParams);
  * Generates whorl array from simple count using sensible defaults
  * for radius and height based on component type.
  */
-function createWhorl(count: number, radius: number, height: number): ComponentWhorl[] {
+function createWhorl(
+	count: number,
+	radius: number,
+	height: number,
+	tilt: number = 0.0
+): ComponentWhorl[] {
 	if (count === 0) return [];
 
 	return [
@@ -174,7 +182,8 @@ function createWhorl(count: number, radius: number, height: number): ComponentWh
 			radius,
 			height,
 			pattern: 'EvenlySpaced' as const,
-			rotation_offset: 0.0
+			rotation_offset: 0.0,
+			tilt_angle: tilt
 		}
 	];
 }
@@ -189,17 +198,20 @@ function buildFloralDiagram(
 	diagram: DiagramParams,
 	receptacle: ReceptacleParams
 ): FloralDiagram {
+	// Convert stamen tilt from degrees to radians
+	const stamenTiltRadians = (diagram.stamenTilt * Math.PI) / 180;
+
 	return {
 		receptacle_height: receptacle.height,
 		receptacle_radius: receptacle.base_radius,
-		// Petals: outer ring at 80% height
-		petal_whorls: createWhorl(diagram.petalCount, 1.0, 0.8),
-		// Stamens: middle ring at 60% height, slightly offset from petals
-		stamen_whorls: createWhorl(diagram.stamenCount, 0.6, 0.6),
-		// Pistils: center at 50% height
-		pistil_whorls: createWhorl(diagram.pistilCount, 0.0, 0.5),
-		// Sepals: outer ring at 40% height (below petals)
-		sepal_whorls: createWhorl(diagram.sepalCount, 1.0, 0.4)
+		// Petals: outer ring at 75% height
+		petal_whorls: createWhorl(diagram.petalCount, 1.0, 0.75, 0.0),
+		// Stamens: middle ring at 85% height (ABOVE petal base - botanically correct)
+		stamen_whorls: createWhorl(diagram.stamenCount, 0.6, 0.85, stamenTiltRadians),
+		// Pistils: center at 80% height (anthers level with/above pistil base)
+		pistil_whorls: createWhorl(diagram.pistilCount, 0.0, 0.8, 0.0),
+		// Sepals: outer ring at 70% height (just below petals, reduced gap)
+		sepal_whorls: createWhorl(diagram.sepalCount, 1.0, 0.7, 0.0)
 	};
 }
 
@@ -247,12 +259,19 @@ export function resetToDefaults(): void {
  * Used for loading presets. Extracts simple counts from diagram whorls.
  */
 export function loadParams(params: FlowerParams): void {
+	// Extract tilt angle from first stamen whorl (convert radians to degrees)
+	const firstStamenWhorl = params.diagram.stamen_whorls[0];
+	const stamenTiltDegrees = firstStamenWhorl
+		? Math.round((firstStamenWhorl.tilt_angle * 180) / Math.PI)
+		: 90;
+
 	// Extract counts from whorls
 	diagramParams.set({
 		pistilCount: params.diagram.pistil_whorls.reduce((sum, w) => sum + w.count, 0),
 		stamenCount: params.diagram.stamen_whorls.reduce((sum, w) => sum + w.count, 0),
 		petalCount: params.diagram.petal_whorls.reduce((sum, w) => sum + w.count, 0),
-		sepalCount: params.diagram.sepal_whorls.reduce((sum, w) => sum + w.count, 0)
+		sepalCount: params.diagram.sepal_whorls.reduce((sum, w) => sum + w.count, 0),
+		stamenTilt: stamenTiltDegrees
 	});
 
 	receptacleParams.set(params.receptacle);
