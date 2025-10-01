@@ -3,11 +3,22 @@
 
 	interface Props {
 		onResetCamera: () => void;
+		onExport: () => void;
 	}
 
-	let { onResetCamera }: Props = $props();
+	let { onResetCamera, onExport }: Props = $props();
 
 	let expanded = $state(false);
+	let exporting = $state(false);
+
+	async function handleExport() {
+		exporting = true;
+		try {
+			await onExport();
+		} finally {
+			exporting = false;
+		}
+	}
 </script>
 
 <div class="viewer-controls">
@@ -108,6 +119,11 @@
 				<button class="action-button" onclick={onResetCamera}>
 					Reset Camera
 				</button>
+
+				<button class="export-button" onclick={handleExport} disabled={exporting}>
+					{exporting ? 'Exporting...' : 'Export GLB'}
+				</button>
+				<p class="export-help">Download as 3D model (.glb)</p>
 			</div>
 		</div>
 	{/if}
@@ -264,5 +280,37 @@
 
 	.action-button:hover {
 		background-color: #2563eb;
+	}
+
+	.export-button {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		color: white;
+		border: none;
+		border-radius: 0.5rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+		margin-top: 0.75rem;
+	}
+
+	.export-button:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+	}
+
+	.export-button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.export-help {
+		margin-top: 0.25rem;
+		font-size: 0.7rem;
+		color: #888;
+		text-align: center;
 	}
 </style>

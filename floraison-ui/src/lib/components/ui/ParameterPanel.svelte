@@ -12,7 +12,8 @@
 		allParams,
 		inflorescenceParams,
 		isRecursivePattern,
-		getRecursiveDefaults
+		getRecursiveDefaults,
+		currentPresetName
 	} from '$lib/stores/parameters';
 	import { presets, presetNames, type PresetName } from '$lib/presets';
 
@@ -71,6 +72,9 @@
 				$inflorescenceParams.enabled = false;
 			}
 
+			// Update current preset name for export
+			$currentPresetName = selectedPreset;
+
 			// Wait for stores to update, THEN snapshot params
 			setTimeout(() => {
 				lastLoadedParams = JSON.stringify($allParams);
@@ -93,6 +97,7 @@
 			currentParams !== lastLoadedParams
 		) {
 			selectedPreset = 'custom';
+			$currentPresetName = 'custom';
 		}
 	});
 

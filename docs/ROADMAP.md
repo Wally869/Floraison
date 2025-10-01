@@ -69,6 +69,11 @@
 - 🎉 **Epic 9 Complete!** UI Enhancement finished! Phase 2 COMPLETE!
 - ✅ **Task 14.1**: Inflorescence UI Panel (mode toggle, pattern dropdown, parameters)
 - ✅ **Task 14.2**: Inflorescence Presets (5 presets: Lily Raceme, Lavender Spike, Cherry Umbel, Hydrangea Corymb, Astilbe Plume)
+- ✅ **Task 14.3**: Visual Enhancements (shadows, translucency, tone mapping, hemisphere lighting, vertex colors)
+- ✅ **Task 13.1**: glTF Export Module (Three.js GLTFExporter integration)
+- ✅ **Task 13.2**: Material Support (PBR materials with vertex colors)
+- ✅ **Task 13.3**: Export Button in UI (download GLB files with preset names)
+- 🎉 **Epic 13 Complete!** glTF Export finished!
 
 ## Overview
 
@@ -138,8 +143,8 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 | Epic | Title | Effort | Tasks | Status |
 |------|-------|--------|-------|--------|
-| [Epic 13](roadmap/phase-4/epic-13-gltf-export.md) | glTF Export | 6-8 hours | 3 | ⏳ Pending |
-| [Epic 14](roadmap/phase-4/epic-14-ui-polish-presets.md) | UI Polish & Presets | 6-8 hours | 4 | ⏳ Pending |
+| [Epic 13](roadmap/phase-4/epic-13-gltf-export.md) | glTF Export | 6-8 hours | 3 | ✅ Complete |
+| [Epic 14](roadmap/phase-4/epic-14-ui-polish-presets.md) | UI Polish & Presets | 6-8 hours | 4 | ✅ 75% (3/4) |
 | [Epic 15](roadmap/phase-4/epic-15-documentation-demo.md) | Documentation & Demo | 4-6 hours | 4 | ⏳ Pending |
 
 **Phase 4 Total**: 16-22 hours
@@ -187,4 +192,4 @@ This roadmap breaks down the Floraison project into manageable epics and tasks f
 
 ---
 
-**Progress**: 12/15 epics complete • 52/78 tasks complete • 🎉 Phase 1 COMPLETE! • 🎉 Phase 2 COMPLETE! • 🎉 Phase 3 COMPLETE! • Phase 4: 50% in progress 🎉
+**Progress**: 13/15 epics complete • 59/78 tasks complete • 🎉 Phase 1 COMPLETE! • 🎉 Phase 2 COMPLETE! • 🎉 Phase 3 COMPLETE! • Phase 4: 75% complete 🚀

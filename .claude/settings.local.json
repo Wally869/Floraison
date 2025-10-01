@@ -19,7 +19,8 @@
       "Bash(cargo clean:*)",
       "Bash(npm install:*)",
       "Bash(npm run dev:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

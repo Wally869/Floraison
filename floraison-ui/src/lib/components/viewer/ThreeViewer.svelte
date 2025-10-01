@@ -6,6 +6,8 @@
 	import type { MeshData } from '$lib/wasm/floraison';
 	import ViewerControls from './ViewerControls.svelte';
 	import { viewerSettings } from '$lib/stores/viewer';
+	import { exportToGLB, generateFilename } from '$lib/three/exporter';
+	import { currentPresetName } from '$lib/stores/parameters';
 
 	// Props
 	interface Props {
@@ -142,6 +144,25 @@
 			sceneCtx.resetCamera();
 		}
 	}
+
+	function handleExport() {
+		if (!flowerMesh) {
+			console.warn('No flower to export');
+			return;
+		}
+
+		const filename = generateFilename($currentPresetName);
+
+		exportToGLB(flowerMesh, {
+			filename,
+			onSuccess: () => {
+				console.log('Flower exported successfully!');
+			},
+			onError: (error) => {
+				console.error('Export failed:', error);
+			}
+		});
+	}
 </script>
 
 <div class="viewer-container">
@@ -149,7 +170,7 @@
 	{#if !mesh}
 		<div class="loading">Loading flower...</div>
 	{/if}
-	<ViewerControls onResetCamera={handleResetCamera} />
+	<ViewerControls onResetCamera={handleResetCamera} onExport={handleExport} />
 </div>
 
 <style>

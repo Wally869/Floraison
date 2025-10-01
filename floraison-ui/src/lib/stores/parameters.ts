@@ -18,6 +18,15 @@ export {
 } from './inflorescence';
 
 // ============================================================================
+// Current Preset Tracking
+// ============================================================================
+
+/**
+ * Current preset name (used for export filename)
+ */
+export const currentPresetName = writable<string>('lily');
+
+// ============================================================================
 // TypeScript Types (matching Rust structs)
 // ============================================================================
 
