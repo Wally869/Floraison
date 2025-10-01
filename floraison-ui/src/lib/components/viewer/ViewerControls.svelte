@@ -141,6 +141,13 @@
 		gap: 0.5rem;
 	}
 
+	/* Mobile: adjust for hamburger button */
+	@media (max-width: 767px) {
+		.viewer-controls {
+			top: 4.5rem; /* Below hamburger button */
+		}
+	}
+
 	.toggle-button {
 		width: 2.5rem;
 		height: 2.5rem;

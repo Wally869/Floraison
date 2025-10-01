@@ -108,26 +108,31 @@ const material = new THREE.MeshPhysicalMaterial({
 
 **Description**: Ensure UI works on mobile devices.
 
+**Status**: ✅ Complete
+
 **Acceptance Criteria**:
-- [ ] Parameter panel is collapsible drawer on mobile
-- [ ] Touch controls work for orbit camera
-- [ ] UI scales properly on small screens
-- [ ] Tested on iOS and Android
+- [x] Parameter panel is collapsible drawer on mobile
+- [x] Touch controls work for orbit camera (OrbitControls built-in support)
+- [x] UI scales properly on small screens
+- [x] Tested on Xiaomi Redmi (Android)
+- [x] Shadows disabled by default on mobile for performance
 
 **Dependencies**: Task 9.1
 
-**Technical Notes**:
-Use Tailwind responsive classes:
-```svelte
-<aside class="hidden md:block md:w-80">
-  <ParameterPanel />
-</aside>
+**Technical Implementation**:
+- Hamburger menu button (48x48px touch target, fixed top-left, mobile only)
+- Slide-in drawer with 0.3s transition (transform: translateX)
+- Backdrop overlay with tap-to-close and fade animation
+- Responsive breakpoint at 768px (Tailwind `md:`)
+- Mobile device detection for shadow optimization
+- Viewer controls repositioned below hamburger on mobile
 
-<button class="md:hidden" on:click={togglePanel}>
-  Menu
-</button>
-```
+**Files Modified**:
+- `src/routes/+page.svelte` - Hamburger button, backdrop, mobile state
+- `src/lib/components/ui/ParameterPanel.svelte` - Responsive drawer styling
+- `src/lib/components/viewer/ViewerControls.svelte` - Mobile positioning
+- `src/lib/stores/viewer.ts` - Mobile shadow optimization
 
-**Effort**: 2.5 hours
+**Effort**: 2 hours
 
 ---

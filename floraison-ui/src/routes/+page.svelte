@@ -11,8 +11,19 @@
 	let error = $state('');
 	let generator: FlowerGenerator | null = null;
 
+	// Mobile panel state
+	let panelOpen = $state(false);
+
 	// Debounce timer for parameter changes
 	let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function togglePanel() {
+		panelOpen = !panelOpen;
+	}
+
+	function closePanel() {
+		panelOpen = false;
+	}
 
 	// Initialize WASM and generator
 	onMount(async () => {
@@ -106,8 +117,27 @@
 			</div>
 		</div>
 	{:else}
+		<!-- Hamburger menu button (mobile only) -->
+		<button class="hamburger-button md:hidden" onclick={togglePanel} aria-label="Toggle menu">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M3 6h18M3 12h18M3 18h18" />
+			</svg>
+		</button>
+
 		<div class="split-view">
-			<ParameterPanel />
+			<!-- Backdrop overlay (mobile only, when panel open) -->
+			{#if panelOpen}
+				<div
+					class="backdrop md:hidden"
+					onclick={closePanel}
+					onkeydown={(e) => e.key === 'Escape' && closePanel()}
+					role="button"
+					tabindex="-1"
+					aria-label="Close menu"
+				></div>
+			{/if}
+
+			<ParameterPanel open={panelOpen} />
 			<div class="viewer-container">
 				<ThreeViewer {mesh} />
 				{#if regenerating}
@@ -145,6 +175,56 @@
 		display: flex;
 		width: 100%;
 		height: 100%;
+		position: relative; /* For backdrop positioning */
+	}
+
+	.hamburger-button {
+		position: fixed;
+		top: 1rem;
+		left: 1rem;
+		z-index: 60;
+		width: 3rem;
+		height: 3rem;
+		background-color: white;
+		border: 1px solid #e5e7eb;
+		border-radius: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		transition: all 0.2s;
+	}
+
+	.hamburger-button:hover {
+		background-color: #f3f4f6;
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	.hamburger-button:active {
+		transform: scale(0.95);
+	}
+
+	.hamburger-button svg {
+		width: 1.5rem;
+		height: 1.5rem;
+	}
+
+	.backdrop {
+		position: fixed;
+		inset: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		z-index: 40;
+		animation: fadeIn 0.2s ease-out;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.viewer-container {

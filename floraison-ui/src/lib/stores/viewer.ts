@@ -20,6 +20,12 @@ export interface ViewerSettings {
 	enableShadows: boolean;
 }
 
+// Detect mobile device for performance optimization
+function isMobileDevice(): boolean {
+	if (typeof window === 'undefined') return false;
+	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
 const defaultSettings: ViewerSettings = {
 	showAxes: false,
 	backgroundColor: '#f0f0f0',
@@ -31,7 +37,7 @@ const defaultSettings: ViewerSettings = {
 	hemisphereGroundColor: '#8b7355', // Brownish earth
 	exposure: 1.0, // Neutral exposure
 	wireframe: false,
-	enableShadows: true
+	enableShadows: !isMobileDevice() // Disable shadows on mobile for better performance
 };
 
 export const viewerSettings = writable<ViewerSettings>(defaultSettings);
