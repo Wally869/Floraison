@@ -7,6 +7,7 @@
 	import ViewerControls from './ViewerControls.svelte';
 	import { viewerSettings } from '$lib/stores/viewer';
 	import { exportToGLB, generateFilename } from '$lib/three/exporter';
+	import { captureScreenshot, generateScreenshotFilename } from '$lib/three/screenshot';
 	import { currentPresetName } from '$lib/stores/parameters';
 
 	// Props
@@ -201,6 +202,25 @@
 			}
 		});
 	}
+
+	function handleScreenshot() {
+		if (!sceneCtx) {
+			console.warn('Scene not initialized');
+			return;
+		}
+
+		const filename = generateScreenshotFilename($currentPresetName);
+
+		captureScreenshot(sceneCtx.renderer, {
+			filename,
+			onSuccess: () => {
+				console.log('Screenshot captured successfully!');
+			},
+			onError: (error) => {
+				console.error('Screenshot failed:', error);
+			}
+		});
+	}
 </script>
 
 <div class="viewer-container">
@@ -212,6 +232,7 @@
 		onResetCamera={handleResetCamera}
 		onFrameFlower={handleFrameFlower}
 		onExport={handleExport}
+		onScreenshot={handleScreenshot}
 	/>
 </div>
 

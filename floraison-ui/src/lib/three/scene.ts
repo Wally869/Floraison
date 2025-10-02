@@ -55,7 +55,8 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	// Create WebGL renderer
 	const renderer = new THREE.WebGLRenderer({
 		canvas,
-		antialias: true
+		antialias: true,
+		preserveDrawingBuffer: true // Required for screenshots/canvas capture
 	});
 	renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 	renderer.setPixelRatio(window.devicePixelRatio);

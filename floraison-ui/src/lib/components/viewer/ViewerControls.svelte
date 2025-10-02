@@ -5,12 +5,14 @@
 		onResetCamera: () => void;
 		onFrameFlower: () => void;
 		onExport: () => void;
+		onScreenshot: () => void;
 	}
 
-	let { onResetCamera, onFrameFlower, onExport }: Props = $props();
+	let { onResetCamera, onFrameFlower, onExport, onScreenshot }: Props = $props();
 
 	let expanded = $state(false);
 	let exporting = $state(false);
+	let capturing = $state(false);
 
 	async function handleExport() {
 		exporting = true;
@@ -18,6 +20,15 @@
 			await onExport();
 		} finally {
 			exporting = false;
+		}
+	}
+
+	async function handleScreenshot() {
+		capturing = true;
+		try {
+			await onScreenshot();
+		} finally {
+			capturing = false;
 		}
 	}
 </script>
@@ -124,6 +135,11 @@
 				<button class="action-button secondary" onclick={onFrameFlower}>
 					Frame Flower
 				</button>
+
+				<button class="screenshot-button" onclick={handleScreenshot} disabled={capturing}>
+					{capturing ? 'Capturing...' : '📷 Screenshot'}
+				</button>
+				<p class="export-help">Capture as PNG image</p>
 
 				<button class="export-button" onclick={handleExport} disabled={exporting}>
 					{exporting ? 'Exporting...' : 'Export GLB'}
@@ -302,6 +318,31 @@
 		background-color: #4b5563;
 	}
 
+	.screenshot-button {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+		color: white;
+		border: none;
+		border-radius: 0.5rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+		margin-top: 0.75rem;
+	}
+
+	.screenshot-button:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+	}
+
+	.screenshot-button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
 	.export-button {
 		width: 100%;
 		padding: 0.75rem 1rem;
@@ -314,7 +355,7 @@
 		cursor: pointer;
 		transition: all 0.2s;
 		box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
-		margin-top: 0.75rem;
+		margin-top: 0.5rem;
 	}
 
 	.export-button:hover:not(:disabled) {
