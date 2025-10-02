@@ -96,7 +96,12 @@ function randomDiagramParams(): DiagramParams {
 		stamenCount: randomInt(4, 12), // Typical range
 		petalCount: randomInt(4, 12), // Common petal counts
 		sepalCount: randomInt(0, 6), // Often 0, sometimes present
-		stamenTilt: randomInt(30, 90) // Droop to horizontal
+		stamenTilt: randomInt(30, 90), // Droop to horizontal
+		// Natural variation: subtle randomness for organic look
+		position_jitter: randomBoolean(0.4) ? randomRange(0.05, 0.2) : 0.0, // 40% chance of position jitter
+		angle_jitter: randomBoolean(0.5) ? randomRange(2, 8) : 0.0, // 50% chance of angle jitter
+		size_jitter: randomBoolean(0.3) ? randomRange(0.05, 0.15) : 0.0, // 30% chance of size jitter
+		jitter_seed: randomInt(0, 9999) // Random seed for variety
 	};
 }
 

@@ -58,7 +58,11 @@ export const lilyPreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 1.0,
@@ -149,7 +153,11 @@ export const rosePreset: FlowerPreset = {
 					rotation_offset: 0.0,
 					tilt_angle: 0.0
 				}
-			]
+			],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.8,
@@ -240,7 +248,11 @@ export const daisyPreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.5,
@@ -331,7 +343,11 @@ export const tulipPreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.8,
@@ -422,7 +438,11 @@ export const orchidPreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.6,
@@ -540,7 +560,11 @@ export const lavenderSpikePreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.4,
@@ -674,7 +698,11 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 			],
 			stamen_whorls: [],
 			pistil_whorls: [],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.3,
@@ -772,7 +800,11 @@ export const astilbeCompoundPreset: FlowerPreset = {
 				}
 			],
 			pistil_whorls: [],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.2,
@@ -880,7 +912,11 @@ export const alliumUmbelPreset: FlowerPreset = {
 					tilt_angle: 0.0
 				}
 			],
-			sepal_whorls: []
+			sepal_whorls: [],
+			position_jitter: 0.0,
+			angle_jitter: 0.0,
+			size_jitter: 0.0,
+			jitter_seed: 42
 		},
 		receptacle: {
 			height: 0.15,

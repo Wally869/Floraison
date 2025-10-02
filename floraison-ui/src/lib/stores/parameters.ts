@@ -37,6 +37,11 @@ export interface DiagramParams {
 	petalCount: number;
 	sepalCount: number;
 	stamenTilt: number; // Tilt angle in degrees (0-90)
+	// Natural variation parameters
+	position_jitter: number; // 0-0.5: Random position offset
+	angle_jitter: number; // 0-15: Random rotation variation in degrees
+	size_jitter: number; // 0-0.3: Random scale variation (±30%)
+	jitter_seed: number; // Seed for deterministic randomness
 }
 
 export interface ReceptacleParams {
@@ -126,7 +131,12 @@ const defaultDiagramParams: DiagramParams = {
 	stamenCount: 6,
 	petalCount: 6,
 	sepalCount: 0,
-	stamenTilt: 90 // Default: 90° horizontal spreading (like lily)
+	stamenTilt: 90, // Default: 90° horizontal spreading (like lily)
+	// Natural variation (disabled by default for perfect symmetry)
+	position_jitter: 0.0,
+	angle_jitter: 0.0,
+	size_jitter: 0.0,
+	jitter_seed: 42
 };
 
 const defaultReceptacleParams: ReceptacleParams = {
@@ -239,7 +249,12 @@ function buildFloralDiagram(
 		// Pistils: center at 80% height (anthers level with/above pistil base)
 		pistil_whorls: createWhorl(diagram.pistilCount, 0.0, 0.8, 0.0),
 		// Sepals: outer ring at 70% height (just below petals, reduced gap)
-		sepal_whorls: createWhorl(diagram.sepalCount, 1.0, 0.7, 0.0)
+		sepal_whorls: createWhorl(diagram.sepalCount, 1.0, 0.7, 0.0),
+		// Natural variation parameters
+		position_jitter: diagram.position_jitter,
+		angle_jitter: diagram.angle_jitter,
+		size_jitter: diagram.size_jitter,
+		jitter_seed: diagram.jitter_seed
 	};
 }
 
@@ -329,13 +344,18 @@ export function loadParams(params: FlowerParams): void {
 		? Math.round((firstStamenWhorl.tilt_angle * 180) / Math.PI)
 		: 90;
 
-	// Extract counts from whorls
+	// Extract counts from whorls, with default jitter values for backward compatibility
 	diagramParams.set({
 		pistilCount: params.diagram.pistil_whorls.reduce((sum, w) => sum + w.count, 0),
 		stamenCount: params.diagram.stamen_whorls.reduce((sum, w) => sum + w.count, 0),
 		petalCount: params.diagram.petal_whorls.reduce((sum, w) => sum + w.count, 0),
 		sepalCount: params.diagram.sepal_whorls.reduce((sum, w) => sum + w.count, 0),
-		stamenTilt: stamenTiltDegrees
+		stamenTilt: stamenTiltDegrees,
+		// Extract jitter params if present, otherwise use defaults (0 = no jitter)
+		position_jitter: (params.diagram as any).position_jitter ?? 0.0,
+		angle_jitter: (params.diagram as any).angle_jitter ?? 0.0,
+		size_jitter: (params.diagram as any).size_jitter ?? 0.0,
+		jitter_seed: (params.diagram as any).jitter_seed ?? 42
 	});
 
 	receptacleParams.set(params.receptacle);

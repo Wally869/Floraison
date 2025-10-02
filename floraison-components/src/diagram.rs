@@ -144,6 +144,23 @@ pub struct FloralDiagram {
     /// Optional whorl(s) of sepals (outer protective leaves)
     /// Will be implemented in future epics
     pub sepal_whorls: Vec<ComponentWhorl>,
+
+    /// Natural variation parameters for organic randomness
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub position_jitter: f32,  // 0-0.5: Random position offset
+
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub angle_jitter: f32,  // 0-15: Random rotation variation in degrees
+
+    #[cfg_attr(feature = "serde", serde(default))]
+    pub size_jitter: f32,  // 0-0.3: Random scale variation
+
+    #[cfg_attr(feature = "serde", serde(default = "default_jitter_seed"))]
+    pub jitter_seed: u64,  // Seed for deterministic randomness
+}
+
+fn default_jitter_seed() -> u64 {
+    42
 }
 
 impl FloralDiagram {
@@ -183,6 +200,10 @@ impl FloralDiagram {
                 tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
+            position_jitter: 0.0,
+            angle_jitter: 0.0,
+            size_jitter: 0.0,
+            jitter_seed: 42,
         }
     }
 
@@ -232,6 +253,10 @@ impl FloralDiagram {
                 tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
+            position_jitter: 0.0,
+            angle_jitter: 0.0,
+            size_jitter: 0.0,
+            jitter_seed: 42,
         }
     }
 
@@ -271,6 +296,10 @@ impl FloralDiagram {
                 tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
+            position_jitter: 0.0,
+            angle_jitter: 0.0,
+            size_jitter: 0.0,
+            jitter_seed: 42,
         }
     }
 
@@ -310,6 +339,10 @@ impl FloralDiagram {
                 tilt_angle: 0.0,
             }],
             sepal_whorls: vec![],
+            position_jitter: 0.0,
+            angle_jitter: 0.0,
+            size_jitter: 0.0,
+            jitter_seed: 42,
         }
     }
 

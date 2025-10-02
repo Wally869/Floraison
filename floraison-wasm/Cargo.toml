@@ -24,3 +24,7 @@ serde-wasm-bindgen = { workspace = true }
 console_error_panic_hook = { workspace = true }
 js-sys = { workspace = true }
 web-sys = { workspace = true }
+
+# RNG for jitter/randomness
+rand = { version = "0.8", features = ["small_rng"] }
+getrandom = { version = "0.2", features = ["js"] }

@@ -320,19 +320,30 @@ impl FloralDiagram {
     /// Vector of placements for all components in the flower
     pub fn generate_placements(&self) -> Vec<ComponentPlacement> {
         let mut placements = Vec::new();
+        let mut component_index: u64 = 0;
+
+        // Check if jitter is enabled (any param > 0)
+        let jitter_enabled = self.position_jitter > 0.0 || self.angle_jitter > 0.0 || self.size_jitter > 0.0;
 
         // Add pistils
         for whorl in &self.pistil_whorls {
             let angles = whorl.calculate_angles();
             for angle in angles {
+                let (radius, jitter_angle, scale) = if jitter_enabled {
+                    self.apply_jitter(whorl.radius, angle, component_index)
+                } else {
+                    (whorl.radius, angle, 1.0)
+                };
+
                 placements.push(ComponentPlacement {
                     component_type: ComponentType::Pistil,
-                    radius: whorl.radius,
-                    angle,
+                    radius,
+                    angle: jitter_angle,
                     height: whorl.height,
-                    scale: 1.0,
+                    scale,
                     tilt_angle: whorl.tilt_angle,
                 });
+                component_index += 1;
             }
         }
 
@@ -340,14 +351,21 @@ impl FloralDiagram {
         for whorl in &self.stamen_whorls {
             let angles = whorl.calculate_angles();
             for angle in angles {
+                let (radius, jitter_angle, scale) = if jitter_enabled {
+                    self.apply_jitter(whorl.radius, angle, component_index)
+                } else {
+                    (whorl.radius, angle, 1.0)
+                };
+
                 placements.push(ComponentPlacement {
                     component_type: ComponentType::Stamen,
-                    radius: whorl.radius,
-                    angle,
+                    radius,
+                    angle: jitter_angle,
                     height: whorl.height,
-                    scale: 1.0,
+                    scale,
                     tilt_angle: whorl.tilt_angle,
                 });
+                component_index += 1;
             }
         }
 
@@ -355,14 +373,21 @@ impl FloralDiagram {
         for whorl in &self.petal_whorls {
             let angles = whorl.calculate_angles();
             for angle in angles {
+                let (radius, jitter_angle, scale) = if jitter_enabled {
+                    self.apply_jitter(whorl.radius, angle, component_index)
+                } else {
+                    (whorl.radius, angle, 1.0)
+                };
+
                 placements.push(ComponentPlacement {
                     component_type: ComponentType::Petal,
-                    radius: whorl.radius,
-                    angle,
+                    radius,
+                    angle: jitter_angle,
                     height: whorl.height,
-                    scale: 1.0,
+                    scale,
                     tilt_angle: whorl.tilt_angle,
                 });
+                component_index += 1;
             }
         }
 
@@ -370,18 +395,62 @@ impl FloralDiagram {
         for whorl in &self.sepal_whorls {
             let angles = whorl.calculate_angles();
             for angle in angles {
+                let (radius, jitter_angle, scale) = if jitter_enabled {
+                    self.apply_jitter(whorl.radius, angle, component_index)
+                } else {
+                    (whorl.radius, angle, 1.0)
+                };
+
                 placements.push(ComponentPlacement {
                     component_type: ComponentType::Sepal,
-                    radius: whorl.radius,
-                    angle,
+                    radius,
+                    angle: jitter_angle,
                     height: whorl.height,
-                    scale: 1.0,
+                    scale,
                     tilt_angle: whorl.tilt_angle,
                 });
+                component_index += 1;
             }
         }
 
         placements
+    }
+
+    /// Apply jitter to placement parameters for natural variation
+    ///
+    /// Uses seeded RNG for deterministic randomness
+    fn apply_jitter(&self, base_radius: f32, base_angle: f32, index: u64) -> (f32, f32, f32) {
+        use rand::{Rng, SeedableRng};
+        use rand::rngs::SmallRng;
+
+        // Create seeded RNG unique to this component
+        let mut rng = SmallRng::seed_from_u64(self.jitter_seed.wrapping_add(index));
+
+        // Position jitter: offset radius slightly
+        let radius_offset = if self.position_jitter > 0.0 {
+            rng.gen_range(-self.position_jitter..self.position_jitter)
+        } else {
+            0.0
+        };
+        let jittered_radius = (base_radius + radius_offset).max(0.0);
+
+        // Angle jitter: rotate slightly (convert degrees to radians)
+        let angle_offset = if self.angle_jitter > 0.0 {
+            let max_angle_rad = self.angle_jitter.to_radians();
+            rng.gen_range(-max_angle_rad..max_angle_rad)
+        } else {
+            0.0
+        };
+        let jittered_angle = base_angle + angle_offset;
+
+        // Size jitter: scale slightly
+        let scale: f32 = if self.size_jitter > 0.0 {
+            1.0 + rng.gen_range(-self.size_jitter..self.size_jitter)
+        } else {
+            1.0
+        };
+
+        (jittered_radius, jittered_angle, scale.max(0.1)) // Clamp scale to avoid invisibility
     }
 }
 

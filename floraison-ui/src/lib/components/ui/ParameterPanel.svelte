@@ -512,6 +512,89 @@
 				/>
 				<p class="param-help">0° = upright, 90° = spreading</p>
 			</div>
+
+			<!-- Natural Variation Subsection -->
+			<div class="subsection-header">Natural Variation</div>
+
+			<div class="param-group">
+				<label for="position-jitter">
+					<span class="param-label">Position Jitter</span>
+					<span class="param-value">{$diagramParams.position_jitter.toFixed(2)}</span>
+				</label>
+				<input
+					id="position-jitter"
+					type="range"
+					min="0"
+					max="0.5"
+					step="0.05"
+					bind:value={$diagramParams.position_jitter}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 Random position offset (0 = perfect alignment)</p>
+			</div>
+
+			<div class="param-group">
+				<label for="angle-jitter">
+					<span class="param-label">Rotation Jitter (deg)</span>
+					<span class="param-value">{$diagramParams.angle_jitter.toFixed(0)}°</span>
+				</label>
+				<input
+					id="angle-jitter"
+					type="range"
+					min="0"
+					max="15"
+					step="1"
+					bind:value={$diagramParams.angle_jitter}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 Random rotation variation (0 = perfect symmetry)</p>
+			</div>
+
+			<div class="param-group">
+				<label for="size-jitter">
+					<span class="param-label">Size Jitter</span>
+					<span class="param-value">{$diagramParams.size_jitter.toFixed(2)}</span>
+				</label>
+				<input
+					id="size-jitter"
+					type="range"
+					min="0"
+					max="0.3"
+					step="0.05"
+					bind:value={$diagramParams.size_jitter}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 Random size variation (0 = uniform size)</p>
+			</div>
+
+			<div class="param-group">
+				<label for="jitter-seed">
+					<span class="param-label">Random Seed</span>
+					<span class="param-value">{$diagramParams.jitter_seed}</span>
+				</label>
+				<div style="display: flex; gap: 8px;">
+					<input
+						id="jitter-seed"
+						type="range"
+						min="0"
+						max="9999"
+						step="1"
+						bind:value={$diagramParams.jitter_seed}
+						class="param-slider"
+						style="flex: 1;"
+					/>
+					<button
+						onclick={() => {
+							$diagramParams.jitter_seed = Math.floor(Math.random() * 10000);
+						}}
+						class="icon-button"
+						title="Randomize seed"
+					>
+						🎲
+					</button>
+				</div>
+				<p class="param-help">💡 Same seed = same variation pattern</p>
+			</div>
 		</div>
 	</details>
 
@@ -1351,5 +1434,41 @@
 		font-weight: 600;
 		color: #6b7280;
 		margin-bottom: 0.75rem;
+	}
+
+	/* Subsection header for grouping params */
+	.subsection-header {
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #9ca3af;
+		margin-top: 1.25rem;
+		margin-bottom: 0.75rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	/* Icon button (e.g., for randomize seed) */
+	.icon-button {
+		width: 36px;
+		height: 36px;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		background-color: white;
+		cursor: pointer;
+		font-size: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.icon-button:hover {
+		background-color: #f3f4f6;
+		border-color: #9ca3af;
+		transform: scale(1.05);
+	}
+
+	.icon-button:active {
+		transform: scale(0.95);
 	}
 </style>
