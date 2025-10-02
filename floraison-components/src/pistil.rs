@@ -5,7 +5,7 @@
 
 use crate::{Mesh, Vec2, Vec3, Mat4};
 use floraison_core::geometry::surface_revolution::{surface_of_revolution, uv_sphere};
-use floraison_core::geometry::sweep::sweep_along_curve;
+use floraison_core::geometry::sweep::sweep_tapered_cylinder;
 use floraison_core::math::curves::sample_catmull_rom_curve;
 
 #[cfg(feature = "serde")]
@@ -128,7 +128,7 @@ impl PistilParams {
 pub fn generate(params: &PistilParams) -> Mesh {
     // Generate style based on whether curve is provided
     let (mut style, tip_position) = if let Some(ref curve_points) = params.style_curve {
-        // Curved style: sweep profile along curve
+        // Curved style: sweep tapered cylinder along curve
         assert!(
             curve_points.len() >= 4,
             "Style curve requires at least 4 control points"
@@ -137,13 +137,14 @@ pub fn generate(params: &PistilParams) -> Mesh {
         // Sample curve using Catmull-Rom spline
         let sampled_curve = sample_catmull_rom_curve(curve_points, 20);
 
-        // Create tapered profile (radius, offset_along_curve)
-        let profile = vec![
-            Vec2::new(params.base_radius, 0.0),
-            Vec2::new(params.tip_radius, 1.0),
-        ];
-
-        let style_mesh = sweep_along_curve(&profile, &sampled_curve, params.segments, params.color);
+        // Sweep tapered cylinder (base radius to tip radius) along the curve
+        let style_mesh = sweep_tapered_cylinder(
+            params.base_radius,
+            params.tip_radius,
+            &sampled_curve,
+            params.segments,
+            params.color,
+        );
 
         // Tip position is at the end of the curve
         let tip_pos = *sampled_curve.last().unwrap();

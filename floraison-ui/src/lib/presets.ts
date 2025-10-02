@@ -76,7 +76,9 @@ export const lilyPreset: FlowerPreset = {
 			tip_radius: 0.06,
 			stigma_radius: 0.12,
 			segments: 12,
-			color: [0.95, 0.9, 0.3] // Yellow-green
+			color: [0.95, 0.9, 0.3], // Yellow-green
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 1.5,
@@ -85,7 +87,9 @@ export const lilyPreset: FlowerPreset = {
 			anther_width: 0.07,
 			anther_height: 0.07,
 			segments: 10,
-			color: [0.95, 0.75, 0.2] // Golden
+			color: [0.95, 0.75, 0.2], // Golden
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 3.0,
@@ -163,7 +167,9 @@ export const rosePreset: FlowerPreset = {
 			tip_radius: 0.08,
 			stigma_radius: 0.15,
 			segments: 12,
-			color: [0.95, 0.9, 0.3]
+			color: [0.95, 0.9, 0.3],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.8,
@@ -172,7 +178,9 @@ export const rosePreset: FlowerPreset = {
 			anther_width: 0.06,
 			anther_height: 0.06,
 			segments: 10,
-			color: [0.95, 0.8, 0.2]
+			color: [0.95, 0.8, 0.2],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 2.5,
@@ -250,7 +258,9 @@ export const daisyPreset: FlowerPreset = {
 			tip_radius: 0.04,
 			stigma_radius: 0.08,
 			segments: 8,
-			color: [0.85, 0.7, 0.2]
+			color: [0.85, 0.7, 0.2],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.6,
@@ -259,7 +269,9 @@ export const daisyPreset: FlowerPreset = {
 			anther_width: 0.04,
 			anther_height: 0.04,
 			segments: 8,
-			color: [0.9, 0.75, 0.2]
+			color: [0.9, 0.75, 0.2],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 2.0,
@@ -337,7 +349,9 @@ export const tulipPreset: FlowerPreset = {
 			tip_radius: 0.1,
 			stigma_radius: 0.15,
 			segments: 12,
-			color: [0.85, 0.9, 0.3]
+			color: [0.85, 0.9, 0.3],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 1.2,
@@ -346,7 +360,9 @@ export const tulipPreset: FlowerPreset = {
 			anther_width: 0.08,
 			anther_height: 0.08,
 			segments: 10,
-			color: [0.2, 0.2, 0.3] // Dark
+			color: [0.2, 0.2, 0.3], // Dark
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 3.5,
@@ -424,7 +440,9 @@ export const orchidPreset: FlowerPreset = {
 			tip_radius: 0.05,
 			stigma_radius: 0.1,
 			segments: 12,
-			color: [0.95, 0.9, 0.4]
+			color: [0.95, 0.9, 0.4],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 1.0,
@@ -433,7 +451,9 @@ export const orchidPreset: FlowerPreset = {
 			anther_width: 0.08,
 			anther_height: 0.08,
 			segments: 10,
-			color: [0.9, 0.85, 0.3]
+			color: [0.9, 0.85, 0.3],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 4.0,
@@ -538,7 +558,9 @@ export const lavenderSpikePreset: FlowerPreset = {
 			tip_radius: 0.02,
 			stigma_radius: 0.04,
 			segments: 8,
-			color: [0.9, 0.85, 0.4]
+			color: [0.9, 0.85, 0.4],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.5,
@@ -547,7 +569,9 @@ export const lavenderSpikePreset: FlowerPreset = {
 			anther_width: 0.03,
 			anther_height: 0.03,
 			segments: 6,
-			color: [0.95, 0.9, 0.4]
+			color: [0.95, 0.9, 0.4],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 1.0,
@@ -668,7 +692,9 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 			tip_radius: 0.02,
 			stigma_radius: 0.04,
 			segments: 6,
-			color: [0.9, 0.9, 0.5]
+			color: [0.9, 0.9, 0.5],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.4,
@@ -677,7 +703,9 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 			anther_width: 0.02,
 			anther_height: 0.02,
 			segments: 6,
-			color: [0.95, 0.9, 0.4]
+			color: [0.95, 0.9, 0.4],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 1.2,
@@ -762,7 +790,9 @@ export const astilbeCompoundPreset: FlowerPreset = {
 			tip_radius: 0.015,
 			stigma_radius: 0.025,
 			segments: 6,
-			color: [0.9, 0.85, 0.4]
+			color: [0.9, 0.85, 0.4],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.4,
@@ -771,7 +801,9 @@ export const astilbeCompoundPreset: FlowerPreset = {
 			anther_width: 0.02,
 			anther_height: 0.02,
 			segments: 6,
-			color: [0.95, 0.9, 0.4]
+			color: [0.95, 0.9, 0.4],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 0.6,
@@ -866,7 +898,9 @@ export const alliumUmbelPreset: FlowerPreset = {
 			tip_radius: 0.015,
 			stigma_radius: 0.025,
 			segments: 6,
-			color: [0.9, 0.85, 0.4]
+			color: [0.9, 0.85, 0.4],
+			pistil_bend: 0.0,
+			pistil_droop: 0.0
 		},
 		stamen: {
 			filament_length: 0.5,
@@ -875,7 +909,9 @@ export const alliumUmbelPreset: FlowerPreset = {
 			anther_width: 0.015,
 			anther_height: 0.015,
 			segments: 6,
-			color: [0.95, 0.9, 0.4]
+			color: [0.95, 0.9, 0.4],
+			stamen_bend: 0.0,
+			stamen_droop: 0.0
 		},
 		petal: {
 			length: 0.5,

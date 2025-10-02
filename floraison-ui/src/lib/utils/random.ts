@@ -134,7 +134,9 @@ function randomPistilParams(): PistilParams {
 		tip_radius,
 		stigma_radius,
 		segments: 12, // Fixed
-		color: randomYellowColor()
+		color: randomYellowColor(),
+		pistil_bend: randomBoolean(0.2) ? randomRange(0.1, 0.4) : 0.0, // 20% chance of curve
+		pistil_droop: randomBoolean(0.3) ? randomRange(-0.4, 0.2) : 0.0 // 30% chance of droop
 	};
 }
 
@@ -149,7 +151,9 @@ function randomStamenParams(): StamenParams {
 		anther_width: randomRange(0.04, 0.1),
 		anther_height: randomRange(0.04, 0.1),
 		segments: 10, // Fixed
-		color: randomYellowColor()
+		color: randomYellowColor(),
+		stamen_bend: randomBoolean(0.3) ? randomRange(0.1, 0.5) : 0.0, // 30% chance of curve
+		stamen_droop: randomBoolean(0.3) ? randomRange(-0.4, 0.2) : 0.0 // 30% chance of droop
 	};
 }
 

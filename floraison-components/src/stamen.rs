@@ -5,7 +5,7 @@
 
 use crate::{Mesh, Vec2, Vec3, Mat4};
 use floraison_core::geometry::surface_revolution::{surface_of_revolution, uv_sphere};
-use floraison_core::geometry::sweep::sweep_along_curve;
+use floraison_core::geometry::sweep::sweep_tapered_cylinder;
 use floraison_core::math::curves::sample_catmull_rom_curve;
 
 #[cfg(feature = "serde")]
@@ -149,7 +149,7 @@ impl StamenParams {
 pub fn generate(params: &StamenParams) -> Mesh {
     // Generate filament based on whether curve is provided
     let (mut filament, tip_position) = if let Some(ref curve_points) = params.filament_curve {
-        // Curved filament: sweep profile along curve
+        // Curved filament: sweep cylinder along curve
         assert!(
             curve_points.len() >= 4,
             "Filament curve requires at least 4 control points"
@@ -158,13 +158,14 @@ pub fn generate(params: &StamenParams) -> Mesh {
         // Sample curve using Catmull-Rom spline
         let sampled_curve = sample_catmull_rom_curve(curve_points, 20);
 
-        // Create cylindrical profile (constant radius)
-        let profile = vec![
-            Vec2::new(params.filament_radius, 0.0),
-            Vec2::new(params.filament_radius, 1.0),
-        ];
-
-        let filament_mesh = sweep_along_curve(&profile, &sampled_curve, params.segments, params.color);
+        // Sweep cylindrical filament (constant radius) along the curve
+        let filament_mesh = sweep_tapered_cylinder(
+            params.filament_radius,
+            params.filament_radius, // Same radius at both ends for cylinder
+            &sampled_curve,
+            params.segments,
+            params.color,
+        );
 
         // Tip position is at the end of the curve
         let tip_pos = *sampled_curve.last().unwrap();

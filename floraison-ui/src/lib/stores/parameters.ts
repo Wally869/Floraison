@@ -6,6 +6,7 @@
  */
 
 import { writable, derived, type Readable } from 'svelte/store';
+import { generateBendCurve } from '$lib/utils/curves';
 
 // Re-export inflorescence store for convenience
 export {
@@ -56,7 +57,9 @@ export interface PistilParams {
 	stigma_radius: number;
 	segments: number;
 	color: [number, number, number];
-	// Note: style_curve omitted for simplicity in Epic 8
+	pistil_bend: number; // 0-1: bend amount for curved style (0=straight, 1=dramatic arc)
+	pistil_droop: number; // -1 to 1: vertical tilt (-1=droop down, 0=straight, 1=lift up)
+	// Note: style_curve generated from pistil_bend and pistil_droop
 }
 
 export interface StamenParams {
@@ -67,7 +70,9 @@ export interface StamenParams {
 	anther_height: number;
 	segments: number;
 	color: [number, number, number];
-	// Note: filament_curve omitted for simplicity in Epic 8
+	stamen_bend: number; // 0-1: bend amount for curved filament (0=straight, 1=dramatic arc)
+	stamen_droop: number; // -1 to 1: vertical tilt (-1=droop down, 0=straight, 1=lift up)
+	// Note: filament_curve generated from stamen_bend and stamen_droop
 }
 
 export interface PetalParams {
@@ -141,7 +146,9 @@ const defaultPistilParams: PistilParams = {
 	tip_radius: 0.06,
 	stigma_radius: 0.12,
 	segments: 12,
-	color: [1.0, 1.0, 1.0]
+	color: [1.0, 1.0, 1.0],
+	pistil_bend: 0.0, // Straight by default
+	pistil_droop: 0.0 // No droop by default
 };
 
 const defaultStamenParams: StamenParams = {
@@ -151,7 +158,9 @@ const defaultStamenParams: StamenParams = {
 	anther_width: 0.07,
 	anther_height: 0.07,
 	segments: 10,
-	color: [1.0, 1.0, 1.0]
+	color: [1.0, 1.0, 1.0],
+	stamen_bend: 0.0, // Straight by default
+	stamen_droop: 0.0 // No droop by default
 };
 
 const defaultPetalParams: PetalParams = {
@@ -243,15 +252,51 @@ function buildFloralDiagram(
  *
  * Derives complete FlowerParams from all parameter stores.
  * This is the single source of truth that triggers flower regeneration.
+ *
+ * Automatically converts bend amounts to curve control points:
+ * - pistil_bend → style_curve
+ * - stamen_bend → filament_curve
  */
 export const allParams: Readable<FlowerParams> = derived(
 	[diagramParams, receptacleParams, pistilParams, stamenParams, petalParams],
 	([$diagram, $receptacle, $pistil, $stamen, $petal]) => {
+		// Generate pistil curve if bend or droop > 0
+		const pistilCurve = generateBendCurve(
+			$pistil.length,
+			$pistil.pistil_bend,
+			$pistil.pistil_droop,
+			1
+		);
+
+		// Generate stamen curve if bend or droop > 0
+		const stamenCurve = generateBendCurve(
+			$stamen.filament_length,
+			$stamen.stamen_bend,
+			$stamen.stamen_droop,
+			1
+		);
+
+		// Build pistil params with optional curve
+		// Remove UI-only pistil_bend and pistil_droop fields before sending to Rust
+		const { pistil_bend: _pistilBend, pistil_droop: _pistilDroop, ...pistilBase } = $pistil;
+		const pistilRust = {
+			...pistilBase,
+			...(pistilCurve && { style_curve: pistilCurve })
+		};
+
+		// Build stamen params with optional curve
+		// Remove UI-only stamen_bend and stamen_droop fields before sending to Rust
+		const { stamen_bend: _stamenBend, stamen_droop: _stamenDroop, ...stamenBase } = $stamen;
+		const stamenRust = {
+			...stamenBase,
+			...(stamenCurve && { filament_curve: stamenCurve })
+		};
+
 		return {
 			diagram: buildFloralDiagram($diagram, $receptacle),
 			receptacle: $receptacle,
-			pistil: $pistil,
-			stamen: $stamen,
+			pistil: pistilRust as any, // Cast needed since we add optional style_curve
+			stamen: stamenRust as any, // Cast needed since we add optional filament_curve
 			petal: $petal
 		};
 	}

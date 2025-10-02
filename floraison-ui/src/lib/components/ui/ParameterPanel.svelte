@@ -699,6 +699,40 @@
 			</div>
 
 			<div class="param-group">
+				<label for="pistil-bend">
+					<span class="param-label">Pistil Bend</span>
+					<span class="param-value">{$pistilParams.pistil_bend.toFixed(2)}</span>
+				</label>
+				<input
+					id="pistil-bend"
+					type="range"
+					min="0"
+					max="1"
+					step="0.05"
+					bind:value={$pistilParams.pistil_bend}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 0 = straight, 0.5 = gentle curve, 1.0 = dramatic arc</p>
+			</div>
+
+			<div class="param-group">
+				<label for="pistil-droop">
+					<span class="param-label">Pistil Droop</span>
+					<span class="param-value">{$pistilParams.pistil_droop.toFixed(2)}</span>
+				</label>
+				<input
+					id="pistil-droop"
+					type="range"
+					min="-1"
+					max="1"
+					step="0.05"
+					bind:value={$pistilParams.pistil_droop}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 -1 = droop down, 0 = straight, 1 = lift up</p>
+			</div>
+
+			<div class="param-group">
 				<label for="pistil-segments">
 					<span class="param-label">Segments</span>
 					<span class="param-value">{$pistilParams.segments}</span>
@@ -795,6 +829,40 @@
 					bind:value={$stamenParams.anther_width}
 					class="param-slider"
 				/>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-bend">
+					<span class="param-label">Stamen Bend</span>
+					<span class="param-value">{$stamenParams.stamen_bend.toFixed(2)}</span>
+				</label>
+				<input
+					id="stamen-bend"
+					type="range"
+					min="0"
+					max="1"
+					step="0.05"
+					bind:value={$stamenParams.stamen_bend}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 0 = straight, 0.5 = gentle curve, 1.0 = dramatic arc</p>
+			</div>
+
+			<div class="param-group">
+				<label for="stamen-droop">
+					<span class="param-label">Stamen Droop</span>
+					<span class="param-value">{$stamenParams.stamen_droop.toFixed(2)}</span>
+				</label>
+				<input
+					id="stamen-droop"
+					type="range"
+					min="-1"
+					max="1"
+					step="0.05"
+					bind:value={$stamenParams.stamen_droop}
+					class="param-slider"
+				/>
+				<p class="param-help">💡 -1 = droop down, 0 = straight, 1 = lift up</p>
 			</div>
 
 			<div class="param-group">

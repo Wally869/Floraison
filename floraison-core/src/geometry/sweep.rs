@@ -156,6 +156,117 @@ fn compute_curve_tangents(curve: &[Vec3]) -> Vec<Vec3> {
     tangents
 }
 
+/// Sweep a tapered cylinder along a 3D curve
+///
+/// Simpler and more efficient than the general sweep function for the common
+/// case of a simple cylinder that tapers from base to tip.
+///
+/// The radius is linearly interpolated along the curve:
+/// `radius(t) = base_radius + (tip_radius - base_radius) * t`
+///
+/// # Arguments
+///
+/// * `base_radius` - Radius at the start of the curve
+/// * `tip_radius` - Radius at the end of the curve
+/// * `curve` - 3D curve path (should be smoothly sampled)
+/// * `segments` - Number of angular divisions around the curve (8-32 typical)
+/// * `color` - Vertex color
+///
+/// # Returns
+///
+/// A mesh with the swept cylinder geometry
+///
+/// # Example
+///
+/// ```
+/// use floraison_core::geometry::sweep::sweep_tapered_cylinder;
+/// use floraison_core::Vec3;
+///
+/// // Create a tapered cylinder along a curve
+/// let curve = vec![
+///     Vec3::new(0.0, 0.0, 0.0),
+///     Vec3::new(0.0, 1.0, 0.0),
+///     Vec3::new(0.0, 2.0, 0.0),
+/// ];
+///
+/// let mesh = sweep_tapered_cylinder(0.1, 0.05, &curve, 16, Vec3::ONE);
+/// assert!(mesh.vertex_count() > 0);
+/// ```
+pub fn sweep_tapered_cylinder(
+    base_radius: f32,
+    tip_radius: f32,
+    curve: &[Vec3],
+    segments: usize,
+    color: Vec3,
+) -> Mesh {
+    assert!(curve.len() >= 2, "Curve must have at least 2 points");
+    assert!(segments >= 3, "Need at least 3 segments");
+
+    let num_curve_points = curve.len();
+
+    // Pre-allocate mesh capacity (one ring per curve point)
+    let vertex_capacity = num_curve_points * segments;
+    let triangle_capacity = (num_curve_points - 1) * segments * 2 * 3;
+    let mut mesh = Mesh::with_capacity(vertex_capacity, triangle_capacity);
+
+    // Compute tangents at each curve point
+    let tangents = compute_curve_tangents(&curve);
+
+    // Compute rotation-minimizing frames to prevent twist artifacts
+    let frames = compute_rotation_minimizing_frames(&tangents);
+
+    // For each point along the curve
+    for (curve_idx, (&curve_point, &(right, up))) in curve.iter().zip(frames.iter()).enumerate() {
+
+        // Interpolate radius based on position along curve
+        let t = curve_idx as f32 / (num_curve_points - 1) as f32;
+        let radius = base_radius + (tip_radius - base_radius) * t;
+
+        // Create a ring of vertices around the curve
+        for seg_idx in 0..segments {
+            let angle = seg_idx as f32 * 2.0 * PI / segments as f32;
+            let cos_a = angle.cos();
+            let sin_a = angle.sin();
+
+            // Position vertex in circular cross-section
+            let local_pos = right * (radius * cos_a) + up * (radius * sin_a);
+            let position = curve_point + local_pos;
+
+            // Normal points radially outward from curve
+            let normal = (right * cos_a + up * sin_a).normalize();
+
+            // UV coordinates
+            let u = seg_idx as f32 / segments as f32;
+            let v = t;
+            let uv = Vec2::new(u, v);
+
+            mesh.add_vertex(position, normal, uv, color);
+        }
+    }
+
+    // Generate triangles connecting the rings
+    for curve_idx in 0..(num_curve_points - 1) {
+        for seg_idx in 0..segments {
+            let next_seg = (seg_idx + 1) % segments;
+
+            // Vertex indices for current quad
+            let base_idx = curve_idx * segments;
+            let next_curve_base = (curve_idx + 1) * segments;
+
+            let i0 = (base_idx + seg_idx) as u32;
+            let i1 = (base_idx + next_seg) as u32;
+            let i2 = (next_curve_base + seg_idx) as u32;
+            let i3 = (next_curve_base + next_seg) as u32;
+
+            // Two triangles per quad
+            mesh.add_triangle(i0, i2, i1);
+            mesh.add_triangle(i1, i2, i3);
+        }
+    }
+
+    mesh
+}
+
 /// Compute an orthonormal frame (right, up) perpendicular to a tangent vector
 ///
 /// This creates a coordinate system where:
@@ -178,6 +289,54 @@ fn compute_orthonormal_frame(tangent: Vec3) -> (Vec3, Vec3) {
     let up = tangent.cross(right).normalize();
 
     (right, up)
+}
+
+/// Compute rotation-minimizing frames along a curve
+///
+/// This prevents frame twist artifacts by propagating the frame along the curve
+/// with minimal rotation. Uses the parallel transport method.
+fn compute_rotation_minimizing_frames(tangents: &[Vec3]) -> Vec<(Vec3, Vec3)> {
+    let n = tangents.len();
+    let mut frames = Vec::with_capacity(n);
+
+    // Initial frame at first point
+    let (mut right, mut up) = compute_orthonormal_frame(tangents[0]);
+    frames.push((right, up));
+
+    // Propagate frame along curve with minimal rotation
+    for i in 1..n {
+        let t_prev = tangents[i - 1];
+        let t_curr = tangents[i];
+
+        // Compute rotation between tangents
+        let axis = t_prev.cross(t_curr);
+        let axis_len_sq = axis.length_squared();
+
+        if axis_len_sq < 1e-8 {
+            // Tangents are nearly parallel, no rotation needed
+            frames.push((right, up));
+        } else {
+            // Rotate the frame using Rodrigues' rotation formula
+            let axis_norm = axis * (1.0 / axis_len_sq.sqrt());
+            let dot = t_prev.dot(t_curr).clamp(-1.0, 1.0);
+            let angle = dot.acos();
+
+            right = rotate_around_axis(right, axis_norm, angle);
+            up = rotate_around_axis(up, axis_norm, angle);
+
+            frames.push((right, up));
+        }
+    }
+
+    frames
+}
+
+/// Rotate a vector around an axis by an angle using Rodrigues' formula
+fn rotate_around_axis(v: Vec3, axis: Vec3, angle: f32) -> Vec3 {
+    let cos_a = angle.cos();
+    let sin_a = angle.sin();
+
+    v * cos_a + axis.cross(v) * sin_a + axis * axis.dot(v) * (1.0 - cos_a)
 }
 
 #[cfg(test)]
