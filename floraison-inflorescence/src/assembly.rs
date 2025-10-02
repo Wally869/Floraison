@@ -3,7 +3,111 @@
 use floraison_core::math::curves::AxisCurve;
 use floraison_core::{geometry::mesh::Mesh, geometry::sweep::sweep_along_curve, Mat4, Quat, Vec2, Vec3};
 
-use crate::{aging::FlowerAging, patterns, InflorescenceParams, PatternType};
+use crate::{aging::FlowerAging, patterns, CurveMode, InflorescenceParams, PatternType};
+
+// ============================================================================
+// Curve Generation Utilities (Shared by Axis and Branches)
+// ============================================================================
+
+/// Generate curved 3D path using quadratic bezier curve
+///
+/// This shared function creates smooth curves for both main axes and individual branches.
+/// Uses a quadratic bezier curve with control point offset perpendicular to the line.
+///
+/// # Arguments
+///
+/// * `start` - Start position of the curve
+/// * `end` - End position of the curve
+/// * `curve_amount` - Curvature intensity (0.0 = straight line, 1.0 = dramatic curve)
+/// * `curve_direction` - Normalized direction vector for curve offset (perpendicular to line)
+/// * `num_points` - Number of points to generate along the curve (minimum 2)
+///
+/// # Returns
+///
+/// Vector of 3D points forming a smooth curve from start to end
+///
+/// # Example
+///
+/// ```
+/// use floraison_inflorescence::assembly::generate_curved_points;
+/// use floraison_core::Vec3;
+///
+/// // Generate a drooping curve
+/// let start = Vec3::ZERO;
+/// let end = Vec3::new(0.0, 10.0, 0.0);
+/// let curve_dir = Vec3::new(0.0, -1.0, 0.0);
+/// let points = generate_curved_points(start, end, 0.5, curve_dir, 8);
+/// assert_eq!(points.len(), 8);
+/// ```
+pub fn generate_curved_points(
+    start: Vec3,
+    end: Vec3,
+    curve_amount: f32,
+    curve_direction: Vec3,
+    num_points: usize,
+) -> Vec<Vec3> {
+    assert!(num_points >= 2, "Need at least 2 points for curve");
+
+    // Optimization: if curve amount is negligible, return straight line
+    if curve_amount < 0.01 {
+        return vec![start, end];
+    }
+
+    let mut points = Vec::with_capacity(num_points);
+
+    // Calculate curve control point using quadratic bezier
+    // Control point is at midpoint, offset perpendicular to the line
+    let midpoint = (start + end) * 0.5;
+    let line_length = (end - start).length();
+
+    // Offset amount scales with both curve_amount and line length
+    let offset_magnitude = curve_amount * line_length * 0.5;
+    let control_point = midpoint + curve_direction.normalize() * offset_magnitude;
+
+    // Generate points along quadratic bezier curve
+    for i in 0..num_points {
+        let t = if num_points > 1 {
+            i as f32 / (num_points - 1) as f32
+        } else {
+            0.5
+        };
+
+        // Quadratic bezier: B(t) = (1-t)²·P0 + 2(1-t)t·P1 + t²·P2
+        let t2 = t * t;
+        let one_minus_t = 1.0 - t;
+        let one_minus_t2 = one_minus_t * one_minus_t;
+
+        let point = start * one_minus_t2 + control_point * (2.0 * one_minus_t * t) + end * t2;
+
+        points.push(point);
+    }
+
+    points
+}
+
+/// Generate main axis points with optional curvature
+///
+/// Creates control points for the inflorescence main axis, optionally curved.
+///
+/// # Arguments
+///
+/// * `params` - Inflorescence parameters including axis_length and curve settings
+///
+/// # Returns
+///
+/// Vector of 3D points from origin (0,0,0) to axis top, curved if specified
+pub fn generate_axis_points(params: &InflorescenceParams) -> Vec<Vec3> {
+    let start = Vec3::ZERO;
+    let end = Vec3::new(0.0, params.axis_length, 0.0);
+
+    generate_curved_points(
+        start,
+        end,
+        params.axis_curve_amount,
+        params.axis_curve_direction,
+        if params.axis_curve_amount > 0.01 { 8 } else { 2 }, // More points for curves
+    )
+}
 
 /// Assemble a complete inflorescence from parameters and a flower mesh
 ///
@@ -47,11 +151,8 @@ pub fn assemble_inflorescence(
 ) -> Mesh {
     let mut final_mesh = Mesh::new();
 
-    // 1. Generate axis curve (for now, simple straight vertical line)
-    let axis_points = vec![
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, params.axis_length, 0.0),
-    ];
+    // 1. Generate axis curve (straight or curved based on params)
+    let axis_points = generate_axis_points(params);
     let axis = AxisCurve::new(axis_points.clone());
 
     // 2. Generate branch points based on pattern type
@@ -78,9 +179,9 @@ pub fn assemble_inflorescence(
 
     // 4. For each branch, add pedicel and flower
     for branch in &branches {
-        // 4a. Generate pedicel mesh if branch has length
+        // 4a. Generate pedicel mesh if branch has length (with optional curvature)
         if branch.length > 0.01 {
-            let pedicel = generate_pedicel(branch, stem_radius * 0.6, stem_color);
+            let pedicel = generate_pedicel(branch, params, stem_radius * 0.6, stem_color);
             final_mesh.merge(&pedicel);
         }
 
@@ -121,12 +222,14 @@ pub fn generate_stem_along_axis(axis_points: &[Vec3], radius: f32, color: Vec3) 
     sweep_along_curve(&profile, axis_points, 8, color)
 }
 
-/// Generate a pedicel (branch stem) mesh
+/// Generate a pedicel (branch stem) mesh with optional curvature
 ///
-/// Creates a thin cylindrical stem from the axis attachment point to the flower position.
+/// Creates a thin cylindrical stem from the axis attachment point to the flower position,
+/// optionally curved based on branch curvature parameters.
 ///
 /// # Arguments
 /// * `branch` - Branch point containing position, direction, and length
+/// * `params` - Inflorescence parameters (for branch curve settings)
 /// * `radius` - Radius of the pedicel
 /// * `color` - RGB color for the pedicel
 ///
@@ -134,22 +237,60 @@ pub fn generate_stem_along_axis(axis_points: &[Vec3], radius: f32, color: Vec3) 
 /// Mesh of the pedicel geometry
 pub fn generate_pedicel(
     branch: &crate::BranchPoint,
+    params: &InflorescenceParams,
     radius: f32,
     color: Vec3,
 ) -> Mesh {
-    // Create a simple two-point curve from base to flower position
     // Base position: work backwards from flower position using direction and length
     let base = branch.position - branch.direction * branch.length;
     let tip = branch.position;
 
+    // Calculate effective curve amount based on mode
+    // Use (1.0 - age) as proxy for position along axis (0=bottom, 1=top)
+    // This works for indeterminate patterns where age=1 at bottom, age=0 at top
+    let position_on_axis = 1.0 - branch.age;
+
+    let effective_curve_amount = match params.branch_curve_mode {
+        CurveMode::Uniform => params.branch_curve_amount,
+        // Use squared position for more dramatic gradient effect
+        // Top branches get full curve, middle gets reduced curve, bottom gets minimal curve
+        CurveMode::GradientUp => params.branch_curve_amount * (position_on_axis * position_on_axis),
+        CurveMode::GradientDown => {
+            let bottom_emphasis = 1.0 - position_on_axis;
+            params.branch_curve_amount * (bottom_emphasis * bottom_emphasis)
+        }
+    };
+
+    // Determine curve direction perpendicular to branch
+    // For natural droop, curve downward (perpendicular to branch direction in horizontal plane)
+    let branch_dir = branch.direction.normalize();
+    let up = Vec3::Y;
+
+    // Cross product gives perpendicular direction in horizontal plane
+    // If branch is vertical, this will be zero, so add fallback
+    let curve_dir = if branch_dir.cross(up).length() > 0.1 {
+        branch_dir.cross(up).normalize()
+    } else {
+        Vec3::X // Fallback for vertical branches
+    };
+
+    // For natural droop, also add downward component
+    let curve_direction = (curve_dir + Vec3::new(0.0, -0.5, 0.0)).normalize();
+
+    // Create curved path from base to tip
+    let curve_points = generate_curved_points(
+        base,
+        tip,
+        effective_curve_amount,
+        curve_direction,
+        if effective_curve_amount > 0.01 { 6 } else { 2 },
+    );
+
     // Create cylindrical profile
     let profile = vec![Vec2::new(radius, 0.0), Vec2::new(radius, 1.0)];
 
-    // Create curve (base to tip)
-    let curve = vec![base, tip];
-
     // Sweep profile along curve
-    sweep_along_curve(&profile, &curve, 6, color)
+    sweep_along_curve(&profile, &curve_points, 6, color)
 }
 
 /// Assemble an inflorescence with age-based flower variation
@@ -195,11 +336,8 @@ pub fn assemble_inflorescence_with_aging(
 ) -> Mesh {
     let mut final_mesh = Mesh::new();
 
-    // 1. Generate axis curve
-    let axis_points = vec![
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, params.axis_length, 0.0),
-    ];
+    // 1. Generate axis curve (straight or curved based on params)
+    let axis_points = generate_axis_points(params);
     let axis = AxisCurve::new(axis_points.clone());
 
     // 2. Generate branch points based on pattern type
@@ -226,9 +364,9 @@ pub fn assemble_inflorescence_with_aging(
 
     // 4. For each branch, add pedicel and age-appropriate flower
     for branch in &branches {
-        // 4a. Generate pedicel mesh if branch has length
+        // 4a. Generate pedicel mesh if branch has length (with optional curvature)
         if branch.length > 0.01 {
-            let pedicel = generate_pedicel(branch, stem_radius * 0.6, stem_color);
+            let pedicel = generate_pedicel(branch, params, stem_radius * 0.6, stem_color);
             final_mesh.merge(&pedicel);
         }
 
@@ -377,10 +515,11 @@ mod tests {
             age: 0.5,
         };
 
+        let params = InflorescenceParams::default();
         let radius = 0.05;
         let color = Vec3::new(0.2, 0.6, 0.2);
 
-        let pedicel = generate_pedicel(&branch, radius, color);
+        let pedicel = generate_pedicel(&branch, &params, radius, color);
 
         assert!(pedicel.vertex_count() > 0, "Pedicel should have vertices");
         assert!(

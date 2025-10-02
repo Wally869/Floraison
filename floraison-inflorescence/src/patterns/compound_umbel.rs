@@ -43,11 +43,8 @@ pub fn generate_compound_umbel(
 
     let mut final_mesh = Mesh::new();
 
-    // Generate main axis
-    let axis_points = vec![
-        Vec3::new(0.0, 0.0, 0.0),
-        Vec3::new(0.0, params.axis_length, 0.0),
-    ];
+    // Generate main axis (straight or curved based on params)
+    let axis_points = assembly::generate_axis_points(params);
     let axis = AxisCurve::new(axis_points.clone());
 
     // Get primary branch points (umbel rays)
@@ -63,7 +60,7 @@ pub fn generate_compound_umbel(
     for branch in &primary_branches {
         // Generate pedicel connecting main axis to sub-inflorescence
         if branch.length > 0.01 {
-            let pedicel = assembly::generate_pedicel(branch, 0.05, stem_color);
+            let pedicel = assembly::generate_pedicel(branch, params, 0.05, stem_color);
             final_mesh.merge(&pedicel);
         }
 

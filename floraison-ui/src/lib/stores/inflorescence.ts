@@ -16,6 +16,8 @@ export type PatternType =
 	| 'CompoundRaceme'
 	| 'CompoundUmbel';
 
+export type CurveMode = 'Uniform' | 'GradientUp' | 'GradientDown';
+
 export interface InflorescenceParams {
 	enabled: boolean; // Toggle between flower/inflorescence mode
 	pattern: PatternType;
@@ -34,6 +36,11 @@ export interface InflorescenceParams {
 	angle_divergence: number;
 	// Age distribution control
 	age_distribution: number; // 0.0 = all buds, 0.5 = natural gradient, 1.0 = all blooms
+	// Curvature parameters
+	axis_curve_amount: number; // 0.0 = straight, 1.0 = dramatic curve
+	axis_curve_direction: [number, number, number]; // Direction vector [x, y, z] (matches glam::Vec3 serde array format)
+	branch_curve_amount: number; // 0.0 = straight, 1.0 = arching
+	branch_curve_mode: CurveMode; // Uniform, GradientUp, or GradientDown
 }
 
 const defaultParams: InflorescenceParams = {
@@ -51,7 +58,12 @@ const defaultParams: InflorescenceParams = {
 	recursion_depth: 1, // Always initialize to 1 (never null to avoid slider midpoint issue)
 	branch_ratio: 0.7,
 	angle_divergence: 0.0,
-	age_distribution: 0.5 // 0.5 = natural age gradient (default behavior)
+	age_distribution: 0.5, // 0.5 = natural age gradient (default behavior)
+	// Curvature defaults
+	axis_curve_amount: 0.0, // Straight by default
+	axis_curve_direction: [0.0, 0.0, 1.0], // Forward droop (perpendicular to vertical axis) [x, y, z]
+	branch_curve_amount: 0.0, // Straight by default
+	branch_curve_mode: 'Uniform'
 };
 
 export const inflorescenceParams = writable<InflorescenceParams>(defaultParams);

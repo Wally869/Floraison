@@ -373,6 +373,80 @@
 					</p>
 				</div>
 
+				<!-- Curvature Section -->
+				<div class="subsection-header">Curvature</div>
+
+				<div class="param-group">
+					<label for="axis-curve-amount">
+						<span class="param-label">Axis Curve</span>
+						<span class="param-value">{$inflorescenceParams.axis_curve_amount.toFixed(2)}</span>
+					</label>
+					<input
+						id="axis-curve-amount"
+						type="range"
+						min="0"
+						max="1"
+						step="0.1"
+						bind:value={$inflorescenceParams.axis_curve_amount}
+						class="param-slider"
+					/>
+					<p class="param-help">Main axis droop/arc (0=straight, 1=dramatic curve)</p>
+				</div>
+
+				<div class="param-group">
+					<label for="axis-curve-direction" class="param-label">Curve Direction</label>
+					<select
+						id="axis-curve-direction"
+						class="param-select"
+						onchange={(e) => {
+							const value = e.currentTarget.value;
+							if (value === 'forward') {
+								$inflorescenceParams.axis_curve_direction = [0.0, 0.0, 1.0];
+							} else if (value === 'backward') {
+								$inflorescenceParams.axis_curve_direction = [0.0, 0.0, -1.0];
+							} else if (value === 'sideways') {
+								$inflorescenceParams.axis_curve_direction = [1.0, 0.0, 0.0];
+							}
+						}}
+					>
+						<option value="forward">Forward (droop)</option>
+						<option value="backward">Backward</option>
+						<option value="sideways">Sideways</option>
+					</select>
+					<p class="param-help">Direction of main axis curvature</p>
+				</div>
+
+				<div class="param-group">
+					<label for="branch-curve-amount">
+						<span class="param-label">Branch Curve</span>
+						<span class="param-value">{$inflorescenceParams.branch_curve_amount.toFixed(2)}</span>
+					</label>
+					<input
+						id="branch-curve-amount"
+						type="range"
+						min="0"
+						max="1"
+						step="0.1"
+						bind:value={$inflorescenceParams.branch_curve_amount}
+						class="param-slider"
+					/>
+					<p class="param-help">Branch curvature (0=straight, 1=arching)</p>
+				</div>
+
+				<div class="param-group">
+					<label for="branch-curve-mode" class="param-label">Curve Distribution</label>
+					<select
+						id="branch-curve-mode"
+						bind:value={$inflorescenceParams.branch_curve_mode}
+						class="param-select"
+					>
+						<option value="Uniform">Uniform (all equal)</option>
+						<option value="GradientUp">Gradient Up (top curves more)</option>
+						<option value="GradientDown">Gradient Down (bottom curves more)</option>
+					</select>
+					<p class="param-help">How branch curvature varies along axis</p>
+				</div>
+
 				<!-- Recursive pattern parameters (conditional) -->
 				{#if isRecursivePattern($inflorescenceParams.pattern)}
 					<div class="recursive-params">

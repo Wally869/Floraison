@@ -17,6 +17,22 @@ pub mod patterns;
 pub mod assembly;
 pub mod aging;
 
+/// Branch curve distribution mode
+///
+/// Controls how branch curvature varies along the inflorescence axis.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub enum CurveMode {
+    /// All branches curve equally
+    Uniform,
+
+    /// Top branches curve more (curvature increases with height)
+    GradientUp,
+
+    /// Bottom branches curve more (curvature decreases with height)
+    GradientDown,
+}
+
 /// Inflorescence pattern type
 ///
 /// Defines the branching and arrangement pattern for multi-flower structures.
@@ -158,6 +174,28 @@ pub struct InflorescenceParams {
     ///
     /// Age thresholds: bud < 0.3, bloom 0.3-0.8, wilt > 0.8
     pub age_distribution: f32,
+
+    // --- Curvature parameters ---
+
+    /// Main axis curvature amount (0.0 = straight, 1.0 = dramatic curve)
+    pub axis_curve_amount: f32,
+
+    /// Main axis curve direction (normalized vector)
+    ///
+    /// Default: Vec3::new(0.0, -1.0, 0.0) for downward droop (gravity)
+    /// Can be customized for forward/backward lean or side curves
+    pub axis_curve_direction: Vec3,
+
+    /// Branch (pedicel) curvature amount (0.0 = straight, 1.0 = dramatic curve)
+    pub branch_curve_amount: f32,
+
+    /// Branch curve distribution mode
+    ///
+    /// Controls how curvature varies along the axis:
+    /// - Uniform: All branches curve equally
+    /// - GradientUp: Top branches curve more
+    /// - GradientDown: Bottom branches curve more
+    pub branch_curve_mode: CurveMode,
 }
 
 impl Default for InflorescenceParams {
@@ -178,6 +216,11 @@ impl Default for InflorescenceParams {
             branch_ratio: None,
             angle_divergence: None,
             age_distribution: 0.5, // 0.5 = natural gradient (default behavior)
+            // Curvature parameters
+            axis_curve_amount: 0.0, // Straight by default
+            axis_curve_direction: Vec3::new(0.0, -1.0, 0.0), // Downward droop
+            branch_curve_amount: 0.0, // Straight by default
+            branch_curve_mode: CurveMode::Uniform,
         }
     }
 }

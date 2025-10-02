@@ -11,6 +11,7 @@ floraison-core = { workspace = true }
 glam = { workspace = true }
 serde = { workspace = true, optional = true }
 rand = { version = "0.8", features = ["small_rng"] }
+getrandom = { version = "0.2", features = ["js"] }
 
 [features]
 default = []

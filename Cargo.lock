@@ -29,6 +29,7 @@ name = "floraison-components"
 version = "0.1.0"
 dependencies = [
  "floraison-core",
+ "getrandom",
  "glam",
  "rand",
  "serde",

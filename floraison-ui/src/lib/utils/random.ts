@@ -210,6 +210,10 @@ function randomInflorescenceParams(): InflorescenceParams {
 	// Natural rotation angles (golden angle, 120°, 144°, 180°)
 	const rotation_angle = randomChoice([137.5, 120, 144, 180]);
 
+	// Curvature: 30% chance for axis curve, 30% for branch curve
+	const hasAxisCurve = randomBoolean(0.3);
+	const hasBranchCurve = randomBoolean(0.3);
+
 	return {
 		enabled: randomBoolean(0.5), // 50% chance
 		pattern,
@@ -225,7 +229,20 @@ function randomInflorescenceParams(): InflorescenceParams {
 		recursion_depth: isRecursive ? randomInt(1, 2) : 1,
 		branch_ratio: randomRange(0.5, 0.8),
 		angle_divergence: 0, // Fixed for now
-		age_distribution: 0.5 // Natural gradient (default)
+		age_distribution: 0.5, // Natural gradient (default)
+		// Curvature parameters
+		axis_curve_amount: hasAxisCurve ? randomRange(0.2, 0.7) : 0.0,
+		axis_curve_direction: hasAxisCurve
+			? randomBoolean(0.6)
+				? [0.0, 0.0, 1.0] // 60% forward (droop)
+				: randomBoolean(0.5)
+					? [0.0, 0.0, -1.0] // 20% backward
+					: [1.0, 0.0, 0.0] // 20% sideways
+			: [0.0, 0.0, 1.0], // Default forward
+		branch_curve_amount: hasBranchCurve ? randomRange(0.2, 0.7) : 0.0,
+		branch_curve_mode: hasBranchCurve
+			? randomChoice(['Uniform', 'GradientUp', 'GradientDown'] as const)
+			: 'Uniform'
 	};
 }
 
