@@ -16,6 +16,7 @@
 		currentPresetName
 	} from '$lib/stores/parameters';
 	import { presets, presetNames, type PresetName } from '$lib/presets';
+	import { generateRandomFlowerParams } from '$lib/utils/random';
 
 	// Props
 	interface Props {
@@ -90,6 +91,36 @@
 		}
 	}
 
+	// Randomize all parameters
+	function randomizeParameters() {
+		isLoadingPreset = true; // Prevent "custom" detection
+
+		const randomParams = generateRandomFlowerParams();
+
+		// Update all stores
+		$diagramParams = randomParams.diagram;
+		$receptacleParams = randomParams.receptacle;
+		$pistilParams = randomParams.pistil;
+		$stamenParams = randomParams.stamen;
+		$petalParams = randomParams.petal;
+		$inflorescenceParams = randomParams.inflorescence;
+
+		// Update color pickers
+		receptacleColor = rgbToHex(randomParams.receptacle.color);
+		pistilColor = rgbToHex(randomParams.pistil.color);
+		stamenColor = rgbToHex(randomParams.stamen.color);
+		petalColor = rgbToHex(randomParams.petal.color);
+
+		// Set preset to custom
+		selectedPreset = 'custom';
+		$currentPresetName = 'custom';
+
+		setTimeout(() => {
+			lastLoadedParams = JSON.stringify($allParams);
+			isLoadingPreset = false;
+		}, 100);
+	}
+
 	// Detect parameter changes to auto-switch to "Custom"
 	$effect(() => {
 		const currentParams = JSON.stringify($allParams);
@@ -119,12 +150,21 @@
 <div class="parameter-panel" class:open>
 	<div class="panel-header">
 		<h2 class="text-2xl font-bold text-gray-800">Flower Parameters</h2>
-		<button
-			onclick={resetToDefaults}
-			class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors"
-		>
-			Reset
-		</button>
+		<div class="button-group">
+			<button
+				onclick={randomizeParameters}
+				class="px-3 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded transition-colors"
+				title="Generate random flower"
+			>
+				🎲 Random
+			</button>
+			<button
+				onclick={resetToDefaults}
+				class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+			>
+				Reset
+			</button>
+		</div>
 	</div>
 
 	<!-- Preset Selector -->
@@ -972,6 +1012,11 @@
 		margin-bottom: 1.5rem;
 		padding-bottom: 1rem;
 		border-bottom: 2px solid #e5e7eb;
+	}
+
+	.button-group {
+		display: flex;
+		gap: 0.5rem;
 	}
 
 	details {

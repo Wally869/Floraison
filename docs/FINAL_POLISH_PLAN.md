@@ -15,39 +15,46 @@
 - **Astilbe Preset**: Enhanced with 10 branches (was 6), larger flowers (0.7-0.8 vs 0.5-0.6), taller axis (14 vs 10)
 - **TypeScript Check**: 0 errors, 0 warnings
 
+### ✅ Completed (Phase 2 - High-Priority Features)
+- **Random Generation Button**: One-click randomization with smart constraints
+  - Purple "🎲 Random" button next to Reset
+  - Pastel color palette for pleasant aesthetics
+  - Smart parameter constraints for natural proportions
+  - 50% chance for inflorescence patterns
+  - HSL→RGB color utilities
+
 ### 🚧 In Progress
 - None currently
 
 ### 📋 Remaining
-- Phase 2: High-Priority Features (6-9 hours)
+- Phase 2: Bend/curve parameters, Age controls (~5-7 hours)
 - Phase 3: Polish & UX (6-10 hours)
 - Phase 4: Final Testing (2-3 hours)
 
-**Total Time Invested**: 30 minutes
-**Remaining Estimate**: 14-22 hours
+**Total Time Invested**: 2.5 hours (30min + 2h)
+**Remaining Estimate**: 12-18 hours
 
 ---
 
 ## Issues Identified
 
-### 1. **Random Generation Button** ⭐
-**Status**: Not implemented
+### 1. **Random Generation Button** ⭐ ✅ COMPLETE
+**Status**: ✅ Implemented
 **Priority**: HIGH
 **Description**: Add a "Randomize" button that generates random parameter values within reasonable bounds.
 
-**Implementation**:
-- Add button to ParameterPanel header (next to Reset button)
-- Generate random values for all parameters with constraints:
-  - Count parameters: Random(3, 12)
-  - Length/width: Random(0.5, 3.0)
-  - Curl: Random(-0.8, 0.8)
-  - Twist: Random(0, 45)
-  - Colors: Random pastel colors (avoid pure black/white)
-  - Inflorescence: 50% chance to enable, random pattern
-- Use seeded random for reproducibility (needs wasm-compatible random crate)
-- Consider "Randomize Component" buttons for granular control
+**Implementation**: ✅ COMPLETE
+- ✅ Purple "🎲 Random" button in ParameterPanel header (next to Reset button)
+- ✅ Smart constraint-based randomization with natural ranges
+- ✅ Pastel color generation using HSL→RGB conversion (0.4-0.8 saturation, 0.6-0.9 lightness)
+- ✅ Green colors for receptacles, yellow for pistils/stamens
+- ✅ Natural parameter relationships (tip_radius based on base_radius, etc.)
+- ✅ Golden angle and natural rotation angles (137.5°, 120°, 144°, 180°)
+- ✅ 50% chance for inflorescence patterns
+- ✅ 30% chance for petal ruffle
+- ✅ New utility files: `lib/utils/random.ts` and `lib/utils/colors.ts`
 
-**Estimated Effort**: 2-3 hours
+**Time Spent**: 2 hours
 
 ---
 
@@ -319,7 +326,7 @@ inflorescence: {
 
 | Issue | Priority | Effort | Status |
 |-------|----------|--------|--------|
-| 1. Random Generation Button | HIGH | 2-3h | Not implemented |
+| 1. Random Generation Button | HIGH | 2-3h | ✅ **COMPLETE** (Smart constraints) |
 | 2. Bend/Curve Parameters | HIGH | 3-4h | Partially implemented |
 | 3. Lily Stamen Tilt | MEDIUM | 5min | ✅ **FIXED** (90°→60°) |
 | 4. Ground/Shadow Fix | MEDIUM | 5min | ✅ **FIXED** (60×60, 40×40) |
@@ -330,8 +337,8 @@ inflorescence: {
 | 9. Web Worker | LOW | 4-6h | Defer post-launch |
 | 10. UI Reorganization | MEDIUM | 2-3h | Review needed |
 
-**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → **14-20 hours remaining**
-**Completed**: 30 minutes (Issues #3, #4, #6)
+**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → **12-18 hours remaining**
+**Completed**: 2.5 hours (Issues #1, #3, #4, #6)
 
 ---
 
@@ -343,8 +350,8 @@ inflorescence: {
 3. ✅ Adjust Astilbe preset values (10min) - 10 branches, larger flowers, taller axis
 4. ✅ TypeScript check passed (0 errors, 0 warnings)
 
-### Phase 2: High-Priority Features (6-9 hours)
-1. Random generation button (2-3h)
+### Phase 2: High-Priority Features (4-6 hours remaining)
+1. ✅ Random generation button (2-3h) - COMPLETE with smart constraints
 2. Bend/curve parameters for pistil/stamen (3-4h)
 3. Age distribution slider (1-2h)
 
@@ -444,9 +451,10 @@ let mesh = aging.select_mesh(adjusted_age);
 - ✅ `floraison-ui/src/lib/presets.ts` - Lily tilt (line 48), Astilbe values (lines 788-796)
 - ✅ `floraison-ui/src/lib/three/scene.ts` - Ground plane (line 105), shadow camera (lines 89-92)
 
-### Random Generation
-- `floraison-ui/src/lib/components/ui/ParameterPanel.svelte` - Add button
-- `floraison-ui/src/lib/utils/random.ts` - NEW: Random generation logic
+### Random Generation ✅ COMPLETE
+- ✅ `floraison-ui/src/lib/components/ui/ParameterPanel.svelte` - Added button and randomizeParameters()
+- ✅ `floraison-ui/src/lib/utils/random.ts` - NEW: Random generation logic with smart constraints
+- ✅ `floraison-ui/src/lib/utils/colors.ts` - NEW: HSL→RGB conversion utilities
 
 ### Bend/Curve Parameters
 - `floraison-core/src/components/pistil.rs` - Add bend logic
