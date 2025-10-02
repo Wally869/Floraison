@@ -21,6 +21,7 @@
 	let sceneCtx: SceneContext | null = $state(null);
 	// Plain variable - not reactive! Three.js state is imperative, not reactive UI state
 	let flowerMesh: THREE.Mesh | null = null;
+	let meshCenter = new THREE.Vector3(0, 0, 0); // Track mesh center for camera reset
 	let isFirstMeshLoad = $state(true);
 
 	onMount(() => {
@@ -107,11 +108,17 @@
 		// Convert WASM mesh to Three.js geometry
 		const geometry = wasmMeshToGeometry(newMesh);
 
-		// Compute bounding box for ground positioning
+		// Compute bounding box for ground positioning and orbit centering
 		geometry.computeBoundingBox();
 		if (geometry.boundingBox) {
 			const minY = geometry.boundingBox.min.y;
 			sceneCtx.positionGround(minY);
+
+			// Always update orbit target to center of bounding box (especially vertical center)
+			// This makes the camera orbit around the middle of the mesh rather than its base
+			geometry.boundingBox.getCenter(meshCenter);
+			sceneCtx.controls.target.copy(meshCenter);
+			sceneCtx.controls.update();
 		}
 
 		// Create enhanced material with translucency (organic petal appearance)
@@ -156,7 +163,11 @@
 
 	function handleResetCamera() {
 		if (sceneCtx) {
-			sceneCtx.resetCamera();
+			// Reset camera to default position but look at mesh center
+			sceneCtx.camera.position.set(10, 10, 10);
+			sceneCtx.camera.lookAt(meshCenter);
+			sceneCtx.controls.target.copy(meshCenter);
+			sceneCtx.controls.update();
 		}
 	}
 
