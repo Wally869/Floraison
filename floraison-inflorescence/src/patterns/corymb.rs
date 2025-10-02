@@ -8,7 +8,7 @@
 use floraison_core::math::curves::AxisCurve;
 use glam::Quat;
 
-use crate::{BranchPoint, InflorescenceParams};
+use crate::{apply_age_distribution, BranchPoint, InflorescenceParams};
 
 /// Linear interpolation between two values
 #[inline]
@@ -78,7 +78,8 @@ pub fn generate_branch_points(
         let position = sample.position + direction * length;
 
         // Age: indeterminate (bottom = oldest = 1.0, top = youngest = 0.0)
-        let age = 1.0 - t;
+        let base_age = 1.0 - t;
+        let age = apply_age_distribution(base_age, params.age_distribution);
 
         branches.push(BranchPoint {
             position,

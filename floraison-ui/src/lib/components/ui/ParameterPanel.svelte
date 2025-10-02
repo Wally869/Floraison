@@ -354,6 +354,25 @@
 					/>
 				</div>
 
+				<div class="param-group">
+					<label for="inflo-age-distribution">
+						<span class="param-label">Age Distribution</span>
+						<span class="param-value">{$inflorescenceParams.age_distribution.toFixed(2)}</span>
+					</label>
+					<input
+						id="inflo-age-distribution"
+						type="range"
+						min="0"
+						max="1"
+						step="0.01"
+						bind:value={$inflorescenceParams.age_distribution}
+						class="param-slider"
+					/>
+					<p class="param-help">
+						💡 0.0 = all buds, 0.5 = natural gradient, 1.0 = all blooms
+					</p>
+				</div>
+
 				<!-- Recursive pattern parameters (conditional) -->
 				{#if isRecursivePattern($inflorescenceParams.pattern)}
 					<div class="recursive-params">

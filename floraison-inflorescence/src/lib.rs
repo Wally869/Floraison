@@ -144,6 +144,20 @@ pub struct InflorescenceParams {
     /// For Dichasium: angle between Y-shaped branches (default: 30°)
     /// For Drepanium: spiral angle increment (uses rotation_angle if None)
     pub angle_divergence: Option<f32>,
+
+    /// Age distribution control for flower maturity
+    ///
+    /// Controls the age range of flowers in the inflorescence:
+    /// - `0.0`: All flowers as buds (age ≈ 0.15)
+    /// - `0.5`: Natural age gradient (default)
+    /// - `1.0`: All flowers in bloom (age ≈ 0.55)
+    ///
+    /// Values between interpolate smoothly:
+    /// - `0.0-0.5`: Gradually introduce natural gradient
+    /// - `0.5-1.0`: Gradually shift toward uniform bloom
+    ///
+    /// Age thresholds: bud < 0.3, bloom 0.3-0.8, wilt > 0.8
+    pub age_distribution: f32,
 }
 
 impl Default for InflorescenceParams {
@@ -163,6 +177,7 @@ impl Default for InflorescenceParams {
             recursion_depth: None,
             branch_ratio: None,
             angle_divergence: None,
+            age_distribution: 0.5, // 0.5 = natural gradient (default behavior)
         }
     }
 }
@@ -200,6 +215,48 @@ pub struct BranchPoint {
     /// For indeterminate patterns: bottom (oldest) = 1.0, top (youngest) = 0.0
     /// For determinate patterns: center/top (oldest) = 1.0, outer/bottom (youngest) = 0.0
     pub age: f32,
+}
+
+/// Apply age distribution control to base age value
+///
+/// Maps the age_distribution parameter (0.0-1.0) to modified age values:
+/// - `distribution = 0.0`: All flowers become buds (age ≈ 0.15)
+/// - `distribution = 0.5`: Natural gradient (age = base_age)
+/// - `distribution = 1.0`: All flowers become blooms (age ≈ 0.55)
+///
+/// # Arguments
+/// * `base_age` - The natural age value from pattern calculation (0.0-1.0)
+/// * `distribution` - Age distribution control (0.0-1.0)
+///
+/// # Returns
+/// Modified age value suitable for FlowerAging::select_mesh()
+///
+/// # Example
+/// ```
+/// use floraison_inflorescence::apply_age_distribution;
+///
+/// // All buds
+/// assert!((apply_age_distribution(0.5, 0.0) - 0.15).abs() < 0.01);
+///
+/// // Natural gradient
+/// assert!((apply_age_distribution(0.5, 0.5) - 0.5).abs() < 0.01);
+///
+/// // All blooms
+/// assert!((apply_age_distribution(0.5, 1.0) - 0.55).abs() < 0.01);
+/// ```
+pub fn apply_age_distribution(base_age: f32, distribution: f32) -> f32 {
+    const BUD_AGE: f32 = 0.15; // Middle of bud range (0.0-0.3)
+    const BLOOM_AGE: f32 = 0.55; // Middle of bloom range (0.3-0.8)
+
+    if distribution < 0.5 {
+        // 0.0 to 0.5: Interpolate from all buds (0.15) to natural gradient
+        let t = distribution * 2.0; // Map 0.0-0.5 to 0.0-1.0
+        BUD_AGE * (1.0 - t) + base_age * t
+    } else {
+        // 0.5 to 1.0: Interpolate from natural gradient to all blooms (0.55)
+        let t = (distribution - 0.5) * 2.0; // Map 0.5-1.0 to 0.0-1.0
+        base_age * (1.0 - t) + BLOOM_AGE * t
+    }
 }
 
 #[cfg(test)]

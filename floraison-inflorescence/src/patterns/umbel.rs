@@ -8,7 +8,7 @@
 use floraison_core::math::curves::AxisCurve;
 use glam::Quat;
 
-use crate::{BranchPoint, InflorescenceParams};
+use crate::{apply_age_distribution, BranchPoint, InflorescenceParams};
 
 /// Generate branch points for an umbel pattern
 ///
@@ -46,12 +46,16 @@ pub fn generate_branch_points(
         // Branch endpoint
         let position = sample.position + direction * params.branch_length_top;
 
+        // Age: determinate (all flowers same age, bloom together)
+        let base_age = 1.0;
+        let age = apply_age_distribution(base_age, params.age_distribution);
+
         branches.push(BranchPoint {
             position,
             direction,
             length: params.branch_length_top,
             flower_scale: params.flower_size_top,
-            age: 1.0, // All same age (determinate)
+            age,
         });
     }
 

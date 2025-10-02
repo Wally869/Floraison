@@ -214,7 +214,8 @@ function randomInflorescenceParams(): InflorescenceParams {
 		flower_size_bottom: randomRange(0.6, 1.0),
 		recursion_depth: isRecursive ? randomInt(1, 2) : 1,
 		branch_ratio: randomRange(0.5, 0.8),
-		angle_divergence: 0 // Fixed for now
+		angle_divergence: 0, // Fixed for now
+		age_distribution: 0.5 // Natural gradient (default)
 	};
 }
 

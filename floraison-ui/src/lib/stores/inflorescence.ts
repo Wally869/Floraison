@@ -32,6 +32,8 @@ export interface InflorescenceParams {
 	recursion_depth: number;
 	branch_ratio: number;
 	angle_divergence: number;
+	// Age distribution control
+	age_distribution: number; // 0.0 = all buds, 0.5 = natural gradient, 1.0 = all blooms
 }
 
 const defaultParams: InflorescenceParams = {
@@ -48,7 +50,8 @@ const defaultParams: InflorescenceParams = {
 	flower_size_bottom: 1.0,
 	recursion_depth: 1, // Always initialize to 1 (never null to avoid slider midpoint issue)
 	branch_ratio: 0.7,
-	angle_divergence: 0.0
+	angle_divergence: 0.0,
+	age_distribution: 0.5 // 0.5 = natural age gradient (default behavior)
 };
 
 export const inflorescenceParams = writable<InflorescenceParams>(defaultParams);

@@ -8,7 +8,7 @@
 use floraison_core::math::curves::AxisCurve;
 use glam::{Quat, Vec3};
 
-use crate::{BranchPoint, InflorescenceParams};
+use crate::{apply_age_distribution, BranchPoint, InflorescenceParams};
 
 /// Helper structure for recursive branch building
 #[derive(Debug, Clone)]
@@ -132,11 +132,12 @@ fn nodes_to_branch_points(
             // Age: Determinate (top/center = oldest)
             // depth=0 (root) -> age=1.0
             // depth=max -> age=0.0
-            let age = if max_depth > 0 {
+            let base_age = if max_depth > 0 {
                 1.0 - (node.depth as f32 / max_depth as f32)
             } else {
                 1.0
             };
+            let age = apply_age_distribution(base_age, params.age_distribution);
 
             // Interpolate flower scale based on depth
             let t = node.depth as f32 / max_depth.max(1) as f32;

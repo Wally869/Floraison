@@ -473,7 +473,8 @@ export const lilyRacemePreset: FlowerPreset = {
 		flower_size_bottom: 0.9,
 		recursion_depth: 1,
 		branch_ratio: 0.7,
-		angle_divergence: 0.0
+		angle_divergence: 0.0,
+		age_distribution: 0.5
 	}
 };
 
@@ -575,7 +576,8 @@ export const lavenderSpikePreset: FlowerPreset = {
 		flower_size_bottom: 0.6,
 		recursion_depth: 1,
 		branch_ratio: 0.7,
-		angle_divergence: 0.0
+		angle_divergence: 0.0,
+		age_distribution: 0.5
 	}
 };
 
@@ -619,7 +621,8 @@ export const cherryUmbelPreset: FlowerPreset = {
 		flower_size_bottom: 0.7,
 		recursion_depth: 1,
 		branch_ratio: 0.7,
-		angle_divergence: 0.0
+		angle_divergence: 0.0,
+		age_distribution: 0.5
 	}
 };
 
@@ -703,7 +706,8 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 		flower_size_bottom: 0.6,
 		recursion_depth: 1,
 		branch_ratio: 0.7,
-		angle_divergence: 0.0
+		angle_divergence: 0.0,
+		age_distribution: 0.5
 	}
 };
 
@@ -796,7 +800,8 @@ export const astilbeCompoundPreset: FlowerPreset = {
 		flower_size_bottom: 0.8,
 		recursion_depth: 2,
 		branch_ratio: 0.5,
-		angle_divergence: 0.0 // Not used for compound raceme
+		angle_divergence: 0.0, // Not used for compound raceme
+		age_distribution: 0.5
 	}
 };
 
@@ -899,7 +904,8 @@ export const alliumUmbelPreset: FlowerPreset = {
 		flower_size_bottom: 0.3,
 		recursion_depth: 1,
 		branch_ratio: 0.7,
-		angle_divergence: 0.0
+		angle_divergence: 0.0,
+		age_distribution: 0.5
 	}
 };
 
