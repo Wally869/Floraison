@@ -87,7 +87,6 @@ pub const ANGLE_144: f32 = 2.0 * PI * 2.0 / 5.0;
 /// assert!(angle > 0.0 && angle < 2.0 * PI);
 /// ```
 pub fn fibonacci_angle(index: usize) -> f32 {
-    
     (index as f32 * GOLDEN_ANGLE) % (2.0 * PI)
 }
 
