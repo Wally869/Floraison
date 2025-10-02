@@ -108,7 +108,7 @@
 		// Convert WASM mesh to Three.js geometry
 		const geometry = wasmMeshToGeometry(newMesh);
 
-		// Compute bounding box for ground positioning and orbit centering
+		// Compute bounding box for ground positioning, orbit centering, and shadow camera
 		geometry.computeBoundingBox();
 		if (geometry.boundingBox) {
 			const minY = geometry.boundingBox.min.y;
@@ -119,6 +119,10 @@
 			geometry.boundingBox.getCenter(meshCenter);
 			sceneCtx.controls.target.copy(meshCenter);
 			sceneCtx.controls.update();
+
+			// Update shadow camera frustum to fit mesh bounds
+			// This ensures shadows render correctly for meshes of any size
+			sceneCtx.updateShadowCamera(geometry.boundingBox);
 		}
 
 		// Create enhanced material with translucency (organic petal appearance)
@@ -131,7 +135,7 @@
 			roughness: 0.6, // Slightly rough surface
 
 			// Translucency (subsurface scattering approximation)
-			transmission: 0.0, // No full transparency
+			transmission: 0.15, // Slight light transmission for realistic petal translucency
 			thickness: 0.5, // Controls SSS depth
 			ior: 1.4, // Index of refraction (organic material)
 

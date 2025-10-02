@@ -27,6 +27,7 @@ export interface SceneContext {
 	toggleAxesHelper: (visible: boolean) => void;
 	toggleShadows: (enabled: boolean) => void;
 	positionGround: (minY: number) => void;
+	updateShadowCamera: (boundingBox: THREE.Box3) => void;
 	resetCamera: () => void;
 }
 
@@ -201,6 +202,26 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		ground.position.y = minY - 0.1;
 	}
 
+	function updateShadowCamera(boundingBox: THREE.Box3) {
+		// Dynamically adjust shadow camera frustum to fit mesh bounds
+		// Add 20% padding to ensure shadows are fully captured
+		const size = new THREE.Vector3();
+		boundingBox.getSize(size);
+		const center = new THREE.Vector3();
+		boundingBox.getCenter(center);
+
+		const maxDim = Math.max(size.x, size.y, size.z);
+		const frustumSize = maxDim * 0.6; // 60% of max dimension with padding
+
+		dirLight.shadow.camera.left = -frustumSize;
+		dirLight.shadow.camera.right = frustumSize;
+		dirLight.shadow.camera.top = frustumSize;
+		dirLight.shadow.camera.bottom = -frustumSize;
+		dirLight.shadow.camera.far = maxDim * 2.5; // Ensure far plane covers entire scene
+
+		dirLight.shadow.camera.updateProjectionMatrix();
+	}
+
 	function resetCamera() {
 		camera.position.set(10, 10, 10);
 		camera.lookAt(0, 0, 0);
@@ -226,6 +247,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		toggleAxesHelper,
 		toggleShadows,
 		positionGround,
+		updateShadowCamera,
 		resetCamera
 	};
 }
