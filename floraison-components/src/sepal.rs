@@ -52,6 +52,7 @@ pub fn default() -> PetalParams {
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
+        lateral_curve: 0.0,
         resolution: 16,
         color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
     }
@@ -81,6 +82,7 @@ pub fn narrow() -> PetalParams {
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
+        lateral_curve: 0.0,
         resolution: 14,
         color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
     }
@@ -110,6 +112,7 @@ pub fn wide() -> PetalParams {
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
+        lateral_curve: 0.0,
         resolution: 18,
         color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
     }
@@ -139,6 +142,7 @@ pub fn recurved() -> PetalParams {
         twist: 5.0,        // Slight twist for organic look
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
+        lateral_curve: 0.0,
         resolution: 16,
         color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
     }

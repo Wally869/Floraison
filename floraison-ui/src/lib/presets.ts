@@ -104,6 +104,7 @@ export const lilyPreset: FlowerPreset = {
 			twist: 15.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 20,
 			color: [1.0, 1.0, 1.0] // White
 		}
@@ -294,6 +295,7 @@ export const daisyPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 12,
 			color: [1.0, 1.0, 1.0] // White
 		}
@@ -389,6 +391,7 @@ export const tulipPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 20,
 			color: [0.95, 0.3, 0.4] // Pink-red
 		}
@@ -606,6 +609,7 @@ export const lavenderSpikePreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 12,
 			color: [0.65, 0.4, 0.75] // Purple
 		}
@@ -651,6 +655,7 @@ export const cherryUmbelPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 16,
 			color: [1.0, 0.8, 0.85] // Pale pink
 		}
@@ -744,6 +749,7 @@ export const hydrangeaCorymbPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 12,
 			color: [0.6, 0.7, 0.9] // Light blue
 		}
@@ -846,6 +852,7 @@ export const astilbeCompoundPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 10,
 			color: [0.95, 0.6, 0.7] // Pink
 		}
@@ -958,6 +965,7 @@ export const alliumUmbelPreset: FlowerPreset = {
 			twist: 0.0,
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
+			lateral_curve: 0.0,
 			resolution: 12,
 			color: [0.7, 0.4, 0.85] // Purple
 		}

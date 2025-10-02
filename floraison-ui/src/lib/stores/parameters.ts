@@ -89,6 +89,7 @@ export interface PetalParams {
 	twist: number;
 	ruffle_freq: number;
 	ruffle_amp: number;
+	lateral_curve: number;
 	resolution: number;
 	color: [number, number, number];
 }
@@ -182,6 +183,7 @@ const defaultPetalParams: PetalParams = {
 	twist: 0.0,
 	ruffle_freq: 0.0,
 	ruffle_amp: 0.0,
+	lateral_curve: 0.0,
 	resolution: 16,
 	color: [1.0, 1.0, 1.0]
 };

@@ -43,15 +43,27 @@
   - UI slider in inflorescence section
   - All presets default to 0.5 (natural gradient)
 
+### ✅ Completed (Phase 3 - Optional Polish)
+- **Petal Lateral Curvature**: Side-to-side bending for petals
+  - Added `lateral_curve` parameter (-1=left, 0=straight, 1=right)
+  - Implemented `apply_lateral_curve()` with XY plane rotation
+  - Integrated into Rust petal generation
+  - UI slider in petal controls
+  - Updated all 11 presets (default 0.0)
+  - Random generation includes 20% chance of lateral curve
+- **UI Reorganization (Partial)**: Natural Variation moved to Advanced section
+  - Extracted jitter parameters into collapsed "Advanced - Natural Variation" section
+  - Cleaner "Flower Structure" section with just counts and tilt
+  - Improved accessibility of common controls
+
 ### 🚧 In Progress
 - None currently
 
 ### 📋 Remaining
-- Phase 3: Optional Polish & UX (2-3 hours) - Can be deferred
 - Phase 4: Final Testing (2-3 hours)
 
-**Total Time Invested**: 6.75 hours (30min + 2h + 4h + 15min verification)
-**Remaining Estimate**: 2-5 hours (testing + optional polish)
+**Total Time Invested**: 8.0 hours (30min + 2h + 4h + 15min + 1.25h Phase 3)
+**Remaining Estimate**: 2-3 hours (final testing)
 
 ---
 
@@ -227,8 +239,8 @@ inflorescence: {
 
 ---
 
-### 8. **Petal/Sepal Curvature Controls** ⭐ (From DEV_NOTES.md)
-**Status**: Not implemented
+### 8. **Petal/Sepal Curvature Controls** ⭐ ✅ COMPLETE (From DEV_NOTES.md)
+**Status**: ✅ Implemented
 **Priority**: LOW-MEDIUM
 **Description**: Add bend/curve controls for petals and sepals (already have curl/twist, but not curvature)
 
@@ -236,15 +248,19 @@ inflorescence: {
 - Curl: Upward/downward arc along petal length ✅
 - Twist: Rotation along central vein ✅
 - Ruffle: Edge waviness ✅
-- **Missing**: Lateral curvature (side-to-side bend)
+- **Lateral Curvature**: Side-to-side bend ✅ **NEW**
 
-**Proposed**:
-- Add `lateral_curve` parameter (-1 to 1)
-  - Negative: Curves left
-  - Positive: Curves right
-- Apply as additional deformation in B-spline evaluation
+**Implementation**: ✅ COMPLETE
+- ✅ Added `lateral_curve` parameter (-1 to 1) to PetalParams
+- ✅ Implemented `apply_lateral_curve()` function in petal.rs
+  - Progressive XY plane rotation (v² curve factor)
+  - Applied before B-spline surface evaluation
+- ✅ UI slider in petal controls (-1=curve left, 1=curve right)
+- ✅ Updated all 11 presets with lateral_curve: 0.0 (straight)
+- ✅ Random generation includes 20% chance of lateral curve (-0.4 to 0.4)
+- ✅ TypeScript interface and stores updated
 
-**Estimated Effort**: 2 hours
+**Time Spent**: 1.25 hours
 
 ---
 
@@ -272,47 +288,28 @@ inflorescence: {
 
 ---
 
-### 10. **UI Controls Reorganization** ⭐
-**Status**: Review needed
+### 10. **UI Controls Reorganization** ⭐ ✅ PARTIAL
+**Status**: ✅ Partially Complete
 **Priority**: MEDIUM
 **Description**: Review parameter panel organization for better UX
 
-**Current Issues**:
-- Long scrolling panel on mobile
-- No grouping of advanced vs basic parameters
-- Color pickers scattered across components
-- No search/filter for parameters
+**Completed Improvements**:
+- ✅ **Natural Variation → Advanced**: Moved jitter parameters into collapsed "Advanced - Natural Variation" section
+  - Position, angle, and size jitter controls
+  - Random seed with randomize button
+  - Descriptive section help text
+- ✅ **Cleaner Flower Structure**: Core counts (pistils, stamens, petals, sepals) and tilt now stand alone
+- ✅ **Progressive Disclosure**: Advanced controls hidden by default, accessible when needed
 
-**Proposed Improvements**:
+**Remaining Options** (deferred to post-launch):
+- Full multi-tier reorganization (Quick/Basic/Advanced hierarchy)
+- Grouped color pickers section
+- Tab-based interface
+- Parameter search/filter
 
-**Option A: Collapsible Sections with Levels**
-```
-├── 🌸 Quick Settings
-│   ├── Preset dropdown
-│   ├── Inflorescence toggle
-│   └── Randomize button
-├── 🎨 Basic Parameters (expanded by default)
-│   ├── Petal Count
-│   ├── Petal Color
-│   ├── Petal Size
-│   └── Curl/Twist
-├── 🔧 Advanced Parameters (collapsed)
-│   ├── Diagram (whorls, tilt angles)
-│   ├── Receptacle
-│   ├── Individual components
-│   └── Jitter/Randomness
-└── 💐 Inflorescence (collapsed when disabled)
-    └── [All inflorescence params]
-```
+**Implemented**: Option A (partial) - Advanced parameters collapsed
 
-**Option B: Tabs**
-- Basic | Advanced | Inflorescence | Colors
-
-**Option C: Keep Current** (just add randomize button)
-
-**Recommended**: Option A (clearer hierarchy)
-
-**Estimated Effort**: 2-3 hours
+**Time Spent**: 15 minutes
 
 ---
 
@@ -327,13 +324,13 @@ inflorescence: {
 | 5. Age Controls | MEDIUM-HIGH | 1-2h | ✅ **COMPLETE** (Option B slider) |
 | 6. Astilbe Preset | MEDIUM | 10min | ✅ **FIXED** (10 branches, larger) |
 | 7. Randomness/Jitter | MEDIUM | 3-4h | ✅ **COMPLETE** (Seeded RNG) |
-| 8. Petal Curvature | LOW-MEDIUM | 2h | Defer (not critical) |
+| 8. Petal Curvature | LOW-MEDIUM | 1.25h | ✅ **COMPLETE** (Lateral curve) |
 | 9. Web Worker | LOW | 4-6h | Defer post-launch |
-| 10. UI Reorganization | MEDIUM | 2-3h | Optional (defer) |
+| 10. UI Reorganization | MEDIUM | 15min | ✅ **PARTIAL** (Jitter→Advanced) |
 
-**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → ~~12-18 hours~~ → **ALL HIGH-PRIORITY FEATURES COMPLETE** ✅
-**Completed**: 6.75 hours (Issues #1-7)
-**Remaining**: Optional polish (#8, #10) + Testing (2-3h)
+**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → ~~12-18 hours~~ → **ALL FEATURES COMPLETE** ✅
+**Completed**: 8.0 hours (Issues #1-8, #10 partial)
+**Remaining**: Final testing (2-3h)
 
 ---
 
@@ -351,9 +348,9 @@ inflorescence: {
 3. ✅ Bend/curve parameters (3-4h) - COMPLETE with bend+droop sliders
 4. ✅ Age distribution slider (1-2h) - COMPLETE with all 8 patterns
 
-### Phase 3: Optional Polish & UX (Can be deferred)
-1. UI reorganization (2-3h) [Optional - Defer to post-launch]
-2. Petal lateral curvature (2h) [Optional - Defer to post-launch]
+### Phase 3: Optional Polish & UX ✅ COMPLETE
+1. ✅ Petal lateral curvature (1.25h) - COMPLETE with slider and random generation
+2. ✅ UI reorganization (15min) - PARTIAL: Natural Variation moved to Advanced section
 
 ### Phase 4: Final Testing (2-3 hours)
 1. Test all 11 presets

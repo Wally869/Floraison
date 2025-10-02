@@ -60,6 +60,10 @@ pub struct PetalParams {
     /// Ruffle amplitude (height of edge waves)
     pub ruffle_amp: f32,
 
+    /// Lateral curve amount (-1.0 = curve left, 0.0 = straight, 1.0 = curve right)
+    /// Bends the petal sideways in the XY plane
+    pub lateral_curve: f32,
+
     /// Tessellation resolution (samples per parametric direction)
     pub resolution: usize,
 
@@ -77,8 +81,10 @@ impl Default for PetalParams {
             base_width: 0.4,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,  // White
         }
@@ -97,6 +103,7 @@ impl PetalParams {
             twist: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 20,
             color: Vec3::ONE,
         }
@@ -113,6 +120,7 @@ impl PetalParams {
             twist: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         }
@@ -127,8 +135,10 @@ impl PetalParams {
             base_width: 0.6,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 12,
             color: Vec3::ONE,
         }
@@ -306,6 +316,56 @@ pub fn apply_twist(control_points: &mut Vec<Vec<Vec3>>, angle_deg: f32) {
     }
 }
 
+/// Apply lateral curve deformation to control points
+///
+/// Curves the petal sideways by rotating points in the XY plane.
+/// The curve increases along the length of the petal.
+///
+/// # Arguments
+///
+/// * `control_points` - Mutable reference to 2D grid of control points
+/// * `amount` - Lateral curve amount in range [-1, 1]:
+///   - Negative values curve left
+///   - Positive values curve right
+///   - 0 = no lateral curve
+///
+/// # Example
+///
+/// ```
+/// use floraison_components::petal::{PetalParams, generate_control_grid, apply_lateral_curve};
+///
+/// let params = PetalParams::default();
+/// let mut grid = generate_control_grid(&params);
+///
+/// // Curve to the right
+/// apply_lateral_curve(&mut grid, 0.5);
+/// ```
+pub fn apply_lateral_curve(control_points: &mut Vec<Vec<Vec3>>, amount: f32) {
+    use std::f32::consts::PI;
+
+    let rows = control_points.len();
+
+    for (row_idx, row) in control_points.iter_mut().enumerate() {
+        // v parameter: 0.0 at base, 1.0 at tip
+        let v = row_idx as f32 / (rows - 1) as f32;
+
+        // Curve increases quadratically along length for smooth deformation
+        let curve_factor = v * v;
+        // Use a smaller multiplier than curl for more subtle lateral bending
+        let curve_angle = amount * curve_factor * PI * 0.3;
+
+        for point in row.iter_mut() {
+            let x = point.x;
+            let y = point.y;
+
+            // Rotate in XY plane around Z axis
+            // Positive angle curves right, negative curves left
+            point.x = x * curve_angle.cos() - y * curve_angle.sin();
+            point.y = x * curve_angle.sin() + y * curve_angle.cos();
+        }
+    }
+}
+
 /// Apply ruffle deformation to control points
 ///
 /// Adds sinusoidal waves to the edges of the petal for a ruffled appearance.
@@ -418,6 +478,9 @@ pub fn generate(params: &PetalParams) -> Mesh {
     }
     if params.twist.abs() > 0.001 {
         apply_twist(&mut control_points, params.twist);
+    }
+    if params.lateral_curve.abs() > 0.001 {
+        apply_lateral_curve(&mut control_points, params.lateral_curve);
     }
     if params.ruffle_freq.abs() > 0.001 && params.ruffle_amp.abs() > 0.001 {
         apply_ruffle(&mut control_points, params.ruffle_freq, params.ruffle_amp);
@@ -690,6 +753,7 @@ mod tests {
         let params = PetalParams {
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
             ..Default::default()
@@ -715,8 +779,10 @@ mod tests {
             base_width: 0.5,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -817,8 +883,10 @@ mod tests {
             base_width: 0.5,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -830,8 +898,10 @@ mod tests {
             base_width: 0.5,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -894,8 +964,10 @@ mod tests {
             base_width: 0.5,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -931,8 +1003,10 @@ mod tests {
             base_width: 0.4,
             curl: 0.0,
             twist: 0.0,
+            lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
+            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };

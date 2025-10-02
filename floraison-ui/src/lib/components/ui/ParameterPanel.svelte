@@ -512,9 +512,16 @@
 				/>
 				<p class="param-help">0° = upright, 90° = spreading</p>
 			</div>
+		</div>
+	</details>
 
-			<!-- Natural Variation Subsection -->
-			<div class="subsection-header">Natural Variation</div>
+	<!-- Advanced - Natural Variation Section -->
+	<details>
+		<summary class="section-header">Advanced - Natural Variation</summary>
+		<div class="section-content">
+			<p class="param-help" style="margin-bottom: 1rem; color: #6b7280;">
+				Add organic imperfection to flower components for a more natural appearance.
+			</p>
 
 			<div class="param-group">
 				<label for="position-jitter">
@@ -530,7 +537,7 @@
 					bind:value={$diagramParams.position_jitter}
 					class="param-slider"
 				/>
-				<p class="param-help">💡 Random position offset (0 = perfect alignment)</p>
+				<p class="param-help">Random position offset (0 = perfect alignment)</p>
 			</div>
 
 			<div class="param-group">
@@ -547,7 +554,7 @@
 					bind:value={$diagramParams.angle_jitter}
 					class="param-slider"
 				/>
-				<p class="param-help">💡 Random rotation variation (0 = perfect symmetry)</p>
+				<p class="param-help">Random rotation variation (0 = perfect symmetry)</p>
 			</div>
 
 			<div class="param-group">
@@ -564,7 +571,7 @@
 					bind:value={$diagramParams.size_jitter}
 					class="param-slider"
 				/>
-				<p class="param-help">💡 Random size variation (0 = uniform size)</p>
+				<p class="param-help">Random size variation (0 = uniform size)</p>
 			</div>
 
 			<div class="param-group">
@@ -593,7 +600,7 @@
 						🎲
 					</button>
 				</div>
-				<p class="param-help">💡 Same seed = same variation pattern</p>
+				<p class="param-help">Same seed = same variation pattern</p>
 			</div>
 		</div>
 	</details>
@@ -1077,6 +1084,23 @@
 					bind:value={$petalParams.twist}
 					class="param-slider"
 				/>
+			</div>
+
+			<div class="param-group">
+				<label for="petal-lateral-curve">
+					<span class="param-label">Lateral Curve</span>
+					<span class="param-value">{$petalParams.lateral_curve.toFixed(2)}</span>
+				</label>
+				<input
+					id="petal-lateral-curve"
+					type="range"
+					min="-1.0"
+					max="1.0"
+					step="0.1"
+					bind:value={$petalParams.lateral_curve}
+					class="param-slider"
+				/>
+				<p class="param-help">Lateral bend (-1=left, 1=right)</p>
 			</div>
 
 			<div class="param-group">
