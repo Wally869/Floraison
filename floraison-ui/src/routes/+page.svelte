@@ -210,6 +210,13 @@
 		height: 1.5rem;
 	}
 
+	/* Hide hamburger button on desktop (md breakpoint: 768px+) */
+	@media (min-width: 768px) {
+		.hamburger-button {
+			display: none;
+		}
+	}
+
 	.backdrop {
 		position: fixed;
 		inset: 0;
