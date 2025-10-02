@@ -85,14 +85,20 @@ impl FlowerGenerator {
         let flower_params: FlowerParams = serde_json::from_str(flower_params_json)
             .map_err(|e| JsValue::from_str(&format!("Failed to parse flower parameters: {}", e)))?;
 
-        // Generate flower mesh for bloom stage
-        let flower_mesh = generate_flower(&flower_params);
+        // Generate distinct meshes for each age stage
+        let bloom_params = create_bloom_params(&flower_params);
+        let bud_params = create_bud_params(&flower_params);
+        let wilt_params = create_wilt_params(&flower_params);
 
-        // Create aging struct (MVP: use same mesh for all stages)
+        let bud_mesh = generate_flower(&bud_params);
+        let bloom_mesh = generate_flower(&bloom_params);
+        let wilt_mesh = generate_flower(&wilt_params);
+
+        // Create aging struct with stage-specific meshes
         let aging = FlowerAging {
-            bud_mesh: flower_mesh.clone(),
-            bloom_mesh: flower_mesh.clone(),
-            wilt_mesh: Some(flower_mesh.clone()),
+            bud_mesh,
+            bloom_mesh,
+            wilt_mesh: Some(wilt_mesh),
         };
 
         // Stem color (green)
@@ -108,6 +114,80 @@ impl FlowerGenerator {
         // Convert to WASM mesh data
         Ok(MeshData::from_mesh(&inflo_mesh))
     }
+}
+
+/// Create bud-stage flower parameters (closed, small, immature)
+///
+/// Modifies base parameters to create a flower in bud stage:
+/// - Petals are smaller (50% length/width) and less curled
+/// - Reproductive parts are shorter and smaller
+/// - No ruffle or twist
+fn create_bud_params(base: &FlowerParams) -> FlowerParams {
+    let mut bud = base.clone();
+
+    // Smaller, closed petals
+    bud.petal.length *= 0.5;
+    bud.petal.width *= 0.5;
+    bud.petal.base_width *= 0.6;
+    bud.petal.curl *= 0.2;  // Minimal curl (more closed)
+    bud.petal.twist = 0.0;  // No twist in buds
+    bud.petal.ruffle_freq = 0.0;  // No ruffle in buds
+    bud.petal.ruffle_amp = 0.0;
+
+    // Shorter reproductive parts
+    bud.pistil.length *= 0.6;
+    bud.pistil.stigma_radius *= 0.7;
+    bud.stamen.filament_length *= 0.5;
+    bud.stamen.anther_length *= 0.7;
+    bud.stamen.anther_width *= 0.7;
+    bud.stamen.anther_height *= 0.7;
+
+    bud
+}
+
+/// Create bloom-stage flower parameters (full size, open, mature)
+///
+/// Returns the base parameters unchanged - this is the reference stage.
+fn create_bloom_params(base: &FlowerParams) -> FlowerParams {
+    base.clone()  // Bloom uses base params unchanged
+}
+
+/// Create wilt-stage flower parameters (drooping, faded, aging)
+///
+/// Modifies base parameters to create a flower in wilt stage:
+/// - Petals droop more (increased curl)
+/// - Slightly smaller and more twisted
+/// - Colors darkened to simulate aging
+fn create_wilt_params(base: &FlowerParams) -> FlowerParams {
+    use floraison_core::Vec3;
+
+    let mut wilt = base.clone();
+
+    // Drooping petals (more downward curl)
+    wilt.petal.length *= 0.9;  // Slightly smaller
+    wilt.petal.curl += 0.3;    // More downward curl
+    wilt.petal.twist *= 1.2;   // Slightly more twisted
+
+    // Darkened color (aging/browning effect)
+    wilt.petal.color = Vec3::new(
+        wilt.petal.color.x * 0.8,
+        wilt.petal.color.y * 0.8,
+        wilt.petal.color.z * 0.8,
+    );
+
+    // Darken reproductive parts too
+    wilt.pistil.color = Vec3::new(
+        wilt.pistil.color.x * 0.8,
+        wilt.pistil.color.y * 0.8,
+        wilt.pistil.color.z * 0.8,
+    );
+    wilt.stamen.color = Vec3::new(
+        wilt.stamen.color.x * 0.8,
+        wilt.stamen.color.y * 0.8,
+        wilt.stamen.color.z * 0.8,
+    );
+
+    wilt
 }
 
 /// Mesh data structure for passing to JavaScript
