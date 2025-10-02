@@ -8,7 +8,6 @@
 import type { WorkerRequest, WorkerResponse } from './types';
 import type { FlowerParams } from '$lib/stores/parameters';
 import type { MeshDataLike } from '$lib/wasm/types';
-import { createMeshDataFromSerialized } from '$lib/wasm/types';
 import GenerationWorker from './generation.worker?worker';
 
 /**
@@ -96,9 +95,8 @@ export class GenerationWorkerManager {
 
 		switch (response.type) {
 			case 'generate-success': {
-				// Convert serialized mesh to MeshDataLike interface
-				const mesh = createMeshDataFromSerialized(response.mesh);
-				pending.resolve(mesh);
+				// response.mesh is already SerializedMeshData (part of MeshDataLike union)
+				pending.resolve(response.mesh);
 				this.pendingRequests.delete(response.id);
 				break;
 			}
