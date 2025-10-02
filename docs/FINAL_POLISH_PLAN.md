@@ -60,10 +60,14 @@
 - None currently
 
 ### 📋 Remaining
-- Phase 4: Final Testing (2-3 hours)
+- Phase 4: Performance & UX Improvements (8-11 hours)
+  - Web Worker for non-blocking generation (4-6h)
+  - Axis/Branch curvature controls (2-3h)
+  - Optimize scene refresh to avoid full recreation (1-2h)
+- Phase 5: Final Testing (2-3 hours)
 
 **Total Time Invested**: 8.0 hours (30min + 2h + 4h + 15min + 1.25h Phase 3)
-**Remaining Estimate**: 2-3 hours (final testing)
+**Remaining Estimate**: 10-14 hours (8-11h improvements + 2-3h testing)
 
 ---
 
@@ -264,27 +268,80 @@ inflorescence: {
 
 ---
 
-### 9. **Web Worker for Generation** 🔄 (From DEV_NOTES.md)
+### 9. **Web Worker for Generation** ⭐⭐ (From DEV_NOTES.md)
 **Status**: Not implemented
-**Priority**: LOW (Nice to have)
+**Priority**: HIGH (User requested)
 **Description**: Move WASM generation to web worker to avoid main thread hangs
 
-**Current**: Generation runs on main thread (can freeze UI for complex inflorescences)
+**Current Issues**:
+- Generation runs on main thread, freezing UI for complex inflorescences
+- No visual feedback during generation
+- Poor UX for compound patterns with high branch counts
+- Browser "Page Unresponsive" warnings on complex flowers
+
+**Proposed Solution**:
+1. **Web Worker Setup**:
+   - Create dedicated worker thread for WASM execution
+   - Load floraison WASM module in worker context
+   - Implement message passing protocol for parameters and mesh data
+
+2. **Loading Spinner**:
+   - Display animated spinner during generation
+   - Show in center of canvas or as overlay
+   - Optional: Progress indicator for multi-step generation
+
+3. **Async Generation Flow**:
+   ```typescript
+   // Main thread
+   worker.postMessage({ type: 'generate', params: flowerParams });
+   showSpinner();
+
+   worker.onmessage = (e) => {
+     hideSpinner();
+     updateMesh(e.data.vertices, e.data.indices, e.data.normals);
+   };
+   ```
 
 **Benefits**:
-- Non-blocking UI during generation
-- Better perceived performance
-- Loading spinner works smoothly
+- ✅ Non-blocking UI during generation
+- ✅ Smooth loading spinner animation
+- ✅ Better perceived performance
+- ✅ No browser warnings on complex flowers
+- ✅ Maintains UI responsiveness for parameter changes
 
-**Implementation Complexity**:
-- Need to move WASM module to worker context
-- Message passing for parameters and mesh buffers
-- Update UI code to handle async worker communication
-- More complex debugging
+**Implementation Steps**:
+1. Create `floraison-worker.ts` with WASM module initialization
+2. Implement message passing protocol (generate, result, error)
+3. Add transferable objects for mesh buffers (zero-copy transfer)
+4. Create spinner component (CSS animation or Three.js sprite)
+5. Update scene.ts to use worker instead of direct WASM calls
+6. Handle worker errors and fallback to main thread
+7. Add worker preloading on app startup
+
+**Files to Modify**:
+- `floraison-ui/src/lib/workers/floraison-worker.ts` - NEW: Worker implementation
+- `floraison-ui/src/lib/components/ui/LoadingSpinner.svelte` - NEW: Spinner component
+- `floraison-ui/src/lib/three/scene.ts` - Update to use worker
+- `floraison-ui/src/routes/+page.svelte` - Initialize worker on mount
+
+**Technical Considerations**:
+- WASM module must support worker context (check `wasm-bindgen` compatibility)
+- Use `Atomics` and `SharedArrayBuffer` for progress updates (optional)
+- Ensure proper worker cleanup on page unload (avoid memory leaks)
+- Debug tools: Chrome DevTools supports worker debugging
+
+**Testing**:
+- Test with simple flowers (should be instant, no spinner flash)
+- Test with complex inflorescences (30+ branches, recursion depth 3)
+- Verify no memory leaks (check with Chrome DevTools Memory profiler)
+- Test rapid parameter changes (debounce or cancel pending generation)
 
 **Estimated Effort**: 4-6 hours
+- Worker setup and WASM integration: 2-3h
+- Spinner component and UI integration: 1h
+- Testing and edge cases: 1-2h
 
-**Recommended**: Defer to post-launch (low priority, high effort)
+**Priority Justification**: User explicitly requested this feature for better UX
 
 ---
 
@@ -313,6 +370,375 @@ inflorescence: {
 
 ---
 
+### 11. **Inflorescence Axis/Branch Curvature** ⭐⭐ (New Feature Request)
+**Status**: Not implemented
+**Priority**: HIGH (User requested)
+**Description**: Add curvature controls for inflorescence main axis and branches to create more natural, organic forms
+
+**Current Limitation**:
+- Inflorescence axes are perfectly straight vertical lines
+- Branches are perfectly straight radial lines
+- Results in geometric, artificial appearance
+- No way to create drooping, arching, or spiraling inflorescences
+
+**Proposed Solution**:
+Add curvature parameters to inflorescence generation:
+
+1. **Main Axis Curvature**:
+   - `axis_curve_amount` (0-1): Degree of curve along main axis
+   - `axis_curve_direction`: Direction of curve (auto: gravity droop, or user-specified)
+   - Apply progressive curve using bezier or arc interpolation
+   - Example: Wisteria (drooping clusters), Delphinium (slight backward lean)
+
+2. **Branch Curvature**:
+   - `branch_curve_amount` (0-1): Degree of curve for individual branches
+   - `branch_curve_type`: Uniform (all same) vs. Gradient (varies by position)
+   - Apply curve to each branch from attachment point to flower
+   - Example: Lilac (upward curving branches), Laburnum (drooping branches)
+
+**Implementation Approach**:
+Similar to pistil/stamen bend system (Issue #2), but applied to inflorescence structure:
+
+```rust
+// In InflorescenceParams
+pub struct InflorescenceParams {
+    // ... existing fields
+    pub axis_curve_amount: f32,      // 0-1
+    pub axis_curve_direction: Vec3,  // Direction vector (default: -Y for droop)
+    pub branch_curve_amount: f32,    // 0-1
+    pub branch_curve_mode: CurveMode, // Uniform, GradientUp, GradientDown
+}
+
+pub enum CurveMode {
+    Uniform,       // All branches curve equally
+    GradientUp,    // Top branches curve more
+    GradientDown,  // Bottom branches curve more
+}
+
+// In pattern generation (e.g., raceme.rs)
+fn apply_axis_curve(points: &mut Vec<Vec3>, params: &InflorescenceParams) {
+    let n = points.len();
+    for (i, point) in points.iter_mut().enumerate() {
+        let t = i as f32 / (n - 1) as f32;  // 0 to 1 along axis
+        let curve_factor = t * t;            // Quadratic for natural droop
+        let offset = params.axis_curve_direction *
+                     params.axis_curve_amount *
+                     curve_factor *
+                     params.axis_length;
+        *point += offset;
+    }
+}
+
+fn apply_branch_curve(
+    branch_start: Vec3,
+    branch_end: Vec3,
+    position_on_axis: f32,  // 0-1
+    params: &InflorescenceParams
+) -> Vec3 {
+    let curve_amount = match params.branch_curve_mode {
+        CurveMode::Uniform => params.branch_curve_amount,
+        CurveMode::GradientUp => params.branch_curve_amount * position_on_axis,
+        CurveMode::GradientDown => params.branch_curve_amount * (1.0 - position_on_axis),
+    };
+
+    // Apply perpendicular curve (arc in horizontal plane)
+    let branch_dir = (branch_end - branch_start).normalize();
+    let up = Vec3::Y;
+    let curve_dir = branch_dir.cross(up).normalize();
+
+    // Quadratic bezier curve
+    let control_point = branch_start +
+                        (branch_end - branch_start) * 0.5 +
+                        curve_dir * curve_amount;
+
+    // Return curved endpoint (or full curve points if needed)
+    control_point
+}
+```
+
+**UI Controls**:
+Add to Inflorescence section in ParameterPanel.svelte:
+
+```svelte
+<!-- Axis Curvature Subsection -->
+<div class="subsection-header">Curvature</div>
+
+<div class="param-group">
+    <label for="axis-curve">
+        <span class="param-label">Axis Curve</span>
+        <span class="param-value">{$inflorescenceParams.axis_curve_amount.toFixed(2)}</span>
+    </label>
+    <input
+        id="axis-curve"
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        bind:value={$inflorescenceParams.axis_curve_amount}
+        class="param-slider"
+    />
+    <p class="param-help">Main axis droop/curve (0=straight, 1=dramatic arc)</p>
+</div>
+
+<div class="param-group">
+    <label for="branch-curve">
+        <span class="param-label">Branch Curve</span>
+        <span class="param-value">{$inflorescenceParams.branch_curve_amount.toFixed(2)}</span>
+    </label>
+    <input
+        id="branch-curve"
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        bind:value={$inflorescenceParams.branch_curve_amount}
+        class="param-slider"
+    />
+    <p class="param-help">Branch curvature (0=straight, 1=arching)</p>
+</div>
+
+<div class="param-group">
+    <label for="branch-curve-mode" class="param-label">Curve Distribution</label>
+    <select id="branch-curve-mode" bind:value={$inflorescenceParams.branch_curve_mode} class="param-select">
+        <option value="Uniform">Uniform (all equal)</option>
+        <option value="GradientUp">Gradient Up (top curves more)</option>
+        <option value="GradientDown">Gradient Down (bottom curves more)</option>
+    </select>
+</div>
+```
+
+**Files to Modify**:
+- `floraison-ui/src/lib/stores/inflorescence.ts` - Add curve parameters
+- `floraison-ui/src/lib/components/ui/ParameterPanel.svelte` - Add UI controls
+- `floraison-inflorescence/src/lib.rs` - Add CurveMode enum and parameters
+- `floraison-inflorescence/src/patterns/raceme.rs` - Implement axis curve
+- `floraison-inflorescence/src/patterns/spike.rs` - Implement axis curve
+- `floraison-inflorescence/src/patterns/umbel.rs` - Implement branch curve
+- `floraison-inflorescence/src/patterns/corymb.rs` - Implement branch curve
+- `floraison-inflorescence/src/patterns/dichasium.rs` - Implement recursive curve
+- `floraison-inflorescence/src/patterns/drepanium.rs` - Implement spiral curve
+- `floraison-inflorescence/src/patterns/compound_raceme.rs` - Inherit from raceme
+- `floraison-inflorescence/src/patterns/compound_umbel.rs` - Inherit from umbel
+- `floraison-ui/src/lib/utils/random.ts` - Add to random generation (30% chance)
+- `floraison-ui/src/lib/presets.ts` - Update all inflorescence presets
+
+**Benefits**:
+- ✅ More realistic, natural-looking inflorescences
+- ✅ Matches real botanical forms (drooping wisteria, arching lilac)
+- ✅ Greater artistic control for users
+- ✅ Complements existing bend/droop system for components
+
+**Examples of Natural Curvature**:
+- **Wisteria**: Heavy axis droop (0.7-0.9), slight branch droop (0.2-0.3)
+- **Lilac**: Subtle axis lean (0.1-0.2), upward branch curve (-0.3)
+- **Laburnum**: Strong axis droop (0.6), strong branch droop (0.5)
+- **Delphinium**: Minimal axis curve (0.1), straight branches (0.0)
+
+**Edge Cases to Handle**:
+- Ensure curve doesn't flip axis upside down (clamp curve amount)
+- Handle interaction with rotation_angle (curves should rotate with branches)
+- Compound patterns: Apply curve recursively to sub-branches
+- Performance: Curve calculation shouldn't significantly slow generation
+
+**Testing**:
+- Test each pattern type with various curve amounts (0, 0.5, 1.0)
+- Verify natural appearance at moderate values (0.3-0.7)
+- Test compound patterns with recursion
+- Ensure random generation produces reasonable values
+
+**Estimated Effort**: 2-3 hours
+- Rust implementation (8 patterns): 1.5-2h
+- TypeScript parameters and UI: 30min
+- Testing and refinement: 30min
+
+**Priority Justification**: User explicitly requested for more natural inflorescence forms
+
+---
+
+### 12. **Optimize Scene Refresh (Mesh-Only Update)** ⭐⭐ (Performance Issue)
+**Status**: Not implemented
+**Priority**: HIGH (User reported issue)
+**Description**: Optimize mesh regeneration to only replace flower mesh instead of recreating entire scene
+
+**Current Issue**:
+- Every mesh regeneration recreates the entire Three.js scene
+- Camera position resets or flickers
+- Ground plane, lights, and environment are unnecessarily recreated
+- Poor UX with visual flash/flicker
+- Potential memory leaks from improper disposal
+
+**Current Behavior** (probable):
+```typescript
+// In scene.ts or similar
+function regenerateFlower(params: FlowerParams) {
+    // ❌ PROBLEM: Recreating everything
+    scene.clear();  // Removes everything
+    createGroundPlane();
+    createLights();
+    createFlowerMesh(params);  // Only this needs to update
+    createCamera();
+}
+```
+
+**Proposed Solution**:
+Maintain persistent scene objects and only update flower mesh:
+
+```typescript
+// In scene.ts
+class FlowerScene {
+    private scene: THREE.Scene;
+    private camera: THREE.PerspectiveCamera;
+    private renderer: THREE.WebGLRenderer;
+    private controls: OrbitControls;
+    private groundPlane: THREE.Mesh;
+    private lights: THREE.Light[];
+    private flowerMesh: THREE.Group | null = null;  // Track separately
+
+    constructor(canvas: HTMLCanvasElement) {
+        // Initialize scene once
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(/* ... */);
+        this.renderer = new THREE.WebGLRenderer({ canvas });
+        this.controls = new OrbitControls(this.camera, canvas);
+
+        // Create persistent objects
+        this.createGroundPlane();
+        this.createLights();
+    }
+
+    private createGroundPlane() {
+        const geometry = new THREE.PlaneGeometry(60, 60);
+        const material = new THREE.ShadowMaterial({ opacity: 0.2 });
+        this.groundPlane = new THREE.Mesh(geometry, material);
+        this.groundPlane.rotation.x = -Math.PI / 2;
+        this.groundPlane.receiveShadow = true;
+        this.scene.add(this.groundPlane);
+    }
+
+    private createLights() {
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        const directional = new THREE.DirectionalLight(0xffffff, 0.8);
+        // ... configure shadows, etc.
+
+        this.lights = [ambient, directional];
+        this.lights.forEach(light => this.scene.add(light));
+    }
+
+    // ✅ SOLUTION: Only update flower mesh
+    updateFlowerMesh(vertices: Float32Array, indices: Uint32Array, normals: Float32Array) {
+        // Remove old mesh
+        if (this.flowerMesh) {
+            this.scene.remove(this.flowerMesh);
+
+            // Properly dispose geometry and materials to prevent memory leaks
+            this.flowerMesh.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                    child.geometry.dispose();
+                    if (Array.isArray(child.material)) {
+                        child.material.forEach(m => m.dispose());
+                    } else {
+                        child.material.dispose();
+                    }
+                }
+            });
+
+            this.flowerMesh = null;
+        }
+
+        // Create new mesh
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+
+        const material = new THREE.MeshPhongMaterial({ /* ... */ });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+
+        this.flowerMesh = new THREE.Group();
+        this.flowerMesh.add(mesh);
+        this.scene.add(this.flowerMesh);
+    }
+
+    // Camera and controls remain untouched
+    render() {
+        this.renderer.render(this.scene, this.camera);
+    }
+
+    dispose() {
+        // Full cleanup when component unmounts
+        this.scene.clear();
+        this.renderer.dispose();
+        this.controls.dispose();
+        // ... dispose all resources
+    }
+}
+```
+
+**Benefits**:
+- ✅ No visual flash/flicker on regeneration
+- ✅ Camera position and zoom level maintained
+- ✅ Orbit controls state preserved (rotation, pan)
+- ✅ Better performance (less object creation)
+- ✅ Proper memory management (explicit disposal)
+- ✅ Smoother UX for parameter adjustments
+
+**Implementation Steps**:
+1. Refactor scene.ts into class-based structure (or similar pattern)
+2. Separate initialization (once) from update (per regeneration)
+3. Track flower mesh reference separately from scene
+4. Implement proper disposal for old meshes (geometry + materials)
+5. Ensure shadow maps update correctly with new mesh
+6. Test camera/controls persistence across updates
+
+**Files to Modify**:
+- `floraison-ui/src/lib/three/scene.ts` - Major refactor to separate init/update
+- `floraison-ui/src/routes/+page.svelte` - Update to use new scene API
+
+**Potential Architecture**:
+```typescript
+// +page.svelte
+let flowerScene: FlowerScene;
+
+onMount(() => {
+    flowerScene = new FlowerScene(canvas);
+    flowerScene.initialize();  // Once: ground, lights, camera
+});
+
+$effect(() => {
+    // Watch for parameter changes
+    const meshData = generateFlower($allParams);  // WASM call
+    flowerScene.updateFlowerMesh(meshData);  // Only update mesh
+});
+
+onDestroy(() => {
+    flowerScene.dispose();  // Clean up everything
+});
+```
+
+**Edge Cases to Handle**:
+- Initial load (no previous mesh to dispose)
+- Rapid parameter changes (debounce or cancel pending updates)
+- WebGL context loss (recovery mechanism)
+- Memory leaks (verify with Chrome DevTools heap snapshots)
+
+**Testing**:
+- Change parameters rapidly and verify no flicker
+- Check camera position stays constant after regeneration
+- Use Chrome DevTools Memory profiler to verify no leaks
+- Test with complex meshes (30+ branches)
+- Verify shadows update correctly
+
+**Estimated Effort**: 1-2 hours
+- Refactor scene.ts structure: 45min
+- Implement mesh-only update: 30min
+- Testing and memory leak verification: 15-30min
+
+**Priority Justification**: User reported as annoying UX issue, quick win for perceived quality
+
+---
+
 ## Summary Table
 
 | Issue | Priority | Effort | Status |
@@ -325,12 +751,17 @@ inflorescence: {
 | 6. Astilbe Preset | MEDIUM | 10min | ✅ **FIXED** (10 branches, larger) |
 | 7. Randomness/Jitter | MEDIUM | 3-4h | ✅ **COMPLETE** (Seeded RNG) |
 | 8. Petal Curvature | LOW-MEDIUM | 1.25h | ✅ **COMPLETE** (Lateral curve) |
-| 9. Web Worker | LOW | 4-6h | Defer post-launch |
+| 9. Web Worker + Spinner | **HIGH** ⭐⭐ | 4-6h | **PRIORITIZED** (User requested) |
 | 10. UI Reorganization | MEDIUM | 15min | ✅ **PARTIAL** (Jitter→Advanced) |
+| 11. Axis/Branch Curvature | **HIGH** ⭐⭐ | 2-3h | **NEW** (User requested) |
+| 12. Optimize Scene Refresh | **HIGH** ⭐⭐ | 1-2h | **NEW** (User reported issue) |
 
-**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → ~~12-18 hours~~ → **ALL FEATURES COMPLETE** ✅
+**Total Estimated Effort**: ~~14-20 hours~~ → **18-22 hours** (with new features)
 **Completed**: 8.0 hours (Issues #1-8, #10 partial)
-**Remaining**: Final testing (2-3h)
+**Remaining**:
+- Phase 4: Issues #9, #11, #12 (7-11 hours)
+- Phase 5: Final testing (2-3 hours)
+- **Total Remaining**: 9-14 hours
 
 ---
 
@@ -352,23 +783,47 @@ inflorescence: {
 1. ✅ Petal lateral curvature (1.25h) - COMPLETE with slider and random generation
 2. ✅ UI reorganization (15min) - PARTIAL: Natural Variation moved to Advanced section
 
-### Phase 4: Final Testing (2-3 hours)
-1. Test all 11 presets
-2. Test all 8 inflorescence patterns
-3. Test edge cases
-4. Cross-browser testing
-5. Mobile testing (Xiaomi Redmi)
-6. Performance profiling
+### Phase 4: Performance & UX Improvements (7-11 hours) - USER REQUESTED
+1. **Web Worker for Generation** (4-6h) - Issue #9
+   - Move WASM to dedicated worker thread
+   - Implement loading spinner component
+   - Non-blocking UI during generation
+   - Proper error handling and fallback
+
+2. **Inflorescence Axis/Branch Curvature** (2-3h) - Issue #11
+   - Add axis_curve_amount and branch_curve_amount parameters
+   - Implement curve application in all 8 patterns
+   - UI controls in inflorescence section
+   - Update presets and random generation
+
+3. **Optimize Scene Refresh** (1-2h) - Issue #12
+   - Refactor scene.ts to class-based structure
+   - Separate scene initialization from mesh updates
+   - Only replace flower mesh on regeneration
+   - Proper disposal to prevent memory leaks
+   - Preserve camera position and controls
+
+### Phase 5: Final Testing (2-3 hours)
+1. Test all 11 presets (with new features)
+2. Test all 8 inflorescence patterns (with curvature)
+3. Test edge cases (extreme parameters, rapid changes)
+4. Verify web worker performance (no freezing)
+5. Verify scene refresh optimization (no flicker)
+6. Cross-browser testing (Chrome, Firefox, Safari)
+7. Mobile testing (Xiaomi Redmi)
+8. Performance profiling (memory leaks, frame rate)
 
 ---
 
-## Post-Launch Enhancements
-- Web worker for generation (4-6h)
+## Post-Launch Enhancements (Future Work)
 - Full age system with bud/wilt meshes (4-5h)
-- More randomness options (color variation, etc.)
-- Leaf geometry
-- Animation (blooming, wind sway)
-- Texture generation
+- More randomness options (color variation, per-component jitter, etc.)
+- Leaf geometry and stem structure
+- Animation (blooming sequence, wind sway, growth)
+- Procedural texture generation (petal veins, spots, gradients)
+- Export to other formats (OBJ, STL for 3D printing)
+- Preset sharing (URL encoding, community gallery)
+- Advanced lighting controls (HDR environment maps)
 
 ---
 
@@ -412,6 +867,108 @@ ageDistribution: number;  // 0-1
 // In Rust:
 let adjusted_age = base_age * age_distribution;
 let mesh = aging.select_mesh(adjusted_age);
+```
+
+### Web Worker Architecture
+```typescript
+// floraison-worker.ts
+import init, { generate_flower } from '$lib/wasm/floraison';
+
+let wasmInitialized = false;
+
+self.onmessage = async (e) => {
+    if (e.data.type === 'init') {
+        await init();
+        wasmInitialized = true;
+        self.postMessage({ type: 'ready' });
+    } else if (e.data.type === 'generate') {
+        if (!wasmInitialized) {
+            self.postMessage({ type: 'error', error: 'WASM not initialized' });
+            return;
+        }
+
+        try {
+            const result = generate_flower(e.data.params);
+            // Transfer buffers for zero-copy
+            self.postMessage(
+                { type: 'result', data: result },
+                [result.vertices.buffer, result.indices.buffer, result.normals.buffer]
+            );
+        } catch (error) {
+            self.postMessage({ type: 'error', error: error.message });
+        }
+    }
+};
+```
+
+### Axis Curvature Implementation
+```rust
+// In inflorescence patterns
+pub fn apply_axis_curve(
+    axis_points: &mut Vec<Vec3>,
+    curve_amount: f32,
+    curve_direction: Vec3,
+    axis_length: f32
+) {
+    let n = axis_points.len();
+    for (i, point) in axis_points.iter_mut().enumerate() {
+        let t = i as f32 / (n - 1) as f32;  // Normalized position (0-1)
+        let curve_factor = t * t;            // Quadratic progression
+        let offset = curve_direction * curve_amount * curve_factor * axis_length;
+        *point += offset;
+    }
+}
+
+// For branches: apply perpendicular curve
+pub fn get_curved_branch_endpoint(
+    start: Vec3,
+    end: Vec3,
+    curve_amount: f32,
+    up_direction: Vec3
+) -> Vec3 {
+    let branch_dir = (end - start).normalize();
+    let curve_dir = branch_dir.cross(up_direction).normalize();
+
+    // Midpoint control point for quadratic bezier
+    let midpoint = start + (end - start) * 0.5;
+    let control = midpoint + curve_dir * curve_amount;
+
+    // Return curved endpoint (simplified - full implementation would generate curve points)
+    end + curve_dir * curve_amount * 0.5
+}
+```
+
+### Scene Mesh-Only Update Pattern
+```typescript
+// Persistent scene objects
+class FlowerScene {
+    private flowerMesh: THREE.Group | null = null;
+
+    updateFlowerMesh(meshData: MeshData) {
+        // Dispose old mesh
+        if (this.flowerMesh) {
+            this.scene.remove(this.flowerMesh);
+            this.disposeMesh(this.flowerMesh);
+        }
+
+        // Create new mesh
+        this.flowerMesh = this.createMeshFromData(meshData);
+        this.scene.add(this.flowerMesh);
+    }
+
+    private disposeMesh(mesh: THREE.Group) {
+        mesh.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.geometry.dispose();
+                if (Array.isArray(child.material)) {
+                    child.material.forEach(m => m.dispose());
+                } else {
+                    child.material.dispose();
+                }
+            }
+        });
+    }
+}
 ```
 
 ---
