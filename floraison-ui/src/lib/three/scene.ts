@@ -38,9 +38,9 @@ export interface SceneContext {
  * @returns Scene context with all necessary objects and methods
  */
 export function createScene(canvas: HTMLCanvasElement): SceneContext {
-	// Create scene with gray background
+	// Create scene with light brown background (earthy tone)
 	const scene = new THREE.Scene();
-	scene.background = new THREE.Color(0xf0f0f0);
+	scene.background = new THREE.Color(0x714B4B);
 
 	// Create perspective camera
 	const camera = new THREE.PerspectiveCamera(

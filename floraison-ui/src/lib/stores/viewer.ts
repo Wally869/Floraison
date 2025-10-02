@@ -28,7 +28,7 @@ function isMobileDevice(): boolean {
 
 const defaultSettings: ViewerSettings = {
 	showAxes: false,
-	backgroundColor: '#f0f0f0',
+	backgroundColor: '#714B4B', // Light brown (earthy tone)
 	ambientIntensity: 0.6,
 	directionalIntensity: 1.2,
 	ambientColor: '#87ceeb', // Light blue (sky color)
