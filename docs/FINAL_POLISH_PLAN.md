@@ -22,17 +22,36 @@
   - Smart parameter constraints for natural proportions
   - 50% chance for inflorescence patterns
   - HSL→RGB color utilities
+- **Jitter/Natural Variation**: Seeded randomness for organic component placement
+  - Position jitter (0-0.5): Random radial offset
+  - Angle jitter (0-15°): Random rotation variation
+  - Size jitter (0-0.3): Random scale variation (±30%)
+  - Deterministic seeded RNG (reproducible with same seed)
+  - UI controls in "Natural Variation" subsection
+  - Integrated into all 11 presets and random generation
+- **Bend/Droop Parameters**: Curved pistils and stamens for organic shapes
+  - Pistil bend (0-1): Arc amount for curved style
+  - Pistil droop (-1 to 1): Vertical tilt control
+  - Stamen bend (0-1): Arc amount for curved filament
+  - Stamen droop (-1 to 1): Vertical tilt control
+  - Automatic curve generation via generateBendCurve()
+  - Random generation includes 20-30% chance of curves
+- **Age Distribution Controls**: Control flower maturity across inflorescences
+  - Age distribution slider (0-1): 0=all buds, 0.5=natural gradient, 1=all blooms
+  - apply_age_distribution() function in Rust
+  - Integrated into all 8 inflorescence patterns (simple + compound)
+  - UI slider in inflorescence section
+  - All presets default to 0.5 (natural gradient)
 
 ### 🚧 In Progress
 - None currently
 
 ### 📋 Remaining
-- Phase 2: Bend/curve parameters, Age controls (~5-7 hours)
-- Phase 3: Polish & UX (6-10 hours)
+- Phase 3: Optional Polish & UX (2-3 hours) - Can be deferred
 - Phase 4: Final Testing (2-3 hours)
 
-**Total Time Invested**: 2.5 hours (30min + 2h)
-**Remaining Estimate**: 12-18 hours
+**Total Time Invested**: 6.75 hours (30min + 2h + 4h + 15min verification)
+**Remaining Estimate**: 2-5 hours (testing + optional polish)
 
 ---
 
@@ -58,25 +77,21 @@
 
 ---
 
-### 2. **Bending/Curve Parameters for Components** ⭐⭐
-**Status**: Partially implemented in Rust, omitted from UI
+### 2. **Bending/Curve Parameters for Components** ⭐⭐ ✅ COMPLETE
+**Status**: ✅ Fully Implemented
 **Priority**: HIGH
-**Description**: Add curve/bend controls for pistil and stamen (currently straight stems only)
+**Description**: Add curve/bend controls for pistil and stamen
 
-**Current State**:
-- `style_curve` for pistil: Commented as "omitted for simplicity in Epic 8"
-- `filament_curve` for stamen: Commented as "omitted for simplicity in Epic 8"
-- Curve generation exists in Rust (Catmull-Rom splines)
+**Implementation**: ✅ COMPLETE
+- ✅ UI sliders for pistil_bend (0-1) and pistil_droop (-1 to 1)
+- ✅ UI sliders for stamen_bend (0-1) and stamen_droop (-1 to 1)
+- ✅ TypeScript generateBendCurve() converts bend+droop to control points
+- ✅ Rust applies curves during pistil/stamen generation
+- ✅ All 11 presets include bend/droop defaults (mostly 0.0 for straight)
+- ✅ Random generation includes 20-30% chance of curves
+- ✅ Prevents mesh pinching with proper curve handling
 
-**Implementation**:
-- Add curve parameters to UI:
-  - **Pistil**: `style_curve_amount` (0-1, 0=straight, 1=curved)
-  - **Stamen**: `filament_curve_amount` (0-1)
-- Modify Rust generators to apply curve when amount > 0
-- Use simple sine wave or bezier curve for bending
-- Alternative: Add `bend_angle` parameter (simpler than full curve)
-
-**Estimated Effort**: 3-4 hours
+**Time Spent**: Already complete (from previous work)
 
 ---
 
@@ -139,41 +154,25 @@ dirLight.shadow.camera.bottom = -20;
 
 ---
 
-### 5. **Age Controls (Flower Aging)** ⭐⭐
-**Status**: Implemented in Rust, not exposed to UI
+### 5. **Age Controls (Flower Aging)** ⭐⭐ ✅ COMPLETE
+**Status**: ✅ Fully Implemented (Option B)
 **Priority**: MEDIUM-HIGH
-**Description**: Flower aging system exists (bud, bloom, wilt) but no user controls
+**Description**: User control for flower maturity distribution in inflorescences
 
-**Current Implementation** (Rust only):
-- `FlowerAging` system with bud/bloom/wilt meshes
-- Age value (0.0-1.0) automatically assigned based on pattern type:
-  - Indeterminate: Bottom=1.0 (oldest), Top=0.0 (youngest)
-  - Determinate: Center=1.0 (oldest), Outer=0.0 (youngest)
-- Age thresholds: <0.3=bud, 0.3-0.8=bloom, >0.8=wilt
+**Implementation**: ✅ COMPLETE
+- ✅ TypeScript `age_distribution` parameter (0-1) in InflorescenceParams
+- ✅ UI slider in inflorescence section (line 360, 368 of ParameterPanel.svelte)
+- ✅ Rust `apply_age_distribution()` function in lib.rs (lines 247-260)
+  - 0.0 = All buds (age ≈ 0.15)
+  - 0.5 = Natural age gradient (default)
+  - 1.0 = All blooms (age ≈ 0.55)
+- ✅ Integrated into all 6 simple patterns (Raceme, Spike, Umbel, Corymb, Dichasium, Drepanium)
+- ✅ Compound patterns inherit via delegation to simple patterns
+- ✅ All 11 presets default to 0.5 (natural gradient)
+- ✅ Random generation includes age_distribution
+- ✅ Comprehensive unit tests
 
-**Proposed UI Controls**:
-
-**Option A: Full Age System** (Complex, 4-5 hours)
-- Create bud/bloom/wilt parameter sets (smaller petals for bud, etc.)
-- Add age visualization toggle
-- Allow manual age override per flower
-
-**Option B: Simple Age Modifier** (Simple, 1-2 hours)
-- Add single slider: "Age Distribution" (0-1)
-  - 0 = All buds
-  - 0.5 = Natural age gradient
-  - 1 = All blooms
-- Shift age calculation: `flower_age = base_age * age_distribution`
-- Add to inflorescence parameters only
-
-**Option C: Defer to Post-Launch** (0 hours)
-- Keep automatic aging as-is
-- Document as future enhancement
-- Age system works correctly, just not user-controllable
-
-**Recommended**: Option B (simple slider)
-
-**Estimated Effort**: 1-2 hours (Option B)
+**Time Spent**: Already complete (from previous work)
 
 ---
 
@@ -207,29 +206,24 @@ inflorescence: {
 
 ---
 
-### 7. **Randomness/Jitter Parameters** ⭐ (From DEV_NOTES.md)
-**Status**: Not implemented
+### 7. **Randomness/Jitter Parameters** ⭐ ✅ COMPLETE (From DEV_NOTES.md)
+**Status**: ✅ Implemented
 **Priority**: MEDIUM
 **Description**: Add randomness sliders to reduce perfect symmetry
 
-**Proposed Parameters**:
-- **Position Jitter** (0-0.5): Random offset to component positions
-- **Angle Jitter** (0-15°): Random rotation variation
-- **Size Variation** (0-0.3): Random scale per component (0.7x to 1.3x)
-- **Color Variation** (0-0.2): Slight hue/saturation/brightness shift
+**Implementation**: ✅ COMPLETE
+- ✅ Position jitter (0-0.5): Random radial offset from base position
+- ✅ Angle jitter (0-15°): Random rotation variation in degrees
+- ✅ Size jitter (0-0.3): Random scale variation (±30%)
+- ✅ Jitter seed: Deterministic seeded RNG for reproducibility
+- ✅ UI controls: "Natural Variation" subsection with 4 sliders + randomize seed button
+- ✅ Rust implementation: `apply_jitter()` using `rand::SmallRng` with component-specific seeds
+- ✅ Added `rand` dependency to `floraison-components` crate
+- ✅ Updated all 11 presets with jitter defaults (disabled: 0.0)
+- ✅ Random generation includes subtle jitter (40% position, 50% angle, 30% size chance)
+- ✅ Performance: Early exit when jitter disabled, no overhead
 
-**Requirements**:
-- Seeded random (deterministic, reproducible)
-- WASM-compatible random crate (e.g., `rand` with `wasm-bindgen` feature)
-- Pass seed from UI to Rust
-
-**Implementation**:
-1. Add `jitter_seed: u64` to WASM parameters
-2. Add jitter sliders to UI (Advanced section)
-3. Apply jitter in Rust component placement
-4. Use `rand::SeedableRng::seed_from_u64(seed)`
-
-**Estimated Effort**: 3-4 hours
+**Time Spent**: 4 hours
 
 ---
 
@@ -327,18 +321,19 @@ inflorescence: {
 | Issue | Priority | Effort | Status |
 |-------|----------|--------|--------|
 | 1. Random Generation Button | HIGH | 2-3h | ✅ **COMPLETE** (Smart constraints) |
-| 2. Bend/Curve Parameters | HIGH | 3-4h | Partially implemented |
+| 2. Bend/Curve Parameters | HIGH | 3-4h | ✅ **COMPLETE** (Bend+Droop) |
 | 3. Lily Stamen Tilt | MEDIUM | 5min | ✅ **FIXED** (90°→60°) |
 | 4. Ground/Shadow Fix | MEDIUM | 5min | ✅ **FIXED** (60×60, 40×40) |
-| 5. Age Controls | MEDIUM-HIGH | 1-2h | Option B recommended |
+| 5. Age Controls | MEDIUM-HIGH | 1-2h | ✅ **COMPLETE** (Option B slider) |
 | 6. Astilbe Preset | MEDIUM | 10min | ✅ **FIXED** (10 branches, larger) |
-| 7. Randomness/Jitter | MEDIUM | 3-4h | Not implemented |
-| 8. Petal Curvature | LOW-MEDIUM | 2h | Not implemented |
+| 7. Randomness/Jitter | MEDIUM | 3-4h | ✅ **COMPLETE** (Seeded RNG) |
+| 8. Petal Curvature | LOW-MEDIUM | 2h | Defer (not critical) |
 | 9. Web Worker | LOW | 4-6h | Defer post-launch |
-| 10. UI Reorganization | MEDIUM | 2-3h | Review needed |
+| 10. UI Reorganization | MEDIUM | 2-3h | Optional (defer) |
 
-**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → **12-18 hours remaining**
-**Completed**: 2.5 hours (Issues #1, #3, #4, #6)
+**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → ~~12-18 hours~~ → **ALL HIGH-PRIORITY FEATURES COMPLETE** ✅
+**Completed**: 6.75 hours (Issues #1-7)
+**Remaining**: Optional polish (#8, #10) + Testing (2-3h)
 
 ---
 
@@ -350,15 +345,15 @@ inflorescence: {
 3. ✅ Adjust Astilbe preset values (10min) - 10 branches, larger flowers, taller axis
 4. ✅ TypeScript check passed (0 errors, 0 warnings)
 
-### Phase 2: High-Priority Features (4-6 hours remaining)
+### Phase 2: High-Priority Features ✅ COMPLETE
 1. ✅ Random generation button (2-3h) - COMPLETE with smart constraints
-2. Bend/curve parameters for pistil/stamen (3-4h)
-3. Age distribution slider (1-2h)
+2. ✅ Randomness/jitter parameters (3-4h) - COMPLETE with seeded RNG
+3. ✅ Bend/curve parameters (3-4h) - COMPLETE with bend+droop sliders
+4. ✅ Age distribution slider (1-2h) - COMPLETE with all 8 patterns
 
-### Phase 3: Polish & UX (6-10 hours)
-1. Randomness/jitter parameters (3-4h)
-2. UI reorganization (2-3h)
-3. Petal lateral curvature (2h) [Optional]
+### Phase 3: Optional Polish & UX (Can be deferred)
+1. UI reorganization (2-3h) [Optional - Defer to post-launch]
+2. Petal lateral curvature (2h) [Optional - Defer to post-launch]
 
 ### Phase 4: Final Testing (2-3 hours)
 1. Test all 11 presets
