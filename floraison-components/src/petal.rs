@@ -23,6 +23,7 @@ use serde::{Deserialize, Serialize};
 ///     base_width: 0.5,
 ///     curl: 0.0,
 ///     twist: 0.0,
+///     lateral_curve: 0.0,
 ///     ruffle_freq: 0.0,
 ///     ruffle_amp: 0.0,
 ///     resolution: 16,
@@ -457,6 +458,7 @@ pub fn apply_ruffle(control_points: &mut Vec<Vec<Vec3>>, frequency: f32, amplitu
 ///     base_width: 0.5,
 ///     curl: 0.3,
 ///     twist: 15.0,
+///     lateral_curve: 0.0,
 ///     ruffle_freq: 2.0,
 ///     ruffle_amp: 0.1,
 ///     resolution: 16,
@@ -781,7 +783,6 @@ mod tests {
             lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
-            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -881,7 +882,6 @@ mod tests {
             lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
-            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -896,7 +896,6 @@ mod tests {
             lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
-            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -962,7 +961,6 @@ mod tests {
             lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
-            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };
@@ -1001,7 +999,6 @@ mod tests {
             lateral_curve: 0.0,
             ruffle_freq: 0.0,
             ruffle_amp: 0.0,
-            lateral_curve: 0.0,
             resolution: 16,
             color: Vec3::ONE,
         };

@@ -37,7 +37,7 @@ struct BranchNode {
 /// - Angle divergence: angle between Y-branches (default: 30°)
 pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     // Extract parameters with defaults
-    let max_depth = params.recursion_depth.unwrap_or(1);
+    let max_depth = params.recursion_depth.unwrap_or(3); // Default depth of 3 (15 nodes: 2^4 - 1)
     let branch_ratio = params.branch_ratio.unwrap_or(0.7);
     let angle_div = params.angle_divergence.unwrap_or(30.0);
 

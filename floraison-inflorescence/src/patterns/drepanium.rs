@@ -39,7 +39,7 @@ struct BranchNode {
 /// - Spiral angle from `params.rotation_angle` (default: 137.5°)
 pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     // Extract parameters with defaults
-    let max_depth = params.recursion_depth.unwrap_or(1);
+    let max_depth = params.recursion_depth.unwrap_or(5); // Default depth of 5 (6 nodes: root + 5 branches)
     let branch_ratio = params.branch_ratio.unwrap_or(0.8);
     let spiral_angle = params.rotation_angle; // Golden angle by default
 
