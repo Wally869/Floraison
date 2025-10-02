@@ -28,6 +28,7 @@ export interface SceneContext {
 	toggleShadows: (enabled: boolean) => void;
 	positionGround: (minY: number) => void;
 	updateShadowCamera: (boundingBox: THREE.Box3) => void;
+	captureSquareScreenshot: (filename: string, onSuccess?: () => void, onError?: (error: Error) => void) => void;
 	resetCamera: () => void;
 }
 
@@ -223,6 +224,108 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		dirLight.shadow.camera.updateProjectionMatrix();
 	}
 
+	function captureSquareScreenshot(
+		filename: string,
+		onSuccess?: () => void,
+		onError?: (error: Error) => void
+	) {
+		try {
+			// Create temporary canvas for square render
+			const tempCanvas = document.createElement('canvas');
+			const size = 2048; // High quality square resolution
+			tempCanvas.width = size;
+			tempCanvas.height = size;
+
+			// Create temporary renderer
+			const tempRenderer = new THREE.WebGLRenderer({
+				canvas: tempCanvas,
+				antialias: true,
+				preserveDrawingBuffer: true
+			});
+			tempRenderer.setSize(size, size);
+			tempRenderer.setPixelRatio(1); // Use 1:1 for consistent quality
+
+			// Copy renderer settings from main renderer
+			tempRenderer.shadowMap.enabled = renderer.shadowMap.enabled;
+			tempRenderer.shadowMap.type = renderer.shadowMap.type;
+			tempRenderer.toneMapping = renderer.toneMapping;
+			tempRenderer.toneMappingExposure = renderer.toneMappingExposure;
+			tempRenderer.outputColorSpace = renderer.outputColorSpace;
+
+			// Create environment map for temp renderer (textures are tied to WebGL context)
+			const tempPMREMGenerator = new PMREMGenerator(tempRenderer);
+			tempPMREMGenerator.compileEquirectangularShader();
+			const tempEnvScene = new THREE.Scene();
+			tempEnvScene.background = new THREE.Color(0xffffff);
+			const tempEnvMap = tempPMREMGenerator.fromScene(tempEnvScene).texture;
+
+			// Store original scene environment
+			const originalEnvironment = scene.environment;
+			const originalEnvironmentIntensity = scene.environmentIntensity;
+
+			// Set temporary environment map
+			scene.environment = tempEnvMap;
+			scene.environmentIntensity = 0.5;
+
+			// Store original camera aspect ratio
+			const originalAspect = camera.aspect;
+
+			// Set camera to square aspect ratio
+			camera.aspect = 1.0;
+			camera.updateProjectionMatrix();
+
+			// Render twice: first pass initializes shadows, second pass captures final image
+			// This ensures shadow maps are properly generated for the new renderer
+			tempRenderer.render(scene, camera);
+			tempRenderer.render(scene, camera); // Second render with shadows ready
+
+			// Restore original camera aspect
+			camera.aspect = originalAspect;
+			camera.updateProjectionMatrix();
+
+			// Restore original scene environment
+			scene.environment = originalEnvironment;
+			scene.environmentIntensity = originalEnvironmentIntensity;
+
+			// Cleanup temp environment resources
+			tempPMREMGenerator.dispose();
+
+			// Capture as blob and download
+			tempCanvas.toBlob(
+				(blob) => {
+					if (!blob) {
+						const error = new Error('Failed to capture canvas as blob');
+						console.error('Screenshot failed:', error);
+						onError?.(error);
+						tempRenderer.dispose();
+						return;
+					}
+
+					// Create download link
+					const url = URL.createObjectURL(blob);
+					const link = document.createElement('a');
+					link.href = url;
+					link.download = filename;
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+
+					// Cleanup
+					URL.revokeObjectURL(url);
+					tempRenderer.dispose();
+
+					onSuccess?.();
+				},
+				'image/png',
+				1.0 // Maximum quality
+			);
+		} catch (error) {
+			console.error('Screenshot failed:', error);
+			const errorObj = error instanceof Error ? error : new Error(String(error));
+			onError?.(errorObj);
+		}
+	}
+
 	function resetCamera() {
 		camera.position.set(10, 10, 10);
 		camera.lookAt(0, 0, 0);
@@ -249,6 +352,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 		toggleShadows,
 		positionGround,
 		updateShadowCamera,
+		captureSquareScreenshot,
 		resetCamera
 	};
 }

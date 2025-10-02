@@ -7,7 +7,7 @@
 	import ViewerControls from './ViewerControls.svelte';
 	import { viewerSettings } from '$lib/stores/viewer';
 	import { exportToGLB, generateFilename } from '$lib/three/exporter';
-	import { captureScreenshot, generateScreenshotFilename } from '$lib/three/screenshot';
+	import { generateScreenshotFilename } from '$lib/three/screenshot';
 	import { currentPresetName } from '$lib/stores/parameters';
 
 	// Props
@@ -211,15 +211,15 @@
 
 		const filename = generateScreenshotFilename($currentPresetName);
 
-		captureScreenshot(sceneCtx.renderer, {
+		sceneCtx.captureSquareScreenshot(
 			filename,
-			onSuccess: () => {
-				console.log('Screenshot captured successfully!');
+			() => {
+				console.log('Square screenshot captured successfully! (2048×2048)');
 			},
-			onError: (error) => {
+			(error) => {
 				console.error('Screenshot failed:', error);
 			}
-		});
+		);
 	}
 </script>
 
