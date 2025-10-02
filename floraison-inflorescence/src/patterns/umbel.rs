@@ -25,10 +25,7 @@ use crate::{apply_age_distribution, BranchPoint, InflorescenceParams};
 /// - Rotation angle determines angular spacing
 /// - Down angle determines spread
 /// - **Determinate**: All flowers same age (bloom together)
-pub fn generate_branch_points(
-    params: &InflorescenceParams,
-    axis: &AxisCurve,
-) -> Vec<BranchPoint> {
+pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     let mut branches = Vec::with_capacity(params.branch_count);
 
     // All branches from top of axis

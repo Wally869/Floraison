@@ -105,18 +105,8 @@ mod tests {
             glam::Vec2::ZERO,
             Vec3::new(1.0, 1.0, 0.5),
         );
-        mesh.add_vertex(
-            Vec3::X,
-            Vec3::Y,
-            glam::Vec2::ZERO,
-            Vec3::new(1.0, 1.0, 0.5),
-        );
-        mesh.add_vertex(
-            Vec3::Z,
-            Vec3::Y,
-            glam::Vec2::ZERO,
-            Vec3::new(1.0, 1.0, 0.5),
-        );
+        mesh.add_vertex(Vec3::X, Vec3::Y, glam::Vec2::ZERO, Vec3::new(1.0, 1.0, 0.5));
+        mesh.add_vertex(Vec3::Z, Vec3::Y, glam::Vec2::ZERO, Vec3::new(1.0, 1.0, 0.5));
         mesh.add_triangle(0, 1, 2);
         mesh
     }

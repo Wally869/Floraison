@@ -13,9 +13,9 @@ use floraison_core::Vec3;
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
 
-pub mod patterns;
-pub mod assembly;
 pub mod aging;
+pub mod assembly;
+pub mod patterns;
 
 /// Branch curve distribution mode
 ///
@@ -143,7 +143,6 @@ pub struct InflorescenceParams {
     pub flower_size_bottom: f32,
 
     // --- Optional parameters for recursive patterns ---
-
     /// Recursion depth for recursive patterns (Dichasium, Drepanium, Compound)
     ///
     /// - Dichasium/Drepanium: number of branching levels (default: 3-5)
@@ -176,7 +175,6 @@ pub struct InflorescenceParams {
     pub age_distribution: f32,
 
     // --- Curvature parameters ---
-
     /// Main axis curvature amount (0.0 = straight, 1.0 = dramatic curve)
     pub axis_curve_amount: f32,
 

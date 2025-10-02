@@ -35,10 +35,7 @@ struct BranchNode {
 /// - Depth controlled by `params.recursion_depth` (default: 3)
 /// - Branch ratio: child length = parent × ratio (default: 0.7)
 /// - Angle divergence: angle between Y-branches (default: 30°)
-pub fn generate_branch_points(
-    params: &InflorescenceParams,
-    axis: &AxisCurve,
-) -> Vec<BranchPoint> {
+pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     // Extract parameters with defaults
     let max_depth = params.recursion_depth.unwrap_or(1);
     let branch_ratio = params.branch_ratio.unwrap_or(0.7);
@@ -106,8 +103,20 @@ fn build_tree_recursive(
 
     // Recurse on both children
     let mut result = vec![node.clone()];
-    result.extend(build_tree_recursive(&left_child, max_depth, branch_ratio, angle_divergence, branching_axis));
-    result.extend(build_tree_recursive(&right_child, max_depth, branch_ratio, angle_divergence, branching_axis));
+    result.extend(build_tree_recursive(
+        &left_child,
+        max_depth,
+        branch_ratio,
+        angle_divergence,
+        branching_axis,
+    ));
+    result.extend(build_tree_recursive(
+        &right_child,
+        max_depth,
+        branch_ratio,
+        angle_divergence,
+        branching_axis,
+    ));
 
     result
 }
@@ -172,11 +181,11 @@ mod tests {
     fn test_dichasium_depth_counts() {
         // Test various depths
         let test_cases = vec![
-            (0, 1),   // 2^1 - 1 = 1
-            (1, 3),   // 2^2 - 1 = 3
-            (2, 7),   // 2^3 - 1 = 7
-            (3, 15),  // 2^4 - 1 = 15
-            (4, 31),  // 2^5 - 1 = 31
+            (0, 1),  // 2^1 - 1 = 1
+            (1, 3),  // 2^2 - 1 = 3
+            (2, 7),  // 2^3 - 1 = 7
+            (3, 15), // 2^4 - 1 = 15
+            (4, 31), // 2^5 - 1 = 31
         ];
 
         for (depth, expected_count) in test_cases {
@@ -280,7 +289,10 @@ mod tests {
         assert!((branches[0].length - 3.0).abs() < 0.1);
 
         // Depth 1 should have length 3.0 * 0.6 = 1.8
-        let depth1_branches: Vec<_> = branches.iter().filter(|b| (b.age - 0.5).abs() < 0.1).collect();
+        let depth1_branches: Vec<_> = branches
+            .iter()
+            .filter(|b| (b.age - 0.5).abs() < 0.1)
+            .collect();
         for branch in depth1_branches {
             assert!(
                 (branch.length - 1.8).abs() < 0.1,
@@ -363,7 +375,10 @@ mod tests {
         assert_eq!(branches[0].flower_scale, 1.0);
 
         // Leaves (depth=2) should have smallest scale
-        let min_scale = branches.iter().map(|b| b.flower_scale).fold(f32::INFINITY, f32::min);
+        let min_scale = branches
+            .iter()
+            .map(|b| b.flower_scale)
+            .fold(f32::INFINITY, f32::min);
         assert!(min_scale < 1.0, "Leaf flowers should be smaller");
     }
 
@@ -381,7 +396,10 @@ mod tests {
         let root_dist = branches[0].position.length();
 
         // Leaves should be farther from origin
-        let max_dist = branches.iter().map(|b| b.position.length()).fold(0.0f32, f32::max);
+        let max_dist = branches
+            .iter()
+            .map(|b| b.position.length())
+            .fold(0.0f32, f32::max);
 
         assert!(
             max_dist > root_dist,

@@ -310,13 +310,7 @@ pub fn sample_quadratic_2d(p0: Vec2, p1: Vec2, p2: Vec2, count: usize) -> Vec<Ve
 /// let samples = sample_cubic_2d(p0, p1, p2, p3, 10);
 /// assert_eq!(samples.len(), 10);
 /// ```
-pub fn sample_cubic_2d(
-    p0: Vec2,
-    p1: Vec2,
-    p2: Vec2,
-    p3: Vec2,
-    count: usize,
-) -> Vec<Vec2> {
+pub fn sample_cubic_2d(p0: Vec2, p1: Vec2, p2: Vec2, p3: Vec2, count: usize) -> Vec<Vec2> {
     assert!(count >= 2, "Need at least 2 samples");
 
     (0..count)
@@ -345,13 +339,7 @@ pub fn sample_cubic_2d(
 /// let samples = sample_cubic_3d(p0, p1, p2, p3, 8);
 /// assert_eq!(samples.len(), 8);
 /// ```
-pub fn sample_cubic_3d(
-    p0: Vec3,
-    p1: Vec3,
-    p2: Vec3,
-    p3: Vec3,
-    count: usize,
-) -> Vec<Vec3> {
+pub fn sample_cubic_3d(p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3, count: usize) -> Vec<Vec3> {
     assert!(count >= 2, "Need at least 2 samples");
 
     (0..count)

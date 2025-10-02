@@ -113,7 +113,8 @@ pub fn sweep_along_curve(profile: &[Vec2], curve: &[Vec3], segments: usize, colo
 
                 // Vertex indices for current quad
                 let base_idx = (curve_idx * num_profile_points + profile_idx) * segments;
-                let next_curve_base = ((curve_idx + 1) * num_profile_points + profile_idx) * segments;
+                let next_curve_base =
+                    ((curve_idx + 1) * num_profile_points + profile_idx) * segments;
 
                 let i0 = (base_idx + seg_idx) as u32;
                 let i1 = (base_idx + next_seg) as u32;
@@ -217,7 +218,6 @@ pub fn sweep_tapered_cylinder(
 
     // For each point along the curve
     for (curve_idx, (&curve_point, &(right, up))) in curve.iter().zip(frames.iter()).enumerate() {
-
         // Interpolate radius based on position along curve
         let t = curve_idx as f32 / (num_curve_points - 1) as f32;
         let radius = base_radius + (tip_radius - base_radius) * t;
@@ -449,7 +449,10 @@ mod tests {
         );
 
         // Verify normalization
-        assert!((right.length() - 1.0).abs() < 1e-5, "Right should be normalized");
+        assert!(
+            (right.length() - 1.0).abs() < 1e-5,
+            "Right should be normalized"
+        );
         assert!((up.length() - 1.0).abs() < 1e-5, "Up should be normalized");
     }
 

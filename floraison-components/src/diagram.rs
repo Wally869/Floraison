@@ -147,16 +147,16 @@ pub struct FloralDiagram {
 
     /// Natural variation parameters for organic randomness
     #[cfg_attr(feature = "serde", serde(default))]
-    pub position_jitter: f32,  // 0-0.5: Random position offset
+    pub position_jitter: f32, // 0-0.5: Random position offset
 
     #[cfg_attr(feature = "serde", serde(default))]
-    pub angle_jitter: f32,  // 0-15: Random rotation variation in degrees
+    pub angle_jitter: f32, // 0-15: Random rotation variation in degrees
 
     #[cfg_attr(feature = "serde", serde(default))]
-    pub size_jitter: f32,  // 0-0.3: Random scale variation
+    pub size_jitter: f32, // 0-0.3: Random scale variation
 
     #[cfg_attr(feature = "serde", serde(default = "default_jitter_seed"))]
-    pub jitter_seed: u64,  // Seed for deterministic randomness
+    pub jitter_seed: u64, // Seed for deterministic randomness
 }
 
 fn default_jitter_seed() -> u64 {
@@ -189,7 +189,7 @@ impl FloralDiagram {
                 height: 0.6,
                 pattern: ArrangementPattern::EvenlySpaced,
                 rotation_offset: PI / 6.0, // Offset by 30° to alternate
-                tilt_angle: PI / 2.0, // Lilies: stamens spread horizontally
+                tilt_angle: PI / 2.0,      // Lilies: stamens spread horizontally
             }],
             pistil_whorls: vec![ComponentWhorl {
                 count: 1,
@@ -461,9 +461,18 @@ mod tests {
         assert_eq!(diagram.total_pistil_count(), 13);
 
         // Check that daisy uses golden spiral
-        assert_eq!(diagram.petal_whorls[0].pattern, ArrangementPattern::GoldenSpiral);
-        assert_eq!(diagram.stamen_whorls[0].pattern, ArrangementPattern::GoldenSpiral);
-        assert_eq!(diagram.pistil_whorls[0].pattern, ArrangementPattern::GoldenSpiral);
+        assert_eq!(
+            diagram.petal_whorls[0].pattern,
+            ArrangementPattern::GoldenSpiral
+        );
+        assert_eq!(
+            diagram.stamen_whorls[0].pattern,
+            ArrangementPattern::GoldenSpiral
+        );
+        assert_eq!(
+            diagram.pistil_whorls[0].pattern,
+            ArrangementPattern::GoldenSpiral
+        );
     }
 
     #[test]

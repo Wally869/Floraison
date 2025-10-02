@@ -3,10 +3,10 @@
 //! WebAssembly bindings for the Floraison flower generator.
 //! Exposes the Rust implementation to JavaScript/TypeScript.
 
-use wasm_bindgen::prelude::*;
-use floraison_components::assembly::{FlowerParams, generate_flower};
+use floraison_components::assembly::{generate_flower, FlowerParams};
 use floraison_core::geometry::mesh::Mesh;
-use floraison_inflorescence::{InflorescenceParams, assembly, aging::FlowerAging};
+use floraison_inflorescence::{aging::FlowerAging, assembly, InflorescenceParams};
+use wasm_bindgen::prelude::*;
 
 /// Initialize the WASM module
 /// Sets up panic hook for better error messages in the browser console
@@ -78,8 +78,10 @@ impl FlowerGenerator {
         flower_params_json: &str,
     ) -> Result<MeshData, JsValue> {
         // Parse inflorescence parameters
-        let inflo_params: InflorescenceParams = serde_json::from_str(inflo_params_json)
-            .map_err(|e| JsValue::from_str(&format!("Failed to parse inflorescence parameters: {}", e)))?;
+        let inflo_params: InflorescenceParams =
+            serde_json::from_str(inflo_params_json).map_err(|e| {
+                JsValue::from_str(&format!("Failed to parse inflorescence parameters: {}", e))
+            })?;
 
         // Parse flower parameters
         let flower_params: FlowerParams = serde_json::from_str(flower_params_json)
@@ -105,11 +107,8 @@ impl FlowerGenerator {
         let stem_color = floraison_core::Vec3::new(0.3, 0.6, 0.3);
 
         // Generate inflorescence mesh
-        let inflo_mesh = assembly::assemble_inflorescence_with_aging(
-            &inflo_params,
-            &aging,
-            stem_color,
-        );
+        let inflo_mesh =
+            assembly::assemble_inflorescence_with_aging(&inflo_params, &aging, stem_color);
 
         // Convert to WASM mesh data
         Ok(MeshData::from_mesh(&inflo_mesh))
@@ -129,9 +128,9 @@ fn create_bud_params(base: &FlowerParams) -> FlowerParams {
     bud.petal.length *= 0.5;
     bud.petal.width *= 0.5;
     bud.petal.base_width *= 0.6;
-    bud.petal.curl *= 0.2;  // Minimal curl (more closed)
-    bud.petal.twist = 0.0;  // No twist in buds
-    bud.petal.ruffle_freq = 0.0;  // No ruffle in buds
+    bud.petal.curl *= 0.2; // Minimal curl (more closed)
+    bud.petal.twist = 0.0; // No twist in buds
+    bud.petal.ruffle_freq = 0.0; // No ruffle in buds
     bud.petal.ruffle_amp = 0.0;
 
     // Shorter reproductive parts
@@ -149,7 +148,7 @@ fn create_bud_params(base: &FlowerParams) -> FlowerParams {
 ///
 /// Returns the base parameters unchanged - this is the reference stage.
 fn create_bloom_params(base: &FlowerParams) -> FlowerParams {
-    base.clone()  // Bloom uses base params unchanged
+    base.clone() // Bloom uses base params unchanged
 }
 
 /// Create wilt-stage flower parameters (drooping, faded, aging)
@@ -164,9 +163,9 @@ fn create_wilt_params(base: &FlowerParams) -> FlowerParams {
     let mut wilt = base.clone();
 
     // Drooping petals (more downward curl)
-    wilt.petal.length *= 0.9;  // Slightly smaller
-    wilt.petal.curl += 0.3;    // More downward curl
-    wilt.petal.twist *= 1.2;   // Slightly more twisted
+    wilt.petal.length *= 0.9; // Slightly smaller
+    wilt.petal.curl += 0.3; // More downward curl
+    wilt.petal.twist *= 1.2; // Slightly more twisted
 
     // Darkened color (aging/browning effect)
     wilt.petal.color = Vec3::new(
@@ -204,28 +203,20 @@ impl MeshData {
     /// Convert a Mesh to flat arrays for JavaScript
     pub fn from_mesh(mesh: &Mesh) -> Self {
         // Flatten Vec<Vec3> positions to Vec<f32> with stride 3
-        let positions: Vec<f32> = mesh.positions
+        let positions: Vec<f32> = mesh
+            .positions
             .iter()
             .flat_map(|v| [v.x, v.y, v.z])
             .collect();
 
         // Flatten Vec<Vec3> normals to Vec<f32> with stride 3
-        let normals: Vec<f32> = mesh.normals
-            .iter()
-            .flat_map(|v| [v.x, v.y, v.z])
-            .collect();
+        let normals: Vec<f32> = mesh.normals.iter().flat_map(|v| [v.x, v.y, v.z]).collect();
 
         // Flatten Vec<Vec2> uvs to Vec<f32> with stride 2
-        let uvs: Vec<f32> = mesh.uvs
-            .iter()
-            .flat_map(|v| [v.x, v.y])
-            .collect();
+        let uvs: Vec<f32> = mesh.uvs.iter().flat_map(|v| [v.x, v.y]).collect();
 
         // Flatten Vec<Vec3> colors to Vec<f32> with stride 3
-        let colors: Vec<f32> = mesh.colors
-            .iter()
-            .flat_map(|v| [v.x, v.y, v.z])
-            .collect();
+        let colors: Vec<f32> = mesh.colors.iter().flat_map(|v| [v.x, v.y, v.z]).collect();
 
         // Copy indices directly
         let indices = mesh.indices.clone();

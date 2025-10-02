@@ -1,7 +1,9 @@
 //! Inflorescence assembly - combining axis, branches, and flowers into complete structure
 
 use floraison_core::math::curves::AxisCurve;
-use floraison_core::{geometry::mesh::Mesh, geometry::sweep::sweep_along_curve, Mat4, Quat, Vec2, Vec3};
+use floraison_core::{
+    geometry::mesh::Mesh, geometry::sweep::sweep_along_curve, Mat4, Quat, Vec2, Vec3,
+};
 
 use crate::{aging::FlowerAging, patterns, CurveMode, InflorescenceParams, PatternType};
 
@@ -105,7 +107,11 @@ pub fn generate_axis_points(params: &InflorescenceParams) -> Vec<Vec3> {
         end,
         params.axis_curve_amount,
         params.axis_curve_direction,
-        if params.axis_curve_amount > 0.01 { 8 } else { 2 }, // More points for curves
+        if params.axis_curve_amount > 0.01 {
+            8
+        } else {
+            2
+        }, // More points for curves
     )
 }
 
@@ -165,10 +171,18 @@ pub fn assemble_inflorescence(
         PatternType::Drepanium => patterns::drepanium::generate_branch_points(params, &axis),
         PatternType::CompoundRaceme => {
             // Compound patterns bypass branch points and generate mesh directly
-            return patterns::compound_raceme::generate_compound_raceme(params, flower_mesh, stem_color);
+            return patterns::compound_raceme::generate_compound_raceme(
+                params,
+                flower_mesh,
+                stem_color,
+            );
         }
         PatternType::CompoundUmbel => {
-            return patterns::compound_umbel::generate_compound_umbel(params, flower_mesh, stem_color);
+            return patterns::compound_umbel::generate_compound_umbel(
+                params,
+                flower_mesh,
+                stem_color,
+            );
         }
     };
 
@@ -350,10 +364,18 @@ pub fn assemble_inflorescence_with_aging(
         PatternType::Drepanium => patterns::drepanium::generate_branch_points(params, &axis),
         PatternType::CompoundRaceme => {
             // Compound patterns use bloom mesh (aging not fully supported for compound patterns)
-            return patterns::compound_raceme::generate_compound_raceme(params, &aging.bloom_mesh, stem_color);
+            return patterns::compound_raceme::generate_compound_raceme(
+                params,
+                &aging.bloom_mesh,
+                stem_color,
+            );
         }
         PatternType::CompoundUmbel => {
-            return patterns::compound_umbel::generate_compound_umbel(params, &aging.bloom_mesh, stem_color);
+            return patterns::compound_umbel::generate_compound_umbel(
+                params,
+                &aging.bloom_mesh,
+                stem_color,
+            );
         }
     };
 

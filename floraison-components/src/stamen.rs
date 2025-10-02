@@ -3,7 +3,7 @@
 //! A stamen consists of a filament (thin stalk) topped with an anther (pollen sac).
 //! This generator creates a cylindrical filament and an ellipsoid anther.
 
-use crate::{Mesh, Vec2, Vec3, Mat4};
+use crate::{Mat4, Mesh, Vec2, Vec3};
 use floraison_core::geometry::surface_revolution::{surface_of_revolution, uv_sphere};
 use floraison_core::geometry::sweep::sweep_tapered_cylinder;
 use floraison_core::math::curves::sample_catmull_rom_curve;
@@ -320,11 +320,7 @@ mod tests {
 
         // Minimum Y should be at or near 0 (base of filament)
         let min_y = mesh.positions.iter().map(|p| p.y).fold(f32::MAX, f32::min);
-        assert!(
-            min_y.abs() < 0.1,
-            "Min Y should be near 0, got {}",
-            min_y
-        );
+        assert!(min_y.abs() < 0.1, "Min Y should be near 0, got {}", min_y);
 
         // Maximum Y should be around filament_length + anther_length/2
         let max_y = mesh.positions.iter().map(|p| p.y).fold(0.0f32, f32::max);
@@ -342,9 +338,9 @@ mod tests {
         let params = StamenParams {
             filament_length: 1.5,
             filament_radius: 0.04,
-            anther_length: 0.4,    // Elongated in Y
-            anther_width: 0.1,     // Wide in X
-            anther_height: 0.06,   // Narrow in Z
+            anther_length: 0.4,  // Elongated in Y
+            anther_width: 0.1,   // Wide in X
+            anther_height: 0.06, // Narrow in Z
             segments: 12,
             color: Vec3::ONE,
             filament_curve: None,
@@ -362,8 +358,14 @@ mod tests {
         assert!(!anther_vertices.is_empty(), "Should have anther vertices");
 
         // Check that the anther has the expected dimensions
-        let max_x = anther_vertices.iter().map(|p| p.x.abs()).fold(0.0f32, f32::max);
-        let max_z = anther_vertices.iter().map(|p| p.z.abs()).fold(0.0f32, f32::max);
+        let max_x = anther_vertices
+            .iter()
+            .map(|p| p.x.abs())
+            .fold(0.0f32, f32::max);
+        let max_z = anther_vertices
+            .iter()
+            .map(|p| p.z.abs())
+            .fold(0.0f32, f32::max);
 
         // X dimension should be close to anther_width
         assert!(
@@ -394,7 +396,10 @@ mod tests {
             .filter(|p| p.y < params.filament_length * 0.5)
             .collect();
 
-        assert!(!filament_vertices.is_empty(), "Should have filament vertices");
+        assert!(
+            !filament_vertices.is_empty(),
+            "Should have filament vertices"
+        );
 
         // Check that all filament vertices have similar radius
         let radii: Vec<f32> = filament_vertices
@@ -451,10 +456,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "at least 4 control points")]
     fn test_curved_stamen_too_few_points() {
-        let curve = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        ];
+        let curve = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0)];
 
         let params = StamenParams {
             filament_length: 2.0,

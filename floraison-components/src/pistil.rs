@@ -3,7 +3,7 @@
 //! A pistil consists of a style (elongated stalk) topped with a stigma (receptive surface).
 //! This generator creates a simple tapered cylinder for the style and a sphere for the stigma.
 
-use crate::{Mesh, Vec2, Vec3, Mat4};
+use crate::{Mat4, Mesh, Vec2, Vec3};
 use floraison_core::geometry::surface_revolution::{surface_of_revolution, uv_sphere};
 use floraison_core::geometry::sweep::sweep_tapered_cylinder;
 use floraison_core::math::curves::sample_catmull_rom_curve;
@@ -71,7 +71,7 @@ impl Default for PistilParams {
             stigma_radius: 0.12,
             segments: 12,
             color: Vec3::ONE,
-            style_curve: None,  // Straight style
+            style_curve: None, // Straight style
         }
     }
 }
@@ -281,11 +281,7 @@ mod tests {
 
         // Minimum Y should be at or near 0 (base of style)
         let min_y = mesh.positions.iter().map(|p| p.y).fold(f32::MAX, f32::min);
-        assert!(
-            min_y.abs() < 0.1,
-            "Min Y should be near 0, got {}",
-            min_y
-        );
+        assert!(min_y.abs() < 0.1, "Min Y should be near 0, got {}", min_y);
 
         // Maximum Y should be around length + stigma_radius
         let max_y = mesh.positions.iter().map(|p| p.y).fold(0.0f32, f32::max);
@@ -384,10 +380,7 @@ mod tests {
     #[test]
     #[should_panic(expected = "at least 4 control points")]
     fn test_curved_pistil_too_few_points() {
-        let curve = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-        ];
+        let curve = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0)];
 
         let params = PistilParams {
             length: 2.0,

@@ -25,7 +25,7 @@
 //! ```
 
 // Re-export petal types and functions
-pub use crate::petal::{PetalParams, generate};
+pub use crate::petal::{generate, PetalParams};
 
 /// Create default parameters for a typical sepal
 ///
@@ -48,13 +48,13 @@ pub fn default() -> PetalParams {
         width: 1.0,
         tip_sharpness: 0.5,
         base_width: 0.4,
-        curl: -0.2,        // Slight downward curl
+        curl: -0.2, // Slight downward curl
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
         lateral_curve: 0.0,
         resolution: 16,
-        color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
+        color: crate::Vec3::new(0.2, 0.6, 0.2), // Green
     }
 }
 
@@ -78,13 +78,13 @@ pub fn narrow() -> PetalParams {
         width: 0.7,
         tip_sharpness: 0.7,
         base_width: 0.3,
-        curl: -0.3,        // More pronounced downward curl
+        curl: -0.3, // More pronounced downward curl
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
         lateral_curve: 0.0,
         resolution: 14,
-        color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
+        color: crate::Vec3::new(0.2, 0.6, 0.2), // Green
     }
 }
 
@@ -108,13 +108,13 @@ pub fn wide() -> PetalParams {
         width: 1.5,
         tip_sharpness: 0.3,
         base_width: 0.6,
-        curl: -0.1,        // Gentle outward curl
+        curl: -0.1, // Gentle outward curl
         twist: 0.0,
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
         lateral_curve: 0.0,
         resolution: 18,
-        color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
+        color: crate::Vec3::new(0.2, 0.6, 0.2), // Green
     }
 }
 
@@ -138,13 +138,13 @@ pub fn recurved() -> PetalParams {
         width: 1.2,
         tip_sharpness: 0.4,
         base_width: 0.5,
-        curl: -0.6,        // Strong backward curl
-        twist: 5.0,        // Slight twist for organic look
+        curl: -0.6, // Strong backward curl
+        twist: 5.0, // Slight twist for organic look
         ruffle_freq: 0.0,
         ruffle_amp: 0.0,
         lateral_curve: 0.0,
         resolution: 16,
-        color: crate::Vec3::new(0.2, 0.6, 0.2),  // Green
+        color: crate::Vec3::new(0.2, 0.6, 0.2), // Green
     }
 }
 
@@ -174,8 +174,14 @@ mod tests {
 
         // Narrow sepal should be thinner than default
         let default_params = default();
-        assert!(params.width < default_params.width, "Narrow sepal should be narrower");
-        assert!(params.curl < default_params.curl, "Narrow sepal should curl more");
+        assert!(
+            params.width < default_params.width,
+            "Narrow sepal should be narrower"
+        );
+        assert!(
+            params.curl < default_params.curl,
+            "Narrow sepal should curl more"
+        );
     }
 
     #[test]
@@ -188,7 +194,10 @@ mod tests {
 
         // Wide sepal should be broader than default
         let default_params = default();
-        assert!(params.width > default_params.width, "Wide sepal should be wider");
+        assert!(
+            params.width > default_params.width,
+            "Wide sepal should be wider"
+        );
     }
 
     #[test]
@@ -200,7 +209,10 @@ mod tests {
         assert!(mesh.triangle_count() > 0);
 
         // Recurved sepal should have strong curl
-        assert!(params.curl < -0.5, "Recurved sepal should curl strongly backward");
+        assert!(
+            params.curl < -0.5,
+            "Recurved sepal should curl strongly backward"
+        );
     }
 
     #[test]

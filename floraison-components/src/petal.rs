@@ -4,7 +4,7 @@
 
 use crate::{Mesh, Vec2, Vec3};
 use floraison_core::math::bezier::sample_cubic_2d;
-use floraison_core::math::bspline::{BSplineSurface, generate_knot_vector};
+use floraison_core::math::bspline::{generate_knot_vector, BSplineSurface};
 
 #[cfg(feature = "serde")]
 use serde::{Deserialize, Serialize};
@@ -85,7 +85,7 @@ impl Default for PetalParams {
             ruffle_amp: 0.0,
             lateral_curve: 0.0,
             resolution: 16,
-            color: Vec3::ONE,  // White
+            color: Vec3::ONE, // White
         }
     }
 }
@@ -182,8 +182,8 @@ impl PetalParams {
 /// assert_eq!(grid[0].len(), 5);  // 5 columns
 /// ```
 pub fn generate_control_grid(params: &PetalParams) -> Vec<Vec<Vec3>> {
-    const ROWS: usize = 9;  // Along length (v direction)
-    const COLS: usize = 5;  // Across width (u direction)
+    const ROWS: usize = 9; // Along length (v direction)
+    const COLS: usize = 5; // Across width (u direction)
 
     let mut grid = vec![vec![Vec3::ZERO; COLS]; ROWS];
 
@@ -499,10 +499,10 @@ pub fn generate(params: &PetalParams) -> Mesh {
 
     let surface = BSplineSurface {
         control_points: transposed,
-        degree_u: 3,  // Cubic in u direction (width)
-        degree_v: 3,  // Cubic in v direction (length)
-        knots_u: generate_knot_vector(COLS, 3, true),  // 5 control points in u
-        knots_v: generate_knot_vector(ROWS, 3, true),  // 9 control points in v
+        degree_u: 3,                                  // Cubic in u direction (width)
+        degree_v: 3,                                  // Cubic in v direction (length)
+        knots_u: generate_knot_vector(COLS, 3, true), // 5 control points in u
+        knots_v: generate_knot_vector(ROWS, 3, true), // 9 control points in v
     };
 
     // 4. Tessellate surface
@@ -542,7 +542,7 @@ pub fn generate(params: &PetalParams) -> Mesh {
     // Duplicate vertices with flipped normals
     for i in 0..front_vertex_count {
         let pos = mesh.positions[i];
-        let normal = -mesh.normals[i];  // Flip normal
+        let normal = -mesh.normals[i]; // Flip normal
         let uv = mesh.uvs[i];
         mesh.add_vertex(pos, normal, uv, params.color);
     }
@@ -663,7 +663,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
         (center.x - min_x) / width,
         (center.y - min_y) / height,
     ));
-    colors.push(Vec3::ONE);  // White default color
+    colors.push(Vec3::ONE); // White default color
 
     // Add outline vertices
     for point in outline {
@@ -673,7 +673,7 @@ fn create_petal_mesh(outline: &[Vec2]) -> Mesh {
             (point.x - min_x) / width,
             (point.y - min_y) / height,
         ));
-        colors.push(Vec3::ONE);  // White default color
+        colors.push(Vec3::ONE); // White default color
     }
 
     // Create fan triangles from center
@@ -760,7 +760,8 @@ mod tests {
         let mesh = generate(&params);
 
         // Most Z coordinates should be near 0 (close to XY plane)
-        let avg_z: f32 = mesh.positions.iter().map(|p| p.z.abs()).sum::<f32>() / mesh.positions.len() as f32;
+        let avg_z: f32 =
+            mesh.positions.iter().map(|p| p.z.abs()).sum::<f32>() / mesh.positions.len() as f32;
         assert!(
             avg_z < 0.5,
             "Petal with no deformations should be close to flat, avg |Z|={}",
@@ -791,11 +792,7 @@ mod tests {
         let min_y = mesh.positions.iter().map(|p| p.y).fold(f32::MAX, f32::min);
         let max_y = mesh.positions.iter().map(|p| p.y).fold(f32::MIN, f32::max);
 
-        assert!(
-            min_y < 0.5,
-            "Base should be near 0, got min_y={}",
-            min_y
-        );
+        assert!(min_y < 0.5, "Base should be near 0, got min_y={}", min_y);
         assert!(
             (max_y - params.length).abs() < 0.1,
             "Tip should be at length {}, got max_y={}",
@@ -1169,9 +1166,9 @@ mod tests {
         }
 
         // Edge columns should have some Z displacement
-        let edges_have_z = grid.iter().any(|row| {
-            row[0].z.abs() > 0.05 || row[4].z.abs() > 0.05
-        });
+        let edges_have_z = grid
+            .iter()
+            .any(|row| row[0].z.abs() > 0.05 || row[4].z.abs() > 0.05);
         assert!(edges_have_z, "Edges should have Z displacement from ruffle");
 
         // All points should remain finite
@@ -1195,7 +1192,10 @@ mod tests {
         // All points should remain finite
         for row in &grid {
             for point in row {
-                assert!(point.is_finite(), "Combined deformations should produce finite values");
+                assert!(
+                    point.is_finite(),
+                    "Combined deformations should produce finite values"
+                );
             }
         }
 
@@ -1220,9 +1220,9 @@ mod tests {
             for (j, point) in row.iter().enumerate() {
                 let orig = original_grid[i][j];
                 assert!(
-                    (point.x - orig.x).abs() < 0.001 &&
-                    (point.y - orig.y).abs() < 0.001 &&
-                    (point.z - orig.z).abs() < 0.001,
+                    (point.x - orig.x).abs() < 0.001
+                        && (point.y - orig.y).abs() < 0.001
+                        && (point.z - orig.z).abs() < 0.001,
                     "Zero deformations should not change grid"
                 );
             }

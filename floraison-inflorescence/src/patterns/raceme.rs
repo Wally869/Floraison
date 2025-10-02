@@ -31,10 +31,7 @@ fn lerp(a: f32, b: f32, t: f32) -> f32 {
 /// - Down angle interpolates from bottom to top
 /// - Rotation follows Fibonacci spiral (golden angle)
 /// - Age increases from bottom (oldest) to top (youngest) - indeterminate
-pub fn generate_branch_points(
-    params: &InflorescenceParams,
-    axis: &AxisCurve,
-) -> Vec<BranchPoint> {
+pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     let mut branches = Vec::with_capacity(params.branch_count);
 
     for i in 0..params.branch_count {
@@ -213,7 +210,7 @@ mod tests {
         let params = InflorescenceParams {
             branch_count: 3,
             rotation_angle: 137.5, // Golden angle
-            angle_top: 0.0,         // Straight up for easier testing
+            angle_top: 0.0,        // Straight up for easier testing
             angle_bottom: 0.0,
             ..Default::default()
         };

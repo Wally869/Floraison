@@ -199,12 +199,7 @@ pub fn radial_positions(count: usize, radius: f32, angle_offset: f32) -> Vec<Vec
 ///     assert!((pos.y - 1.0).abs() < 0.001);
 /// }
 /// ```
-pub fn whorled_positions(
-    count: usize,
-    radius: f32,
-    height: f32,
-    angle_offset: f32,
-) -> Vec<Vec3> {
+pub fn whorled_positions(count: usize, radius: f32, height: f32, angle_offset: f32) -> Vec<Vec3> {
     if count == 0 {
         return Vec::new();
     }
@@ -516,8 +511,7 @@ mod tests {
         assert!((r0 - 2.0).abs() < EPSILON);
 
         // Last element (t=1) should have zero radius
-        let r_last =
-            (positions[9].x * positions[9].x + positions[9].z * positions[9].z).sqrt();
+        let r_last = (positions[9].x * positions[9].x + positions[9].z * positions[9].z).sqrt();
         assert!(r_last < EPSILON);
     }
 

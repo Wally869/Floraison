@@ -484,7 +484,10 @@ mod tests {
 
         // Knot vector must be non-decreasing
         for i in 1..knots.len() {
-            assert!(knots[i] >= knots[i - 1], "Knot vector must be non-decreasing");
+            assert!(
+                knots[i] >= knots[i - 1],
+                "Knot vector must be non-decreasing"
+            );
         }
     }
 

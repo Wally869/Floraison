@@ -30,10 +30,7 @@ fn lerp(a: f32, b: f32, t: f32) -> f32 {
 /// - Pedicel lengths adjusted so all flowers reach same height (flat top)
 /// - Rotation follows Fibonacci spiral (golden angle)
 /// - Age increases from bottom (oldest) to top (youngest) - indeterminate
-pub fn generate_branch_points(
-    params: &InflorescenceParams,
-    axis: &AxisCurve,
-) -> Vec<BranchPoint> {
+pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     let mut branches = Vec::with_capacity(params.branch_count);
 
     // Target height: all flowers should reach the top of the axis

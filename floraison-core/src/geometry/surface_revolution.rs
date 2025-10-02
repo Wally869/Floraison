@@ -29,10 +29,7 @@
 //! assert_eq!(mesh.vertex_count(), 32); // 2 rings × 16 segments
 //! ```
 
-use crate::{
-    geometry::mesh::Mesh,
-    Vec2, Vec3,
-};
+use crate::{geometry::mesh::Mesh, Vec2, Vec3};
 use std::f32::consts::PI;
 
 /// Generate a mesh by revolving a 2D profile around the Y-axis
@@ -305,9 +302,7 @@ mod tests {
 
         // Heights should be either 0 or 2
         for pos in &mesh.positions {
-            assert!(
-                (pos.y - 0.0).abs() < EPSILON || (pos.y - 2.0).abs() < EPSILON
-            );
+            assert!((pos.y - 0.0).abs() < EPSILON || (pos.y - 2.0).abs() < EPSILON);
         }
     }
 
@@ -358,7 +353,11 @@ mod tests {
 
     #[test]
     fn test_surface_of_revolution_simple() {
-        let profile = vec![Vec2::new(1.0, 0.0), Vec2::new(1.5, 1.0), Vec2::new(1.0, 2.0)];
+        let profile = vec![
+            Vec2::new(1.0, 0.0),
+            Vec2::new(1.5, 1.0),
+            Vec2::new(1.0, 2.0),
+        ];
 
         let mesh = surface_of_revolution(&profile, 6, Vec3::ONE);
 
@@ -448,9 +447,9 @@ mod tests {
     fn test_double_cone() {
         // Profile: point -> wide -> point (hourglass/double cone)
         let profile = vec![
-            Vec2::new(0.0, 0.0),  // Bottom point
-            Vec2::new(1.0, 1.0),  // Middle wide
-            Vec2::new(0.0, 2.0),  // Top point
+            Vec2::new(0.0, 0.0), // Bottom point
+            Vec2::new(1.0, 1.0), // Middle wide
+            Vec2::new(0.0, 2.0), // Top point
         ];
 
         let mesh = surface_of_revolution(&profile, 8, Vec3::ONE);

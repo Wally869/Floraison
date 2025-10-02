@@ -37,10 +37,7 @@ struct BranchNode {
 /// - Depth controlled by `params.recursion_depth` (default: 5)
 /// - Branch ratio: child length = parent × ratio (default: 0.8)
 /// - Spiral angle from `params.rotation_angle` (default: 137.5°)
-pub fn generate_branch_points(
-    params: &InflorescenceParams,
-    axis: &AxisCurve,
-) -> Vec<BranchPoint> {
+pub fn generate_branch_points(params: &InflorescenceParams, axis: &AxisCurve) -> Vec<BranchPoint> {
     // Extract parameters with defaults
     let max_depth = params.recursion_depth.unwrap_or(1);
     let branch_ratio = params.branch_ratio.unwrap_or(0.8);
@@ -64,7 +61,14 @@ pub fn generate_branch_points(
     };
 
     // Build spiral recursively with fixed helix axis
-    let nodes = build_spiral_recursive(&root, max_depth, branch_ratio, spiral_angle, helix_axis, initial_perpendicular);
+    let nodes = build_spiral_recursive(
+        &root,
+        max_depth,
+        branch_ratio,
+        spiral_angle,
+        helix_axis,
+        initial_perpendicular,
+    );
 
     // Convert nodes to branch points
     nodes_to_branch_points(nodes, max_depth, params)
@@ -112,7 +116,14 @@ fn build_spiral_recursive(
 
     // Recurse on child (single branch only - scorpioid)
     let mut result = vec![node.clone()];
-    result.extend(build_spiral_recursive(&child, max_depth, branch_ratio, spiral_angle, helix_axis, initial_perpendicular));
+    result.extend(build_spiral_recursive(
+        &child,
+        max_depth,
+        branch_ratio,
+        spiral_angle,
+        helix_axis,
+        initial_perpendicular,
+    ));
 
     result
 }

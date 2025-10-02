@@ -3,12 +3,12 @@
 //! This module handles the assembly of individual floral components into complete flowers.
 //! It maps 2D floral diagram positions to 3D positions on the receptacle surface.
 
-use crate::{Vec2, Vec3, Mat3, Mat4, Quat, Mesh};
-use crate::receptacle::ReceptacleParams;
-use crate::pistil::PistilParams;
-use crate::stamen::StamenParams;
-use crate::petal::PetalParams;
 use crate::diagram::FloralDiagram;
+use crate::petal::PetalParams;
+use crate::pistil::PistilParams;
+use crate::receptacle::ReceptacleParams;
+use crate::stamen::StamenParams;
+use crate::{Mat3, Mat4, Mesh, Quat, Vec2, Vec3};
 use floraison_core::math::bezier::{cubic_bezier_2d, cubic_bezier_derivative_2d};
 
 #[cfg(feature = "serde")]
@@ -141,10 +141,7 @@ impl ReceptacleMapper {
             params.height * 0.2,
         );
 
-        let p2 = Vec2::new(
-            params.bulge_radius,
-            params.height * params.bulge_position,
-        );
+        let p2 = Vec2::new(params.bulge_radius, params.height * params.bulge_position);
 
         let p3 = Vec2::new(params.top_radius, params.height);
 
@@ -231,15 +228,12 @@ impl ReceptacleMapper {
         // Stamens and pistils: tiltable components that start upright
         // - tilt_angle = 0 → points straight up (parallel to pistil)
         // - tilt_angle = π/2 → points radially outward (spreading)
-        if placement.component_type == ComponentType::Stamen ||
-           placement.component_type == ComponentType::Pistil {
-
+        if placement.component_type == ComponentType::Stamen
+            || placement.component_type == ComponentType::Pistil
+        {
             // Compute azimuthal tangent (direction around the flower)
-            let azimuthal_tangent = Vec3::new(
-                -placement.angle.sin(),
-                0.0,
-                placement.angle.cos(),
-            ).normalize();
+            let azimuthal_tangent =
+                Vec3::new(-placement.angle.sin(), 0.0, placement.angle.cos()).normalize();
 
             // Start with upright orientation (local Y = global Y)
             // Then rotate around azimuthal tangent by -tilt_angle:
@@ -278,18 +272,20 @@ impl ReceptacleMapper {
         // - Radial component: normal_2d.x (in XZ plane)
         // - Vertical component: normal_2d.y (along Y axis)
         let normal = Vec3::new(
-            normal_2d.x * placement.angle.cos(),  // radial X component
-            normal_2d.y,                          // vertical Y component
-            normal_2d.x * placement.angle.sin(),  // radial Z component
-        ).normalize();
+            normal_2d.x * placement.angle.cos(), // radial X component
+            normal_2d.y,                         // vertical Y component
+            normal_2d.x * placement.angle.sin(), // radial Z component
+        )
+        .normalize();
 
         // Compute tangent to the circle at this azimuthal angle (in XZ plane)
         // This is the direction "around" the flower at this position
         let tangent = Vec3::new(
-            -placement.angle.sin(),  // d/dθ of cos(θ)
+            -placement.angle.sin(), // d/dθ of cos(θ)
             0.0,
-            placement.angle.cos(),   // d/dθ of sin(θ)
-        ).normalize();
+            placement.angle.cos(), // d/dθ of sin(θ)
+        )
+        .normalize();
 
         // Compute binormal (perpendicular to both normal and tangent)
         // Use right-handed coordinate system: binormal = tangent × normal
@@ -323,7 +319,8 @@ impl FloralDiagram {
         let mut component_index: u64 = 0;
 
         // Check if jitter is enabled (any param > 0)
-        let jitter_enabled = self.position_jitter > 0.0 || self.angle_jitter > 0.0 || self.size_jitter > 0.0;
+        let jitter_enabled =
+            self.position_jitter > 0.0 || self.angle_jitter > 0.0 || self.size_jitter > 0.0;
 
         // Add pistils
         for whorl in &self.pistil_whorls {
@@ -420,8 +417,8 @@ impl FloralDiagram {
     ///
     /// Uses seeded RNG for deterministic randomness
     fn apply_jitter(&self, base_radius: f32, base_angle: f32, index: u64) -> (f32, f32, f32) {
-        use rand::{Rng, SeedableRng};
         use rand::rngs::SmallRng;
+        use rand::{Rng, SeedableRng};
 
         // Create seeded RNG unique to this component
         let mut rng = SmallRng::seed_from_u64(self.jitter_seed.wrapping_add(index));
@@ -489,13 +486,13 @@ impl FlowerParams {
                 width: 1.2,
                 tip_sharpness: 0.4,
                 base_width: 0.4,
-                curl: 0.4,           // Gentle upward curl
-                twist: 15.0,         // Slight twist for organic look
+                curl: 0.4,   // Gentle upward curl
+                twist: 15.0, // Slight twist for organic look
                 ruffle_freq: 0.0,
                 ruffle_amp: 0.0,
                 lateral_curve: 0.0,
-                resolution: 20,      // Higher resolution for smooth curves
-                color: Vec3::ONE,    // White petals
+                resolution: 20,   // Higher resolution for smooth curves
+                color: Vec3::ONE, // White petals
             },
         }
     }
@@ -512,13 +509,13 @@ impl FlowerParams {
                 width: 2.0,
                 tip_sharpness: 0.2,
                 base_width: 0.8,
-                curl: 0.2,           // Slight curl
-                twist: 5.0,          // Minimal twist
-                ruffle_freq: 3.0,    // 3 waves along edges
-                ruffle_amp: 0.15,    // Visible ruffle
+                curl: 0.2,        // Slight curl
+                twist: 5.0,       // Minimal twist
+                ruffle_freq: 3.0, // 3 waves along edges
+                ruffle_amp: 0.15, // Visible ruffle
                 lateral_curve: 0.0,
-                resolution: 24,      // High resolution for ruffle detail
-                color: Vec3::ONE,    // White petals
+                resolution: 24,   // High resolution for ruffle detail
+                color: Vec3::ONE, // White petals
             },
         }
     }
@@ -647,7 +644,10 @@ mod tests {
 
         // Middle should be larger (bulge)
         let r_middle = mapper.radius_at_height(0.5);
-        assert!(r_middle > r_bottom && r_middle > r_top, "Middle should bulge");
+        assert!(
+            r_middle > r_bottom && r_middle > r_top,
+            "Middle should bulge"
+        );
     }
 
     #[test]
@@ -692,9 +692,18 @@ mod tests {
         assert_eq!(placements.len(), 13);
 
         // Count by type
-        let pistils = placements.iter().filter(|p| p.component_type == ComponentType::Pistil).count();
-        let stamens = placements.iter().filter(|p| p.component_type == ComponentType::Stamen).count();
-        let petals = placements.iter().filter(|p| p.component_type == ComponentType::Petal).count();
+        let pistils = placements
+            .iter()
+            .filter(|p| p.component_type == ComponentType::Pistil)
+            .count();
+        let stamens = placements
+            .iter()
+            .filter(|p| p.component_type == ComponentType::Stamen)
+            .count();
+        let petals = placements
+            .iter()
+            .filter(|p| p.component_type == ComponentType::Petal)
+            .count();
 
         assert_eq!(pistils, 1);
         assert_eq!(stamens, 6);
@@ -756,7 +765,10 @@ mod tests {
 
             // Normal should have outward radial component
             let radial_component = normal.x * angle.cos() + normal.z * angle.sin();
-            assert!(radial_component > 0.5, "Normal should point outward radially");
+            assert!(
+                radial_component > 0.5,
+                "Normal should point outward radially"
+            );
 
             // Verify normal is normalized
             let length = normal.length();
@@ -793,7 +805,10 @@ mod tests {
         let normal = transform.rotation * Vec3::Y;
 
         // For a cylinder, normal should be nearly horizontal (small Y component due to Bézier curve)
-        assert!(normal.y.abs() < 0.2, "Cylinder normal should be mostly horizontal");
+        assert!(
+            normal.y.abs() < 0.2,
+            "Cylinder normal should be mostly horizontal"
+        );
 
         // Should point in +X direction (angle = 0)
         assert!(normal.x > 0.8, "Should point in radial direction");
@@ -837,7 +852,10 @@ mod tests {
         let flower = generate_flower(&params);
 
         // Should have vertices from all components
-        assert!(flower.vertex_count() > 500, "Should have substantial geometry");
+        assert!(
+            flower.vertex_count() > 500,
+            "Should have substantial geometry"
+        );
         assert!(flower.triangle_count() > 100, "Should have many triangles");
 
         // Verify mesh integrity
@@ -859,7 +877,10 @@ mod tests {
         let flower = generate_flower(&params);
 
         // Daisy has many components (21 petals, 34 stamens, 13 pistils)
-        assert!(flower.vertex_count() > 1000, "Daisy should have many vertices");
+        assert!(
+            flower.vertex_count() > 1000,
+            "Daisy should have many vertices"
+        );
 
         // Check all geometry is valid
         for pos in &flower.positions {
@@ -887,8 +908,16 @@ mod tests {
         let flower = generate_flower(&params);
 
         // Find the approximate extents of the flower
-        let min_y = flower.positions.iter().map(|p| p.y).fold(f32::MAX, f32::min);
-        let max_y = flower.positions.iter().map(|p| p.y).fold(f32::MIN, f32::max);
+        let min_y = flower
+            .positions
+            .iter()
+            .map(|p| p.y)
+            .fold(f32::MAX, f32::min);
+        let max_y = flower
+            .positions
+            .iter()
+            .map(|p| p.y)
+            .fold(f32::MIN, f32::max);
         let max_radius = flower
             .positions
             .iter()

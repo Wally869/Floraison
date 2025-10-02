@@ -107,18 +107,8 @@ mod tests {
             glam::Vec2::ZERO,
             Vec3::new(1.0, 0.5, 0.5),
         );
-        mesh.add_vertex(
-            Vec3::X,
-            Vec3::Y,
-            glam::Vec2::ZERO,
-            Vec3::new(1.0, 0.5, 0.5),
-        );
-        mesh.add_vertex(
-            Vec3::Z,
-            Vec3::Y,
-            glam::Vec2::ZERO,
-            Vec3::new(1.0, 0.5, 0.5),
-        );
+        mesh.add_vertex(Vec3::X, Vec3::Y, glam::Vec2::ZERO, Vec3::new(1.0, 0.5, 0.5));
+        mesh.add_vertex(Vec3::Z, Vec3::Y, glam::Vec2::ZERO, Vec3::new(1.0, 0.5, 0.5));
         mesh.add_triangle(0, 1, 2);
         mesh
     }
@@ -153,7 +143,10 @@ mod tests {
 
         // Depth 2: main raceme + 4 sub-racemes
         // Should have significantly more vertices than simple raceme
-        assert!(mesh.vertex_count() > 20, "Compound should have many vertices");
+        assert!(
+            mesh.vertex_count() > 20,
+            "Compound should have many vertices"
+        );
     }
 
     #[test]

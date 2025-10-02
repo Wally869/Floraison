@@ -187,7 +187,10 @@ mod tests {
         let p3 = Vec3::new(0.0, 3.0, 1.0);
 
         let point = catmull_rom_point(p0, p1, p2, p3, 0.0);
-        assert!((point - p1).length() < 1e-5, "Should pass through p1 at t=0");
+        assert!(
+            (point - p1).length() < 1e-5,
+            "Should pass through p1 at t=0"
+        );
     }
 
     #[test]
@@ -198,7 +201,10 @@ mod tests {
         let p3 = Vec3::new(0.0, 3.0, 1.0);
 
         let point = catmull_rom_point(p0, p1, p2, p3, 1.0);
-        assert!((point - p2).length() < 1e-5, "Should pass through p2 at t=1");
+        assert!(
+            (point - p2).length() < 1e-5,
+            "Should pass through p2 at t=1"
+        );
     }
 
     #[test]
@@ -211,7 +217,10 @@ mod tests {
         let point = catmull_rom_point(p0, p1, p2, p3, 0.5);
         // For a straight line, midpoint should be average of p1 and p2
         let expected = Vec3::new(0.0, 1.5, 0.0);
-        assert!((point - expected).length() < 0.01, "Midpoint should be near 1.5");
+        assert!(
+            (point - expected).length() < 0.01,
+            "Midpoint should be near 1.5"
+        );
     }
 
     #[test]
@@ -224,8 +233,14 @@ mod tests {
         let tangent = catmull_rom_tangent(p0, p1, p2, p3, 0.5);
         // For points along Y-axis, tangent should point in +Y
         assert!(tangent.y > 0.0, "Tangent should point in +Y direction");
-        assert!(tangent.x.abs() < 1e-5, "Tangent X component should be near 0");
-        assert!(tangent.z.abs() < 1e-5, "Tangent Z component should be near 0");
+        assert!(
+            tangent.x.abs() < 1e-5,
+            "Tangent X component should be near 0"
+        );
+        assert!(
+            tangent.z.abs() < 1e-5,
+            "Tangent Z component should be near 0"
+        );
     }
 
     #[test]
@@ -245,7 +260,10 @@ mod tests {
 
         // Last sample should be at p2
         let last_idx = curve.len() - 1;
-        assert!((curve[last_idx] - points[2]).length() < 1e-5, "Last sample at p2");
+        assert!(
+            (curve[last_idx] - points[2]).length() < 1e-5,
+            "Last sample at p2"
+        );
     }
 
     #[test]
@@ -285,7 +303,10 @@ mod tests {
         let p3 = Vec3::new(0.0, 3.0, 0.0);
 
         let tangent = catmull_rom_tangent(p0, p1, p2, p3, 0.5);
-        assert!(tangent.length() > 0.01, "Tangent should have non-zero length");
+        assert!(
+            tangent.length() > 0.01,
+            "Tangent should have non-zero length"
+        );
     }
 }
 
@@ -756,11 +777,7 @@ impl AxisCurve {
     /// Find an arbitrary unit vector perpendicular to given vector
     fn arbitrary_perpendicular(&self, v: &Vec3) -> Vec3 {
         // Choose a vector not parallel to v
-        let candidate = if v.y.abs() < 0.9 {
-            Vec3::Y
-        } else {
-            Vec3::X
-        };
+        let candidate = if v.y.abs() < 0.9 { Vec3::Y } else { Vec3::X };
 
         // Project out parallel component
         let parallel = candidate.dot(*v) * *v;
@@ -971,10 +988,7 @@ mod axis_tests {
 
     #[test]
     fn test_sample_at_endpoints() {
-        let points = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 10.0, 0.0),
-        ];
+        let points = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 10.0, 0.0)];
 
         let axis = AxisCurve::new(points);
 
@@ -987,10 +1001,7 @@ mod axis_tests {
 
     #[test]
     fn test_sample_at_midpoint() {
-        let points = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 10.0, 0.0),
-        ];
+        let points = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 10.0, 0.0)];
 
         let axis = AxisCurve::new(points);
         let sample = axis.sample_at_t(0.5);
@@ -1012,9 +1023,18 @@ mod axis_tests {
         let sample = axis.sample_at_t(0.5);
 
         // Check normalized
-        assert!((sample.tangent.length() - 1.0).abs() < 1e-3, "Tangent should be unit");
-        assert!((sample.normal.length() - 1.0).abs() < 1e-3, "Normal should be unit");
-        assert!((sample.binormal.length() - 1.0).abs() < 1e-3, "Binormal should be unit");
+        assert!(
+            (sample.tangent.length() - 1.0).abs() < 1e-3,
+            "Tangent should be unit"
+        );
+        assert!(
+            (sample.normal.length() - 1.0).abs() < 1e-3,
+            "Normal should be unit"
+        );
+        assert!(
+            (sample.binormal.length() - 1.0).abs() < 1e-3,
+            "Binormal should be unit"
+        );
 
         // Check orthogonal
         assert!(
@@ -1033,10 +1053,7 @@ mod axis_tests {
 
     #[test]
     fn test_uniform_sampling() {
-        let points = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 10.0, 0.0),
-        ];
+        let points = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 10.0, 0.0)];
 
         let axis = AxisCurve::new(points);
         let samples = axis.sample_uniform(5);
@@ -1077,10 +1094,7 @@ mod axis_tests {
 
     #[test]
     fn test_single_sample() {
-        let points = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(0.0, 10.0, 0.0),
-        ];
+        let points = vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 10.0, 0.0)];
 
         let axis = AxisCurve::new(points);
         let samples = axis.sample_uniform(1);
