@@ -93,7 +93,8 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.shadow.camera.right = 20;
 	dirLight.shadow.camera.top = 20;
 	dirLight.shadow.camera.bottom = -20;
-	dirLight.shadow.bias = -0.0001;  // Tighter bias for VSM
+	dirLight.shadow.bias = -0.001;  // Reduce shadow acne
+	dirLight.shadow.normalBias = 0.02;  // Surface-aware bias for complex geometry
 	dirLight.shadow.radius = 3;  // Wider penumbra for softer edge
 	dirLight.shadow.blurSamples = 25;  // More blur samples for smoothness
 
