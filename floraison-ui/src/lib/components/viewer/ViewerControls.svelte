@@ -3,10 +3,11 @@
 
 	interface Props {
 		onResetCamera: () => void;
+		onFrameFlower: () => void;
 		onExport: () => void;
 	}
 
-	let { onResetCamera, onExport }: Props = $props();
+	let { onResetCamera, onFrameFlower, onExport }: Props = $props();
 
 	let expanded = $state(false);
 	let exporting = $state(false);
@@ -118,6 +119,10 @@
 			<div class="control-group">
 				<button class="action-button" onclick={onResetCamera}>
 					Reset Camera
+				</button>
+
+				<button class="action-button secondary" onclick={onFrameFlower}>
+					Frame Flower
 				</button>
 
 				<button class="export-button" onclick={handleExport} disabled={exporting}>
@@ -287,6 +292,14 @@
 
 	.action-button:hover {
 		background-color: #2563eb;
+	}
+
+	.action-button.secondary {
+		background-color: #6b7280;
+	}
+
+	.action-button.secondary:hover {
+		background-color: #4b5563;
 	}
 
 	.export-button {

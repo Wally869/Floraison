@@ -21,6 +21,7 @@
 	let sceneCtx: SceneContext | null = $state(null);
 	// Plain variable - not reactive! Three.js state is imperative, not reactive UI state
 	let flowerMesh: THREE.Mesh | null = null;
+	let isFirstMeshLoad = $state(true);
 
 	onMount(() => {
 		// Initialize Three.js scene
@@ -69,6 +70,27 @@
 			flowerMesh.material.wireframe = settings.wireframe;
 		}
 	});
+
+	/**
+	 * Frame the mesh in the camera view
+	 * Centers and zooms camera to show entire flower
+	 */
+	function frameMeshInView(geometry: THREE.BufferGeometry) {
+		if (!sceneCtx) return;
+
+		const boundingSphere = geometry.boundingSphere;
+		if (boundingSphere) {
+			const center = boundingSphere.center;
+			const radius = boundingSphere.radius;
+
+			// Position camera at distance based on sphere radius
+			const distance = radius * 2.5;
+			sceneCtx.camera.position.set(distance, distance, distance);
+			sceneCtx.camera.lookAt(center);
+			sceneCtx.controls.target.copy(center);
+			sceneCtx.controls.update();
+		}
+	}
 
 	function updateMesh(newMesh: MeshData) {
 		if (!sceneCtx) return;
@@ -124,24 +146,25 @@
 		flowerMesh.receiveShadow = true; // Petals can shadow each other
 		sceneCtx.scene.add(flowerMesh);
 
-		// Frame camera to show entire flower
-		const boundingSphere = geometry.boundingSphere;
-		if (boundingSphere) {
-			const center = boundingSphere.center;
-			const radius = boundingSphere.radius;
-
-			// Position camera at distance based on sphere radius
-			const distance = radius * 2.5;
-			sceneCtx.camera.position.set(distance, distance, distance);
-			sceneCtx.camera.lookAt(center);
-			sceneCtx.controls.target.copy(center);
-			sceneCtx.controls.update();
+		// Only auto-frame camera on first load
+		// This prevents camera jumping when user is exploring the flower
+		if (isFirstMeshLoad) {
+			frameMeshInView(geometry);
+			isFirstMeshLoad = false;
 		}
 	}
 
 	function handleResetCamera() {
 		if (sceneCtx) {
 			sceneCtx.resetCamera();
+		}
+	}
+
+	function handleFrameFlower() {
+		if (flowerMesh && sceneCtx) {
+			const geometry = flowerMesh.geometry;
+			geometry.computeBoundingSphere();
+			frameMeshInView(geometry);
 		}
 	}
 
@@ -170,7 +193,11 @@
 	{#if !mesh}
 		<div class="loading">Loading flower...</div>
 	{/if}
-	<ViewerControls onResetCamera={handleResetCamera} onExport={handleExport} />
+	<ViewerControls
+		onResetCamera={handleResetCamera}
+		onFrameFlower={handleFrameFlower}
+		onExport={handleExport}
+	/>
 </div>
 
 <style>
