@@ -200,6 +200,8 @@
 		border-radius: 0.5rem;
 		padding: 1rem;
 		min-width: 16rem;
+		max-height: 70vh;
+		overflow-y: auto;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 		backdrop-filter: blur(10px);
 	}
