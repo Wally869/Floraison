@@ -112,6 +112,10 @@ interface FloralDiagram {
 	stamen_whorls: ComponentWhorl[];
 	pistil_whorls: ComponentWhorl[];
 	sepal_whorls: ComponentWhorl[];
+	position_jitter: number;
+	angle_jitter: number;
+	size_jitter: number;
+	jitter_seed: number;
 }
 
 // Complete FlowerParams structure for WASM

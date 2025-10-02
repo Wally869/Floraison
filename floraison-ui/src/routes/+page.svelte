@@ -5,6 +5,7 @@
 	import ParameterPanel from '$lib/components/ui/ParameterPanel.svelte';
 	import LoadingSpinner from '$lib/components/ui/LoadingSpinner.svelte';
 	import type { MeshDataLike } from '$lib/wasm/types';
+	import { getPositions, getIndices } from '$lib/wasm/types';
 	import type { GenerationWorkerManager } from '$lib/workers/manager';
 	import { allParams, inflorescenceParams } from '$lib/stores/parameters';
 
@@ -81,8 +82,8 @@
 
 				// Log metrics
 				if (mesh) {
-					const positions = mesh.positions();
-					const indices = mesh.indices();
+					const positions = getPositions(mesh);
+					const indices = getIndices(mesh);
 
 					console.log(`✓ ${infloParams.enabled ? 'Inflorescence' : 'Flower'} generated:`, {
 						time: `${genTime.toFixed(2)}ms`,

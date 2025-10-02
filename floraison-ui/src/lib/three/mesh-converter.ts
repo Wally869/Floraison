@@ -7,6 +7,7 @@
 
 import * as THREE from 'three';
 import type { MeshDataLike } from '$lib/wasm/types';
+import { getPositions, getNormals, getUVs, getColors, getIndices } from '$lib/wasm/types';
 
 /**
  * Convert MeshData to Three.js BufferGeometry
@@ -24,12 +25,12 @@ import type { MeshDataLike } from '$lib/wasm/types';
 export function wasmMeshToGeometry(meshData: MeshDataLike): THREE.BufferGeometry {
 	const geometry = new THREE.BufferGeometry();
 
-	// Get typed arrays from WASM
-	const positions = meshData.positions();
-	const normals = meshData.normals();
-	const uvs = meshData.uvs();
-	const colors = meshData.colors();
-	const indices = meshData.indices();
+	// Get typed arrays using helper functions
+	const positions = getPositions(meshData);
+	const normals = getNormals(meshData);
+	const uvs = getUVs(meshData);
+	const colors = getColors(meshData);
+	const indices = getIndices(meshData);
 
 	// Set position attribute (stride 3: x, y, z)
 	geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));

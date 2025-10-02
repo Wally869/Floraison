@@ -198,6 +198,7 @@ export const rosePreset: FlowerPreset = {
 			base_width: 0.8,
 			curl: 0.8,
 			twist: 5.0,
+			lateral_curve: 0.0,
 			ruffle_freq: 3.0,
 			ruffle_amp: 0.15,
 			resolution: 24,
@@ -485,6 +486,7 @@ export const orchidPreset: FlowerPreset = {
 			base_width: 0.5,
 			curl: 0.3,
 			twist: 35.0, // Dramatic twist
+			lateral_curve: 0.0,
 			ruffle_freq: 2.0,
 			ruffle_amp: 0.2,
 			resolution: 24,

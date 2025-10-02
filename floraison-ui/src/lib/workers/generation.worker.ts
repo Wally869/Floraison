@@ -84,7 +84,7 @@ async function handleGenerateRequest(request: WorkerRequest) {
 		generator.free();
 
 		// Prepare transferable arrays for zero-copy transfer
-		const transferables = [
+		const transferables: Transferable[] = [
 			serialized.positions.buffer,
 			serialized.normals.buffer,
 			serialized.uvs.buffer,
@@ -99,7 +99,7 @@ async function handleGenerateRequest(request: WorkerRequest) {
 			mesh: serialized
 		};
 
-		self.postMessage(response, transferables);
+		self.postMessage(response, { transfer: transferables });
 	} catch (error) {
 		// Send error response
 		const response: WorkerResponse = {
