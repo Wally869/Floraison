@@ -2,21 +2,26 @@
  * WASM to Three.js Mesh Converter
  *
  * Converts MeshData from WASM to Three.js BufferGeometry.
+ * Now supports both WASM MeshData instances and serialized mesh data from workers.
  */
 
 import * as THREE from 'three';
-import type { MeshData } from '$lib/wasm/floraison';
+import type { MeshDataLike } from '$lib/wasm/types';
 
 /**
- * Convert WASM MeshData to Three.js BufferGeometry
+ * Convert MeshData to Three.js BufferGeometry
  *
- * Takes the flat typed arrays from WASM and creates a BufferGeometry
+ * Takes the flat typed arrays from mesh data and creates a BufferGeometry
  * with proper attributes for positions, normals, UVs, and indices.
  *
- * @param meshData - MeshData instance from WASM
+ * Works with both:
+ * - WASM MeshData instances (direct generation on main thread)
+ * - SerializedMeshData (from worker generation)
+ *
+ * @param meshData - MeshData instance from WASM or serialized mesh data
  * @returns BufferGeometry ready to be used with a Three.js Mesh
  */
-export function wasmMeshToGeometry(meshData: MeshData): THREE.BufferGeometry {
+export function wasmMeshToGeometry(meshData: MeshDataLike): THREE.BufferGeometry {
 	const geometry = new THREE.BufferGeometry();
 
 	// Get typed arrays from WASM

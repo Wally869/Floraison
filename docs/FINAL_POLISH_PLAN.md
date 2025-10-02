@@ -56,18 +56,27 @@
   - Cleaner "Flower Structure" section with just counts and tilt
   - Improved accessibility of common controls
 
+### ✅ Completed (Phase 4 - Performance & UX - Part 1)
+- **Web Worker for Non-Blocking Generation**: Flower generation runs off main thread
+  - Created worker infrastructure (types.ts, generation.worker.ts, manager.ts)
+  - MeshData serialization layer for cross-worker communication
+  - LoadingSpinner component with animated overlay
+  - Zero-copy TypedArray transfer with Transferable Objects
+  - SSR-safe initialization with browser detection
+  - Proper WASM initialization in worker context
+  - Reactive state management for initial generation
+
 ### 🚧 In Progress
 - None currently
 
 ### 📋 Remaining
-- Phase 4: Performance & UX Improvements (8-11 hours)
-  - Web Worker for non-blocking generation (4-6h)
+- Phase 4: Performance & UX Improvements (Part 2) (3-5 hours)
   - Axis/Branch curvature controls (2-3h)
-  - Optimize scene refresh to avoid full recreation (1-2h)
+  - Optimize scene refresh to avoid camera reset (1-2h) ✅ **COMPLETE** (Issue #12)
 - Phase 5: Final Testing (2-3 hours)
 
-**Total Time Invested**: 8.0 hours (30min + 2h + 4h + 15min + 1.25h Phase 3)
-**Remaining Estimate**: 10-14 hours (8-11h improvements + 2-3h testing)
+**Total Time Invested**: 12.5 hours (8.0h previous + 4.5h Issue #9)
+**Remaining Estimate**: 5-8 hours (3-5h curvature + 2-3h testing)
 
 ---
 

@@ -14,6 +14,10 @@ export default defineConfig({
 	optimizeDeps: {
 		exclude: ['$lib/wasm/floraison.js']
 	},
+	worker: {
+		format: 'es',
+		plugins: () => []
+	},
 	test: {
 		expect: { requireAssertions: true },
 		projects: [

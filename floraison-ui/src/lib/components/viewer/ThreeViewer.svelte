@@ -3,7 +3,7 @@
 	import * as THREE from 'three';
 	import { createScene, type SceneContext } from '$lib/three/scene';
 	import { wasmMeshToGeometry } from '$lib/three/mesh-converter';
-	import type { MeshData } from '$lib/wasm/floraison';
+	import type { MeshDataLike } from '$lib/wasm/types';
 	import ViewerControls from './ViewerControls.svelte';
 	import { viewerSettings } from '$lib/stores/viewer';
 	import { exportToGLB, generateFilename } from '$lib/three/exporter';
@@ -11,7 +11,7 @@
 
 	// Props
 	interface Props {
-		mesh: MeshData | null;
+		mesh: MeshDataLike | null;
 	}
 
 	let { mesh = null }: Props = $props();
@@ -92,7 +92,7 @@
 		}
 	}
 
-	function updateMesh(newMesh: MeshData) {
+	function updateMesh(newMesh: MeshDataLike) {
 		if (!sceneCtx) return;
 
 		// Remove old mesh from scene (safe - flowerMesh is not reactive)
