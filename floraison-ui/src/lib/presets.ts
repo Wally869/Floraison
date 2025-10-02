@@ -45,7 +45,7 @@ export const lilyPreset: FlowerPreset = {
 					height: 0.6,
 					pattern: 'EvenlySpaced',
 					rotation_offset: 0.523599, // 30 degrees offset
-					tilt_angle: 1.5708 // PI/2 - horizontal spreading (lily characteristic)
+					tilt_angle: 1.047 // π/3 (60°) - natural drooping spread
 				}
 			],
 			pistil_whorls: [
@@ -785,15 +785,15 @@ export const astilbeCompoundPreset: FlowerPreset = {
 	inflorescence: {
 		enabled: true,
 		pattern: 'CompoundRaceme',
-		axis_length: 10.0,
-		branch_count: 6,
+		axis_length: 14.0,
+		branch_count: 10,
 		angle_top: 30.0,
 		angle_bottom: 45.0,
 		branch_length_top: 0.6,
 		branch_length_bottom: 1.0,
 		rotation_angle: 137.5,
-		flower_size_top: 0.5,
-		flower_size_bottom: 0.6,
+		flower_size_top: 0.7,
+		flower_size_bottom: 0.8,
 		recursion_depth: 2,
 		branch_ratio: 0.5,
 		angle_divergence: 0.0 // Not used for compound raceme

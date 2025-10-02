@@ -86,10 +86,10 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.shadow.mapSize.height = 4096;
 	dirLight.shadow.camera.near = 0.5;
 	dirLight.shadow.camera.far = 50;
-	dirLight.shadow.camera.left = -10;
-	dirLight.shadow.camera.right = 10;
-	dirLight.shadow.camera.top = 10;
-	dirLight.shadow.camera.bottom = -10;
+	dirLight.shadow.camera.left = -20;
+	dirLight.shadow.camera.right = 20;
+	dirLight.shadow.camera.top = 20;
+	dirLight.shadow.camera.bottom = -20;
 	dirLight.shadow.bias = -0.0001;  // Tighter bias for VSM
 	dirLight.shadow.radius = 3;  // Wider penumbra for softer edge
 	dirLight.shadow.blurSamples = 25;  // More blur samples for smoothness
@@ -102,7 +102,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	scene.add(fillLight);
 
 	// Add ground plane for shadow reception
-	const groundGeometry = new THREE.PlaneGeometry(30, 30);
+	const groundGeometry = new THREE.PlaneGeometry(60, 60);
 	const groundMaterial = new THREE.ShadowMaterial({ opacity: 0.3 });
 	const ground = new THREE.Mesh(groundGeometry, groundMaterial);
 	ground.rotation.x = -Math.PI / 2;

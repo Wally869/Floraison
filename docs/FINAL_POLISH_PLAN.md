@@ -4,6 +4,30 @@
 
 ---
 
+## Progress Tracker
+
+**Last Updated**: 2025-10-02
+
+### ✅ Completed (Phase 1 - Quick Fixes)
+- **Lily Stamen Tilt**: Changed from 90° (horizontal) to 60° (natural droop)
+- **Ground Plane**: Increased from 30×30 to 60×60 units
+- **Shadow Camera**: Expanded frustum from 20×20 to 40×40 coverage
+- **Astilbe Preset**: Enhanced with 10 branches (was 6), larger flowers (0.7-0.8 vs 0.5-0.6), taller axis (14 vs 10)
+- **TypeScript Check**: 0 errors, 0 warnings
+
+### 🚧 In Progress
+- None currently
+
+### 📋 Remaining
+- Phase 2: High-Priority Features (6-9 hours)
+- Phase 3: Polish & UX (6-10 hours)
+- Phase 4: Final Testing (2-3 hours)
+
+**Total Time Invested**: 30 minutes
+**Remaining Estimate**: 14-22 hours
+
+---
+
 ## Issues Identified
 
 ### 1. **Random Generation Button** ⭐
@@ -297,26 +321,27 @@ inflorescence: {
 |-------|----------|--------|--------|
 | 1. Random Generation Button | HIGH | 2-3h | Not implemented |
 | 2. Bend/Curve Parameters | HIGH | 3-4h | Partially implemented |
-| 3. Lily Stamen Tilt | MEDIUM | 5min | Wrong default |
-| 4. Ground/Shadow Fix | MEDIUM | 5min | Too small |
+| 3. Lily Stamen Tilt | MEDIUM | 5min | ✅ **FIXED** (90°→60°) |
+| 4. Ground/Shadow Fix | MEDIUM | 5min | ✅ **FIXED** (60×60, 40×40) |
 | 5. Age Controls | MEDIUM-HIGH | 1-2h | Option B recommended |
-| 6. Astilbe Preset | MEDIUM | 10min | Needs adjustment |
+| 6. Astilbe Preset | MEDIUM | 10min | ✅ **FIXED** (10 branches, larger) |
 | 7. Randomness/Jitter | MEDIUM | 3-4h | Not implemented |
 | 8. Petal Curvature | LOW-MEDIUM | 2h | Not implemented |
 | 9. Web Worker | LOW | 4-6h | Defer post-launch |
 | 10. UI Reorganization | MEDIUM | 2-3h | Review needed |
 
-**Total Estimated Effort (excluding #9)**: 14-20 hours
+**Total Estimated Effort (excluding #9)**: ~~14-20 hours~~ → **14-20 hours remaining**
+**Completed**: 30 minutes (Issues #3, #4, #6)
 
 ---
 
 ## Recommended Implementation Order
 
-### Phase 1: Quick Fixes (30 minutes)
-1. Fix lily stamen tilt default (5min)
-2. Fix ground plane / shadow camera (5min)
-3. Adjust Astilbe preset values (10min)
-4. Test all presets (10min)
+### Phase 1: Quick Fixes ✅ COMPLETE (30 minutes)
+1. ✅ Fix lily stamen tilt default (5min) - Changed from 90° to 60°
+2. ✅ Fix ground plane / shadow camera (5min) - Ground 30×30→60×60, Shadow 20×20→40×40
+3. ✅ Adjust Astilbe preset values (10min) - 10 branches, larger flowers, taller axis
+4. ✅ TypeScript check passed (0 errors, 0 warnings)
 
 ### Phase 2: High-Priority Features (6-9 hours)
 1. Random generation button (2-3h)
@@ -415,9 +440,9 @@ let mesh = aging.select_mesh(adjusted_age);
 
 ## Files to Modify
 
-### Quick Fixes
-- `floraison-ui/src/lib/presets.ts` - Lily tilt, Astilbe values
-- `floraison-ui/src/lib/three/scene.ts` - Ground plane, shadow camera
+### Quick Fixes ✅ COMPLETE
+- ✅ `floraison-ui/src/lib/presets.ts` - Lily tilt (line 48), Astilbe values (lines 788-796)
+- ✅ `floraison-ui/src/lib/three/scene.ts` - Ground plane (line 105), shadow camera (lines 89-92)
 
 ### Random Generation
 - `floraison-ui/src/lib/components/ui/ParameterPanel.svelte` - Add button
