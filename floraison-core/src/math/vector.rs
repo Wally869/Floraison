@@ -406,7 +406,7 @@ mod tests {
         // Test that angles are normalized to [0, 2π)
         let pos = Vec3::new(-1.0, 0.0, 0.0);
         let (_, angle, _) = pos.to_cylindrical();
-        assert!(angle >= 0.0 && angle < 2.0 * PI);
+        assert!((0.0..2.0 * PI).contains(&angle));
         assert!((angle - PI).abs() < EPSILON);
     }
 
@@ -415,7 +415,7 @@ mod tests {
         // Test that theta is normalized to [0, 2π)
         let pos = Vec3::new(-1.0, 0.0, 0.0);
         let (_, theta, _) = pos.to_spherical();
-        assert!(theta >= 0.0 && theta < 2.0 * PI);
+        assert!((0.0..2.0 * PI).contains(&theta));
         assert!((theta - PI).abs() < EPSILON);
     }
 

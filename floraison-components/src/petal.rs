@@ -188,7 +188,7 @@ pub fn generate_control_grid(params: &PetalParams) -> Vec<Vec<Vec3>> {
 
     let mut grid = vec![vec![Vec3::ZERO; COLS]; ROWS];
 
-    for row in 0..ROWS {
+    for (row, row_data) in grid.iter_mut().enumerate().take(ROWS) {
         // v parameter: 0.0 at base, 1.0 at tip
         let v = row as f32 / (ROWS - 1) as f32;
         let y = v * params.length;
@@ -206,14 +206,14 @@ pub fn generate_control_grid(params: &PetalParams) -> Vec<Vec<Vec3>> {
             params.width + (params.width * params.tip_sharpness - params.width) * t
         };
 
-        for col in 0..COLS {
+        for (col, cell) in row_data.iter_mut().enumerate().take(COLS) {
             // u parameter: 0.0 at left edge, 1.0 at right edge
             let u = col as f32 / (COLS - 1) as f32;
 
             // Map u to x coordinate: centered at x=0
             let x = (u - 0.5) * width_at_v;
 
-            grid[row][col] = Vec3::new(x, y, 0.0);
+            *cell = Vec3::new(x, y, 0.0);
         }
     }
 
@@ -244,7 +244,7 @@ pub fn generate_control_grid(params: &PetalParams) -> Vec<Vec<Vec3>> {
 /// // Curl upward
 /// apply_curl(&mut grid, 0.5);
 /// ```
-pub fn apply_curl(control_points: &mut Vec<Vec<Vec3>>, amount: f32) {
+pub fn apply_curl(control_points: &mut [Vec<Vec3>], amount: f32) {
     use std::f32::consts::PI;
 
     let rows = control_points.len();
@@ -293,7 +293,7 @@ pub fn apply_curl(control_points: &mut Vec<Vec<Vec3>>, amount: f32) {
 /// // Twist 45 degrees counter-clockwise
 /// apply_twist(&mut grid, 45.0);
 /// ```
-pub fn apply_twist(control_points: &mut Vec<Vec<Vec3>>, angle_deg: f32) {
+pub fn apply_twist(control_points: &mut [Vec<Vec3>], angle_deg: f32) {
     let angle_rad = angle_deg.to_radians();
     let rows = control_points.len();
 
@@ -339,7 +339,7 @@ pub fn apply_twist(control_points: &mut Vec<Vec<Vec3>>, angle_deg: f32) {
 /// // Curve to the right
 /// apply_lateral_curve(&mut grid, 0.5);
 /// ```
-pub fn apply_lateral_curve(control_points: &mut Vec<Vec<Vec3>>, amount: f32) {
+pub fn apply_lateral_curve(control_points: &mut [Vec<Vec3>], amount: f32) {
     use std::f32::consts::PI;
 
     let rows = control_points.len();
@@ -387,7 +387,7 @@ pub fn apply_lateral_curve(control_points: &mut Vec<Vec<Vec3>>, amount: f32) {
 /// // Add 3 waves with amplitude 0.2
 /// apply_ruffle(&mut grid, 3.0, 0.2);
 /// ```
-pub fn apply_ruffle(control_points: &mut Vec<Vec<Vec3>>, frequency: f32, amplitude: f32) {
+pub fn apply_ruffle(control_points: &mut [Vec<Vec3>], frequency: f32, amplitude: f32) {
     use std::f32::consts::PI;
 
     let rows = control_points.len();
@@ -493,9 +493,9 @@ pub fn generate(params: &PetalParams) -> Mesh {
     // Transpose control grid: BSplineSurface expects control_points[u_index][v_index]
     // but our grid is [row][col] = [v_index][u_index]
     let mut transposed = vec![vec![Vec3::ZERO; ROWS]; COLS];
-    for row in 0..ROWS {
-        for col in 0..COLS {
-            transposed[col][row] = control_points[row][col];
+    for (row, row_data) in control_points.iter().enumerate().take(ROWS) {
+        for (col, col_data) in transposed.iter_mut().enumerate().take(COLS) {
+            col_data[row] = row_data[col];
         }
     }
 

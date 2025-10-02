@@ -382,9 +382,9 @@ mod tests {
 
         // Check angles are evenly spaced (60° apart)
         let expected_step = std::f32::consts::TAU / 6.0;
-        for i in 0..6 {
+        for (i, angle) in angles.iter().enumerate().take(6) {
             let expected = i as f32 * expected_step;
-            assert!((angles[i] - expected).abs() < 0.001);
+            assert!((angle - expected).abs() < 0.001);
         }
     }
 
@@ -404,9 +404,9 @@ mod tests {
 
         // Check that angles follow golden spiral
         const GOLDEN_ANGLE: f32 = 2.399963;
-        for i in 0..5 {
+        for (i, angle) in angles.iter().enumerate().take(5) {
             let expected = i as f32 * GOLDEN_ANGLE;
-            assert!((angles[i] - expected).abs() < 0.001);
+            assert!((angle - expected).abs() < 0.001);
         }
     }
 
@@ -499,9 +499,9 @@ mod tests {
         assert_eq!(angles.len(), 3);
 
         // Check angles increment by custom offset
-        for i in 0..3 {
+        for (i, angle) in angles.iter().enumerate().take(3) {
             let expected = i as f32 * 1.0;
-            assert!((angles[i] - expected).abs() < 0.001);
+            assert!((angle - expected).abs() < 0.001);
         }
     }
 

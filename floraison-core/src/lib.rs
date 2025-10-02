@@ -7,7 +7,6 @@
 // Re-export glam types for convenience
 pub use glam::{Mat3, Mat4, Quat, Vec2, Vec3, Vec4};
 
-/// Mathematical utilities for flower generation
 pub mod math {
     //! Mathematical utilities for flower generation
 
@@ -27,7 +26,6 @@ pub mod math {
     pub mod curves;
 }
 
-/// Geometric primitives and mesh generation
 pub mod geometry {
     //! Geometric primitives and mesh generation
 
@@ -40,7 +38,6 @@ pub mod geometry {
     /// Sweep surface generator (extrude profile along curve)
     pub mod sweep;
 
-    /// Tessellation utilities (placeholder)
     pub mod tessellation {
         //! Mesh tessellation and subdivision
         // Will be implemented as needed

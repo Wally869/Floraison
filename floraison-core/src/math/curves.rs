@@ -253,7 +253,7 @@ mod tests {
         ];
 
         let curve = sample_catmull_rom_curve(&points, 10);
-        assert!(curve.len() > 0, "Curve should have samples");
+        assert!(!curve.is_empty(), "Curve should have samples");
 
         // First sample should be at p1
         assert!((curve[0] - points[1]).length() < 1e-5, "First sample at p1");

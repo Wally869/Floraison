@@ -67,7 +67,7 @@ pub fn sweep_along_curve(profile: &[Vec2], curve: &[Vec3], segments: usize, colo
     let mut mesh = Mesh::with_capacity(vertex_capacity, triangle_capacity);
 
     // Compute tangents at each curve point
-    let tangents = compute_curve_tangents(&curve);
+    let tangents = compute_curve_tangents(curve);
 
     // For each point along the curve
     for (curve_idx, (&curve_point, &tangent)) in curve.iter().zip(tangents.iter()).enumerate() {
@@ -211,7 +211,7 @@ pub fn sweep_tapered_cylinder(
     let mut mesh = Mesh::with_capacity(vertex_capacity, triangle_capacity);
 
     // Compute tangents at each curve point
-    let tangents = compute_curve_tangents(&curve);
+    let tangents = compute_curve_tangents(curve);
 
     // Compute rotation-minimizing frames to prevent twist artifacts
     let frames = compute_rotation_minimizing_frames(&tangents);

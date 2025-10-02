@@ -724,9 +724,9 @@ mod tests {
 
         // Should be evenly spaced
         let expected_step = 2.0 * PI / 6.0;
-        for i in 0..petal_angles.len() {
+        for (i, angle) in petal_angles.iter().enumerate() {
             let expected = i as f32 * expected_step;
-            assert!((petal_angles[i] - expected).abs() < 0.01);
+            assert!((angle - expected).abs() < 0.01);
         }
     }
 

@@ -163,20 +163,20 @@ pub fn generate_knot_vector(n: usize, p: usize, uniform: bool) -> Vec<f32> {
     let mut knots = vec![0.0; m];
 
     // First p+1 knots are 0
-    for i in 0..=p {
-        knots[i] = 0.0;
+    for item in knots.iter_mut().take(p + 1) {
+        *item = 0.0;
     }
 
     // Middle knots (if any)
     if uniform && n > p {
-        for i in (p + 1)..n {
-            knots[i] = (i - p) as f32 / (n - p) as f32;
+        for (i, item) in knots.iter_mut().enumerate().take(n).skip(p + 1) {
+            *item = (i - p) as f32 / (n - p) as f32;
         }
     }
 
     // Last p+1 knots are 1
-    for i in n..m {
-        knots[i] = 1.0;
+    for item in knots.iter_mut().take(m).skip(n) {
+        *item = 1.0;
     }
 
     knots
@@ -453,13 +453,13 @@ mod tests {
         let knots = generate_knot_vector(n, p, true);
 
         // First p+1 knots should be 0
-        for i in 0..=p {
-            assert_eq!(knots[i], 0.0);
+        for item in knots.iter().take(p + 1) {
+            assert_eq!(*item, 0.0);
         }
 
         // Last p+1 knots should be 1
-        for i in n..(n + p + 1) {
-            assert_eq!(knots[i], 1.0);
+        for item in knots.iter().take(n + p + 1).skip(n) {
+            assert_eq!(*item, 1.0);
         }
     }
 

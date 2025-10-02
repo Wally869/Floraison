@@ -43,7 +43,7 @@ use std::f32::consts::PI;
 /// let degrees = GOLDEN_ANGLE * 180.0 / PI;
 /// assert!((degrees - 137.5078).abs() < 0.001);
 /// ```
-pub const GOLDEN_ANGLE: f32 = 2.39996322972865332;
+pub const GOLDEN_ANGLE: f32 = 2.399_963_1;
 
 /// Alternate phyllotaxis: 180° divergence (opposite arrangement)
 ///
@@ -87,8 +87,8 @@ pub const ANGLE_144: f32 = 2.0 * PI * 2.0 / 5.0;
 /// assert!(angle > 0.0 && angle < 2.0 * PI);
 /// ```
 pub fn fibonacci_angle(index: usize) -> f32 {
-    let angle = (index as f32 * GOLDEN_ANGLE) % (2.0 * PI);
-    angle
+    
+    (index as f32 * GOLDEN_ANGLE) % (2.0 * PI)
 }
 
 /// Calculate 2D position using Vogel's method for optimal disc packing
@@ -339,6 +339,7 @@ pub fn radius_bulge(t: f32) -> f32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::f32::consts::FRAC_1_SQRT_2;
 
     const EPSILON: f32 = 1e-5;
 
@@ -363,7 +364,7 @@ mod tests {
         // Should wrap around 2π
         for i in 0..100 {
             let angle = fibonacci_angle(i);
-            assert!(angle >= 0.0 && angle < 2.0 * PI);
+            assert!((0.0..2.0 * PI).contains(&angle));
         }
     }
 
@@ -442,8 +443,8 @@ mod tests {
     fn test_radial_positions_offset() {
         let positions = radial_positions(4, 1.0, PI / 4.0);
         // First element should be at 45 degrees
-        assert!((positions[0].x - 0.707107).abs() < 0.001);
-        assert!((positions[0].y - 0.707107).abs() < 0.001);
+        assert!((positions[0].x - FRAC_1_SQRT_2).abs() < 0.001);
+        assert!((positions[0].y - FRAC_1_SQRT_2).abs() < 0.001);
     }
 
     #[test]

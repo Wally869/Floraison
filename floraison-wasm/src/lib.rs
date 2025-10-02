@@ -21,6 +21,12 @@ pub struct FlowerGenerator {
     // Internal state will be added as we implement features
 }
 
+impl Default for FlowerGenerator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[wasm_bindgen]
 impl FlowerGenerator {
     /// Create a new flower generator
