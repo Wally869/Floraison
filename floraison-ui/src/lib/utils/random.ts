@@ -180,7 +180,7 @@ function randomPetalParams(): PetalParams {
 		ruffle_freq,
 		ruffle_amp: ruffle_freq > 0 ? randomRange(0.1, 0.3) : 0,
 		lateral_curve: randomBoolean(0.2) ? randomRange(-0.4, 0.4) : 0.0, // 20% chance of lateral curve
-		resolution: 20, // Fixed for quality
+		resolution: 14, // Balanced quality/performance
 		color: randomPastelColor()
 	};
 }

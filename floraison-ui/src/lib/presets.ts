@@ -105,7 +105,7 @@ export const lilyPreset: FlowerPreset = {
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
 			lateral_curve: 0.0,
-			resolution: 20,
+			resolution: 14,
 			color: [1.0, 1.0, 1.0] // White
 		}
 	}
@@ -393,7 +393,7 @@ export const tulipPreset: FlowerPreset = {
 			ruffle_freq: 0.0,
 			ruffle_amp: 0.0,
 			lateral_curve: 0.0,
-			resolution: 20,
+			resolution: 14,
 			color: [0.95, 0.3, 0.4] // Pink-red
 		}
 	}

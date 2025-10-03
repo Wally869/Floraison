@@ -188,7 +188,7 @@ const defaultPetalParams: PetalParams = {
 	ruffle_freq: 0.0,
 	ruffle_amp: 0.0,
 	lateral_curve: 0.0,
-	resolution: 16,
+	resolution: 14,
 	color: [1.0, 1.0, 1.0]
 };
 
