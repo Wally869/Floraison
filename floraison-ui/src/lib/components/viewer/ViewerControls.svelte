@@ -34,9 +34,15 @@
 </script>
 
 <div class="viewer-controls">
-	<button class="toggle-button" onclick={() => (expanded = !expanded)} aria-label="Toggle viewer controls">
+	<button
+		class="toggle-button"
+		onclick={() => (expanded = !expanded)}
+		aria-label="Toggle viewer controls"
+	>
 		<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-			<path d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+			<path
+				d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+			/>
 		</svg>
 	</button>
 
@@ -73,13 +79,7 @@
 			<div class="control-group">
 				<label class="slider-control">
 					<span>Exposure</span>
-					<input
-						type="range"
-						min="0.5"
-						max="2"
-						step="0.1"
-						bind:value={$viewerSettings.exposure}
-					/>
+					<input type="range" min="0.5" max="2" step="0.1" bind:value={$viewerSettings.exposure} />
 					<span class="value">{$viewerSettings.exposure.toFixed(1)}</span>
 				</label>
 			</div>
@@ -128,13 +128,9 @@
 			</div>
 
 			<div class="control-group">
-				<button class="action-button" onclick={onResetCamera}>
-					Reset Camera
-				</button>
+				<button class="action-button" onclick={onResetCamera}> Reset Camera </button>
 
-				<button class="action-button secondary" onclick={onFrameFlower}>
-					Frame Flower
-				</button>
+				<button class="action-button secondary" onclick={onFrameFlower}> Frame Flower </button>
 
 				<button class="screenshot-button" onclick={handleScreenshot} disabled={capturing}>
 					{capturing ? 'Capturing...' : '📷 Screenshot'}

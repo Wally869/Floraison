@@ -153,14 +153,14 @@
 		<div class="button-group">
 			<button
 				onclick={randomizeParameters}
-				class="px-3 py-1 text-sm bg-purple-500 hover:bg-purple-600 text-white rounded transition-colors"
+				class="rounded bg-purple-500 px-3 py-1 text-sm text-white transition-colors hover:bg-purple-600"
 				title="Generate random flower"
 			>
 				🎲 Random
 			</button>
 			<button
 				onclick={resetToDefaults}
-				class="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+				class="rounded bg-gray-200 px-3 py-1 text-sm transition-colors hover:bg-gray-300"
 			>
 				Reset
 			</button>
@@ -298,8 +298,7 @@
 						<button
 							class="preset-btn"
 							onclick={() =>
-								($inflorescenceParams.rotation_angle =
-									360 / $inflorescenceParams.branch_count)}
+								($inflorescenceParams.rotation_angle = 360 / $inflorescenceParams.branch_count)}
 						>
 							Even
 						</button>
@@ -368,9 +367,7 @@
 						bind:value={$inflorescenceParams.age_distribution}
 						class="param-slider"
 					/>
-					<p class="param-help">
-						💡 0.0 = all buds, 0.5 = natural gradient, 1.0 = all blooms
-					</p>
+					<p class="param-help">💡 0.0 = all buds, 0.5 = natural gradient, 1.0 = all blooms</p>
 				</div>
 
 				<!-- Curvature Section -->
@@ -465,7 +462,9 @@
 								bind:value={$inflorescenceParams.recursion_depth}
 								class="param-slider"
 							/>
-							<p class="param-help">💡 Higher values create more complex structures (may be slower)</p>
+							<p class="param-help">
+								💡 Higher values create more complex structures (may be slower)
+							</p>
 						</div>
 
 						<div class="param-group">
@@ -488,7 +487,9 @@
 							<div class="param-group">
 								<label for="inflo-angle-div">
 									<span class="param-label">Angle Divergence (deg)</span>
-									<span class="param-value">{$inflorescenceParams.angle_divergence.toFixed(1)}°</span>
+									<span class="param-value"
+										>{$inflorescenceParams.angle_divergence.toFixed(1)}°</span
+									>
 								</label>
 								<input
 									id="inflo-angle-div"

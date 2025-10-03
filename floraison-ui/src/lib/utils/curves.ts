@@ -48,13 +48,13 @@ export function generateBendCurve(
 	// Define the actual curve points we want to pass through
 	const start: [number, number, number] = [0, 0, 0]; // Base at origin
 	const middle: [number, number, number] = [
-		maxDisplacement * 0.7 * dir,                    // X: peak sideways bend
-		length * 0.5 - droopAmount * droopScale * 0.5,  // Y: droop=-1 makes middle HIGHER (arch)
+		maxDisplacement * 0.7 * dir, // X: peak sideways bend
+		length * 0.5 - droopAmount * droopScale * 0.5, // Y: droop=-1 makes middle HIGHER (arch)
 		0
 	];
 	const end: [number, number, number] = [
-		maxDisplacement * 0.4 * dir,               // X: curve back slightly
-		length,                                    // Y: always end at target length
+		maxDisplacement * 0.4 * dir, // X: curve back slightly
+		length, // Y: always end at target length
 		0
 	];
 
@@ -78,11 +78,11 @@ export function generateBendCurve(
 
 	// Return 5-point Catmull-Rom curve: [control, start, middle, end, control]
 	const points: Array<[number, number, number]> = [
-		p0,     // P0 - extrapolated control point before start
-		start,  // P1 - actual start (curve begins here)
+		p0, // P0 - extrapolated control point before start
+		start, // P1 - actual start (curve begins here)
 		middle, // P2 - middle bend point (curve passes through)
-		end,    // P3 - actual end (curve ends here)
-		p4      // P4 - extrapolated control point after end
+		end, // P3 - actual end (curve ends here)
+		p4 // P4 - extrapolated control point after end
 	];
 
 	return points;

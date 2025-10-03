@@ -98,7 +98,10 @@
 				}
 			} catch (e) {
 				console.error(`Failed to generate ${infloParams.enabled ? 'inflorescence' : 'flower'}:`, e);
-				error = e instanceof Error ? e.message : `Failed to generate ${infloParams.enabled ? 'inflorescence' : 'flower'}`;
+				error =
+					e instanceof Error
+						? e.message
+						: `Failed to generate ${infloParams.enabled ? 'inflorescence' : 'flower'}`;
 			} finally {
 				loading = false;
 			}

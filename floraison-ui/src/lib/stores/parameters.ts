@@ -238,10 +238,7 @@ function createWhorl(
  * Constructs whorl arrays from simple counts with appropriate
  * positioning for each component type.
  */
-function buildFloralDiagram(
-	diagram: DiagramParams,
-	receptacle: ReceptacleParams
-): FloralDiagram {
+function buildFloralDiagram(diagram: DiagramParams, receptacle: ReceptacleParams): FloralDiagram {
 	// Convert stamen tilt from degrees to radians
 	const stamenTiltRadians = (diagram.stamenTilt * Math.PI) / 180;
 

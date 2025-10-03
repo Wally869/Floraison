@@ -28,7 +28,11 @@ export interface SceneContext {
 	toggleShadows: (enabled: boolean) => void;
 	positionGround: (minY: number) => void;
 	updateShadowCamera: (boundingBox: THREE.Box3) => void;
-	captureSquareScreenshot: (filename: string, onSuccess?: () => void, onError?: (error: Error) => void) => void;
+	captureSquareScreenshot: (
+		filename: string,
+		onSuccess?: () => void,
+		onError?: (error: Error) => void
+	) => void;
 	resetCamera: () => void;
 }
 
@@ -41,7 +45,7 @@ export interface SceneContext {
 export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	// Create scene with light brown background (earthy tone)
 	const scene = new THREE.Scene();
-	scene.background = new THREE.Color(0x714B4B);
+	scene.background = new THREE.Color(0x714b4b);
 
 	// Create perspective camera
 	const camera = new THREE.PerspectiveCamera(
@@ -85,7 +89,7 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.castShadow = true;
 
 	// Configure shadow camera for maximum quality
-	dirLight.shadow.mapSize.width = 4096;  // Ultra-high resolution
+	dirLight.shadow.mapSize.width = 4096; // Ultra-high resolution
 	dirLight.shadow.mapSize.height = 4096;
 	dirLight.shadow.camera.near = 0.5;
 	dirLight.shadow.camera.far = 50;
@@ -93,10 +97,10 @@ export function createScene(canvas: HTMLCanvasElement): SceneContext {
 	dirLight.shadow.camera.right = 20;
 	dirLight.shadow.camera.top = 20;
 	dirLight.shadow.camera.bottom = -20;
-	dirLight.shadow.bias = -0.001;  // Reduce shadow acne
-	dirLight.shadow.normalBias = 0.02;  // Surface-aware bias for complex geometry
-	dirLight.shadow.radius = 3;  // Wider penumbra for softer edge
-	dirLight.shadow.blurSamples = 25;  // More blur samples for smoothness
+	dirLight.shadow.bias = -0.001; // Reduce shadow acne
+	dirLight.shadow.normalBias = 0.02; // Surface-aware bias for complex geometry
+	dirLight.shadow.radius = 3; // Wider penumbra for softer edge
+	dirLight.shadow.blurSamples = 25; // More blur samples for smoothness
 
 	scene.add(dirLight);
 
