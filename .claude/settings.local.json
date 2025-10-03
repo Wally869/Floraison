@@ -23,7 +23,10 @@
       "WebSearch",
       "Bash(cargo clippy:*)",
       "Bash(git add:*)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(git remote get-url:*)",
+      "Bash(NODE_ENV=production npm run build)",
+      "Bash(npm run build:*)"
     ],
     "deny": [],
     "ask": []
