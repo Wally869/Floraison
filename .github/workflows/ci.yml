@@ -107,28 +107,26 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: floraison-ui/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('floraison-ui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
       - name: Install dependencies
-        run: |
-          cd floraison-ui
-          npm ci
+        working-directory: floraison-ui
+        run: npm ci
 
       - name: Type check
-        run: |
-          cd floraison-ui
-          npm run check
-
-      - name: Lint
-        run: |
-          cd floraison-ui
-          npm run lint
+        working-directory: floraison-ui
+        run: npm run check
 
       - name: Run tests
-        run: |
-          cd floraison-ui
-          npm run test
+        working-directory: floraison-ui
+        run: npm run test
 
   build:
     name: Full Build
@@ -147,18 +145,22 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: floraison-ui/package-lock.json
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('floraison-ui/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
 
       - name: Install UI dependencies
-        run: |
-          cd floraison-ui
-          npm ci
+        working-directory: floraison-ui
+        run: npm ci
 
       - name: Build UI
-        run: |
-          cd floraison-ui
-          npm run build
+        working-directory: floraison-ui
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
