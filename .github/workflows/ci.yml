@@ -82,7 +82,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: wasm-build
-          path: floraison-ui/src/lib/wasm/
+          path: |
+            floraison-ui/src/lib/wasm/*.js
+            floraison-ui/src/lib/wasm/*.wasm
+            floraison-ui/src/lib/wasm/floraison.d.ts
+            floraison-ui/src/lib/wasm/floraison_bg.wasm.d.ts
+            floraison-ui/src/lib/wasm/package.json
           retention-days: 1
 
   ui-check:

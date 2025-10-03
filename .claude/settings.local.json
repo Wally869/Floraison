@@ -21,7 +21,8 @@
       "Bash(npm run dev:*)",
       "Bash(grep:*)",
       "WebSearch",
-      "Bash(cargo clippy:*)"
+      "Bash(cargo clippy:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

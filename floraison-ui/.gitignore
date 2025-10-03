@@ -8,12 +8,13 @@ node_modules
 /.svelte-kit
 /build
 
-# WASM generated files (keep loader.ts and README.md)
+# WASM generated files (keep TypeScript source files)
 /src/lib/wasm/*.js
 /src/lib/wasm/*.wasm
 /src/lib/wasm/*.d.ts
 /src/lib/wasm/package.json
 !/src/lib/wasm/loader.ts
+!/src/lib/wasm/types.ts
 !/src/lib/wasm/README.md
 
 # OS
