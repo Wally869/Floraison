@@ -120,6 +120,10 @@ jobs:
         working-directory: floraison-ui
         run: npm ci
 
+      - name: Install Playwright browsers
+        working-directory: floraison-ui
+        run: npx playwright install --with-deps chromium
+
       - name: Type check
         working-directory: floraison-ui
         run: npm run check
