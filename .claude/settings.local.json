@@ -26,7 +26,8 @@
       "Bash(npm run format:*)",
       "Bash(git remote get-url:*)",
       "Bash(NODE_ENV=production npm run build)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

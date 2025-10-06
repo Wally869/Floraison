@@ -15,6 +15,7 @@
 
 import type { WorkerRequest, WorkerResponse } from './types';
 import { serializeMeshData } from '$lib/wasm/types';
+import wasmUrl from '$lib/wasm/floraison_bg.wasm?url';
 
 // WASM module imports (will be loaded asynchronously)
 let wasmModule: typeof import('$lib/wasm/floraison') | null = null;
@@ -31,9 +32,9 @@ async function initializeWasm() {
 		// Dynamic import of WASM module
 		const wasm = await import('$lib/wasm/floraison');
 
-		// CRITICAL: Initialize the WASM module before using it
-		// This loads the .wasm binary and sets up the WebAssembly instance
-		await wasm.default();
+		// CRITICAL: Initialize the WASM module with explicit URL
+		// This ensures correct path resolution with base path on GitHub Pages
+		await wasm.default(wasmUrl);
 
 		wasmModule = wasm;
 		FlowerGenerator = wasm.FlowerGenerator;
