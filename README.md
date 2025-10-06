@@ -4,6 +4,20 @@
 
 Floraison is a web-based tool for generating botanically accurate 3D flowers using pure algorithmic approaches. Based on the SIGGRAPH 2005 paper by Ijiri et al., it uses floral diagrams and inflorescence patterns to create diverse flower models without manual editing.
 
+## 🌸 [Try it Live](https://wally869.github.io/Floraison/)
+
+## Gallery
+
+<p align="center">
+  <img src="media/floraison_custom_2025-10-03T11-23-53.png" width="45%" alt="Purple clustered inflorescence" />
+  <img src="media/floraison_custom_2025-10-06T13-07-39.png" width="45%" alt="Pink flower with spiral inflorescence" />
+</p>
+
+<p align="center">
+  <img src="media/floraison_custom_2025-10-06T13-08-21.png" width="45%" alt="White flower with delicate petals" />
+  <img src="media/floraison_custom_2025-10-06T13-08-46.png" width="45%" alt="Orange flower with curved petals" />
+</p>
+
 ## Features
 
 - **Botanically structured**: Uses floral diagrams (pistil, stamen, petal, sepal arrangements) and inflorescence patterns (raceme, umbel, dichasium, etc.)
