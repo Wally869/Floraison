@@ -131,6 +131,20 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
 };
 
 // Initialize WASM on worker startup
-initializeWasm().catch((error) => {
-	console.error('[Worker] WASM initialization failed:', error);
-});
+initializeWasm()
+	.then(() => {
+		// Send ready message to main thread
+		const response: WorkerResponse = {
+			type: 'init-ready'
+		};
+		self.postMessage(response);
+	})
+	.catch((error) => {
+		console.error('[Worker] WASM initialization failed:', error);
+		// Send error message to main thread
+		const response: WorkerResponse = {
+			type: 'init-error',
+			error: error instanceof Error ? error.message : String(error)
+		};
+		self.postMessage(response);
+	});

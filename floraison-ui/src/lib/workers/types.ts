@@ -63,9 +63,27 @@ export interface GenerateProgressResponse {
 }
 
 /**
+ * Initialization success response sent when WASM module is ready.
+ */
+export interface InitReadyResponse {
+	type: 'init-ready';
+}
+
+/**
+ * Initialization error response sent when WASM module fails to load.
+ */
+export interface InitErrorResponse {
+	type: 'init-error';
+	/** Error message */
+	error: string;
+}
+
+/**
  * All possible response types from worker.
  */
 export type WorkerResponse =
 	| GenerateSuccessResponse
 	| GenerateErrorResponse
-	| GenerateProgressResponse;
+	| GenerateProgressResponse
+	| InitReadyResponse
+	| InitErrorResponse;

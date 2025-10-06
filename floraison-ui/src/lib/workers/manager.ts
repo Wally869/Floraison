@@ -25,6 +25,15 @@ interface PendingRequest {
 }
 
 /**
+ * Queued request waiting for worker to be ready.
+ */
+interface QueuedRequest {
+	id: number;
+	request: WorkerRequest;
+	pending: PendingRequest;
+}
+
+/**
  * Manager for the flower generation worker.
  *
  * This class provides a singleton worker instance and manages the request/response cycle.
@@ -39,6 +48,8 @@ export class GenerationWorkerManager {
 	private worker: Worker;
 	private nextRequestId = 1;
 	private pendingRequests = new Map<number, PendingRequest>();
+	private isReady = false;
+	private requestQueue: QueuedRequest[] = [];
 
 	constructor() {
 		this.worker = new GenerationWorker();
@@ -62,14 +73,13 @@ export class GenerationWorkerManager {
 		return new Promise((resolve, reject) => {
 			const id = this.nextRequestId++;
 
-			// Store pending request
-			this.pendingRequests.set(id, {
+			const pending: PendingRequest = {
 				resolve,
 				reject,
 				onProgress
-			});
+			};
 
-			// Send request to worker
+			// Create request message
 			const request: WorkerRequest = {
 				type: 'generate',
 				id,
@@ -77,6 +87,14 @@ export class GenerationWorkerManager {
 				inflorescenceParams
 			};
 
+			// If worker not ready, queue the request
+			if (!this.isReady) {
+				this.requestQueue.push({ id, request, pending });
+				return;
+			}
+
+			// Worker is ready, send immediately
+			this.pendingRequests.set(id, pending);
 			this.worker.postMessage(request);
 		});
 	}
@@ -86,15 +104,43 @@ export class GenerationWorkerManager {
 	 */
 	private handleWorkerMessage(event: MessageEvent<WorkerResponse>) {
 		const response = event.data;
-		const pending = this.pendingRequests.get(response.id);
-
-		if (!pending) {
-			console.warn('[WorkerManager] Received response for unknown request:', response.id);
-			return;
-		}
 
 		switch (response.type) {
+			case 'init-ready': {
+				console.log('[WorkerManager] Worker ready, processing queued requests');
+				this.isReady = true;
+
+				// Process all queued requests
+				for (const queued of this.requestQueue) {
+					this.pendingRequests.set(queued.id, queued.pending);
+					this.worker.postMessage(queued.request);
+				}
+
+				// Clear queue
+				this.requestQueue = [];
+				break;
+			}
+
+			case 'init-error': {
+				console.error('[WorkerManager] Worker initialization failed:', response.error);
+
+				// Reject all queued requests
+				for (const queued of this.requestQueue) {
+					queued.pending.reject(new Error(`Worker initialization failed: ${response.error}`));
+				}
+
+				// Clear queue
+				this.requestQueue = [];
+				break;
+			}
+
 			case 'generate-success': {
+				const pending = this.pendingRequests.get(response.id);
+				if (!pending) {
+					console.warn('[WorkerManager] Received response for unknown request:', response.id);
+					return;
+				}
+
 				// response.mesh is already SerializedMeshData (part of MeshDataLike union)
 				pending.resolve(response.mesh);
 				this.pendingRequests.delete(response.id);
@@ -102,12 +148,24 @@ export class GenerationWorkerManager {
 			}
 
 			case 'generate-error': {
+				const pending = this.pendingRequests.get(response.id);
+				if (!pending) {
+					console.warn('[WorkerManager] Received response for unknown request:', response.id);
+					return;
+				}
+
 				pending.reject(new Error(response.error));
 				this.pendingRequests.delete(response.id);
 				break;
 			}
 
 			case 'generate-progress': {
+				const pending = this.pendingRequests.get(response.id);
+				if (!pending) {
+					console.warn('[WorkerManager] Received response for unknown request:', response.id);
+					return;
+				}
+
 				// Call progress callback if provided
 				pending.onProgress?.(response.progress, response.message);
 				break;
